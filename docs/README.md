@@ -7,12 +7,13 @@
 
 ## ابدأ من هنا (بالترتيب)
 
-1. [developer-handoff.md](./developer-handoff.md) — المواصفات الكاملة والقرارات المثبّتة
-2. [team.md](./team.md) — أسماء الفريق (مصطفى / نهلة) والشركة
-3. [production-work-plan.md](./production-work-plan.md) — **خطة الإنتاج المرحلية + بوابات الاختبار اليدوي**
-3. [pm-quality-oversight.md](./pm-quality-oversight.md) — دليل مدير المشروع لمراقبة الجودة والمتابعة
-4. [developer-growth-cursor.md](./developer-growth-cursor.md) — تقوية نهلة + مسار مبرمجة عالمية + شروط Cursor
-5. [whatsapp-pm-notifications.md](./whatsapp-pm-notifications.md) — إشعارات واتساب (بداية/نهاية جلسة + بوابات)
+1. [machine-setup.md](./machine-setup.md) — **جهاز جديد/مُفرمَت:** Cursor + Git + Node + سحب الريبو
+2. [developer-handoff.md](./developer-handoff.md) — المواصفات الكاملة والقرارات المثبّتة
+3. [team.md](./team.md) — أسماء الفريق (مصطفى / نهلة) والشركة
+4. [production-work-plan.md](./production-work-plan.md) — **خطة الإنتاج المرحلية + بوابات الاختبار اليدوي**
+5. [pm-quality-oversight.md](./pm-quality-oversight.md) — دليل مدير المشروع لمراقبة الجودة والمتابعة
+6. [developer-growth-cursor.md](./developer-growth-cursor.md) — تقوية نهلة + مسار مبرمجة عالمية + شروط Cursor
+7. [whatsapp-pm-notifications.md](./whatsapp-pm-notifications.md) — إشعارات واتساب (بداية/نهاية جلسة + بوابات)
 4. [pages-inventory.md](./pages-inventory.md) — قائمة الصفحات (MVP / V2 / V3)
 5. [ui-nexlink-spec.md](./ui-nexlink-spec.md) — ثيم NexLink، RTL، Dark، التقويم، الخطوط
 6. [branding/brand-guidelines.md](./branding/brand-guidelines.md) — الشعار والألوان
