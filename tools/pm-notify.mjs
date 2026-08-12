@@ -204,6 +204,14 @@ function resolveRecipients() {
   for (const part of String(process.env.PM_WHATSAPP_TO || "").split(/[,;\s]+/)) {
     push(part, "مستلم");
   }
+
+  const to = String(argValue("--to") || "both").toLowerCase();
+  if (["dev", "engineer", "مهندسة", "programmer"].includes(to)) {
+    return list.filter((x) => x.role === "مهندسة");
+  }
+  if (["mgmt", "admin", "إدارة", "manager"].includes(to)) {
+    return list.filter((x) => x.role === "إدارة");
+  }
   return list;
 }
 
@@ -482,11 +490,14 @@ function buildMessages(cmd) {
       console.error("--text required");
       process.exit(1);
     }
+    const mgmtSummary =
+      argValue("--mgmt-summary") ||
+      `تم إرسال رسالة لنـهلة (${ORG.engineerName}). راجع نسخة المهندسة على واتسابها.`;
     return dual(
       [
-        `${ORG.projectName} — رسالة إدارية`,
+        `${ORG.projectName} — إشعار إدارة`,
         `من: ${ORG.managerName}`,
-        body,
+        mgmtSummary,
         `الوقت: ${t}`,
       ].join("\n"),
       [
@@ -497,6 +508,32 @@ function buildMessages(cmd) {
         body,
         ``,
         `أي شي تحتاجيه خبرينا — منكمل سوا.`,
+        ``,
+        signOff(),
+        t,
+      ].join("\n")
+    );
+  }
+
+  // برومبت أول / رسالة موجهة أساساً للمهندسة
+  if (cmd === "prompt" || cmd === "first-prompt") {
+    const body = argValue("--text");
+    if (!body) {
+      console.error("--text required for prompt");
+      process.exit(1);
+    }
+    return dual(
+      [
+        `${ORG.projectName} — إشعار`,
+        `أُرسل برومبت/تعليمات لنـهلة على واتسابها.`,
+        `الوقت: ${t}`,
+      ].join("\n"),
+      [
+        openLine(),
+        ``,
+        greetEngineer(),
+        ``,
+        body,
         ``,
         signOff(),
         t,
@@ -593,7 +630,8 @@ Usage:
   session-start|session-end [--greeting "..."]
   issue|problem|blocker --title "..." [--notes "..."] [--severity low|medium|high]
   violation|rules|alert --rule "..." [--notes "..."]
-  phase|task|gate|custom ...`);
+  prompt|custom --text "..." [--to dev|mgmt|both] [--greeting "..."]
+  phase|task|gate ...`);
   process.exit(1);
 }
 

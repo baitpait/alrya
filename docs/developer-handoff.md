@@ -29,7 +29,7 @@
 | 4 | ORM | **Prisma** = طبقة تربط TypeScript بـ MySQL (تعريف جداول + استعلامات بدون SQL يدوي في كل شاشة) |
 | 5 | Admin UI | ثيم **NexLink** (Bootstrap 5 CRM) |
 | 6 | الاتجاه | عربي RTL إلزامي |
-| 7 | الوضع | **Dark افتراضي** + زر تبديل Light/Dark |
+| 7 | الوضع | **Light افتراضي** + زر تبديل Light/Dark |
 | 8 | أولوية الشاشات | **التقويم يعرض كل الحجوزات/المواعيد** — أهم شاشة تشغيل |
 | 9 | الهوية | استوديو الراية (بدل NexLink / وميض) |
 
@@ -40,7 +40,7 @@
 | السطح | المسار المقترح | الجمهور | المرجع البصري |
 |--------|----------------|---------|----------------|
 | Public | `/` و `/book` | العرسان / الزبائن | لاندينغ مخصص لهوية الاستوديو (ليس شكل CRM) |
-| Admin | `/admin/*` | موظفون ومدير | [NexLink RTL](https://nexlink.layoutdrop.com/demo/index-rtl.html) + Dark |
+| Admin | `/admin/*` | موظفون ومدير | [NexLink RTL](https://nexlink.layoutdrop.com/demo/index-rtl.html) + Light افتراضي |
 
 ### تدفق الحجز الأونلاين
 
@@ -121,8 +121,8 @@ Alray Studio/
 ### أولوية 1 — أساس
 
 1. Scaffold Next.js + Prisma + اتصال MySQL
-2. Layout Admin: `lang=ar` `dir=rtl` `data-theme=dark` + تحميل `styles-rtl.css`
-3. زر `theme-btn` يعمل (Dark/Light)
+2. Layout Admin: `lang=ar` `dir=rtl` `data-theme=light` + تحميل `styles-rtl.css`
+3. زر `theme-btn` يعمل (Light/Dark)
 4. Login بسيط لموظفي الاستوديو
 
 ### أولوية 2 — التقويم (الأهم عملياً)
@@ -203,7 +203,7 @@ Alray Studio/
 
 ## 10. معايير قبول MVP (Definition of Done)
 
-- [ ] Admin يعمل RTL + Dark افتراضي + تبديل ثيم
+- [ ] Admin يعمل RTL + Light افتراضي + تبديل ثيم (theme-btn)
 - [ ] الخط Instrument Sans واللون الأساسي `#5955D1`
 - [ ] التقويم يعرض مواعيد حقيقية من قاعدة البيانات
 - [ ] يمكن إضافة موعد/مناسبة من التقويم أو من شاشة المناسبات

@@ -1,5 +1,5 @@
 ---
-description: واجهة لوحة الإدارة NexLink RTL Dark وتقويم المواعيد
+description: واجهة لوحة الإدارة NexLink RTL مع Light افتراضي وDark عبر theme-btn وتقويم المواعيد
 globs: "**/app/(admin)/**/*.{ts,tsx},**/components/admin/**/*.{ts,tsx},**/public/theme/nexlink/**/*"
 alwaysApply: false
 ---
@@ -10,16 +10,18 @@ alwaysApply: false
 
 ## Shell إلزامي
 ```html
-<html lang="ar" dir="rtl" data-theme="dark">
+<html lang="ar" dir="rtl" data-theme="light">
 ```
 - CSS: `styles-rtl.css` من أصول محلية
 - الخط: Instrument Sans
 - Primary الثيم: `#5955D1` (يمكن لاحقاً مواءمة ذهب/عنابي دون كسر الثيم)
 - براند القائمة: استوديو الراية + `alraya-studio-logo.png` — ليس NexLink
 
-## theme-btn
-- موجود في الهيدر؛ يبدّل `dark` / `light` ويُفضّل حفظه في `localStorage`
-- الافتراضي دائماً Dark لأول زيارة
+## الثيم: Light افتراضي + Dark بالزر
+- **الافتراضي لأول زيارة / بعد مسح التخزين:** Light
+- **إلزامي:** زر `theme-btn` في الهيدر يبدّل `light` ↔ `dark`
+- حفظ التفضيل في `localStorage`؛ بعد التحديث يبقى اختيار المستخدم
+- الأدمن يدعم الوضعين — نسيان `theme-btn` = عيب مرحلة الثيم/الشِل
 
 ## التقويم — أولوية قصوى (ظهور الحجوزات)
 - مسار: `/admin/calendar`
@@ -36,4 +38,4 @@ alwaysApply: false
 - بادج غير مقروء على الداشبورد/الهيدر
 
 ## إعدادات الموقع
-- `/admin/settings/site`: واتساب عائم + روابط سوشيال — لا تُ硬-كود في الفرونت
+- `/admin/settings/site`: واتساب عائم + روابط سوشيال — لا تُثبَّت كقيم صلبة في الفرونت

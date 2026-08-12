@@ -21,7 +21,7 @@ alwaysApply: true
 | App | **Next.js** (App Router) + **TypeScript** |
 | ORM | **Prisma** |
 | قاعدة البيانات | **MySQL** |
-| Admin UI | ثيم **NexLink** Bootstrap 5 — RTL + Dark افتراضي |
+| Admin UI | ثيم **NexLink** Bootstrap 5 — RTL · **Light افتراضي** · **Dark عبر زر theme-btn** |
 | Public | لاندينغ مخصص (هوية عنابي + ذهبي) |
 | تقويم | FullCalendar (أهم شاشة تشغيل) |
 
@@ -42,7 +42,8 @@ alwaysApply: true
 ## قرارات غير اختيارية
 
 - عربي: `lang="ar" dir="rtl"`
-- أدمن: `data-theme="dark"` افتراضي + زر `theme-btn`
+- أدمن: `data-theme="light"` **افتراضي** — المستخدم يبدّل Light ↔ Dark بزر `theme-btn` (إلزامي في الهيدر) ويُحفظ التفضيل
+- ممنوع نسيان زر التحويل؛ الأدمن يدعم الوضعين معاً
 - لا تعتمد على CDN ديمو NexLink في الإنتاج — أصول محلية من `vendor/nexlink`
 - منطق وميض كمرجع وظيفي فقط — لا تنسخ سورسه
 - لا تبني POS/SMS كامل في MVP ما لم يُطلب

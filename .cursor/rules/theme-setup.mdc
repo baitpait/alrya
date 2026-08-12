@@ -1,5 +1,5 @@
 ---
-description: تسهيل تثبيت وتشغيل ثيم NexLink (RTL + Dark + أصول محلية) لاستوديو الراية
+description: تسهيل تثبيت وتشغيل ثيم NexLink (RTL + Light افتراضي + Dark عبر theme-btn) لاستوديو الراية
 globs: "**/public/theme/**/*,**/vendor/nexlink/**/*,**/app/**/layout.tsx,**/components/admin/**/*.{ts,tsx}"
 alwaysApply: false
 ---
@@ -25,12 +25,12 @@ apps/web/public/theme/nexlink/  ← انسخ الأصول المستخدمة ل�
 - لا تستخدم `https://nexlink.layoutdrop.com/demo/...` في الإنتاج.
 - انسخ فقط ما تحتاجه للصفحات الفعلية لتقليل الحجم.
 
-## 2) تفعيل RTL + Dark (نسخ جاهز)
+## 2) تفعيل RTL + الثيم (Light افتراضي / Dark بالزر)
 
 في layout الأدمن / الجذر للأدمن:
 
 ```tsx
-<html lang="ar" dir="rtl" data-theme="dark">
+<html lang="ar" dir="rtl" data-theme="light">
   <head>
     <link
       href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap"
@@ -62,10 +62,10 @@ body { font-family: "Instrument Sans", sans-serif; }
 ## 4) زر `theme-btn` — سلوك مختصر
 
 - العنصر: `a.theme-btn` داخل `header.app-header`
-- الافتراضي: `data-theme="dark"`
-- عند النقر: بدّل `dark` ↔ `light` على `<html>`
+- الافتراضي: `data-theme="light"`
+- عند النقر: بدّل `light` ↔ `dark` على `<html>`
 - احفظ في `localStorage` بمفتاح مثل `alraya-admin-theme`
-- عند التحميل: اقرأ المحفوظ؛ إن لم يوجد → `dark`
+- عند التحميل: اقرأ المحفوظ؛ إن لم يوجد → `light`
 
 ## 5) براند سريع فوق الثيم
 
@@ -89,9 +89,9 @@ body { font-family: "Instrument Sans", sans-serif; }
 ## 7) Checklist قبل اعتبار الثيم جاهزاً
 
 - [ ] `styles-rtl.css` يعمل محلياً
-- [ ] `dir=rtl` + `data-theme=dark`
+- [ ] `dir=rtl` + `data-theme=light`
 - [ ] Instrument Sans ظاهر
-- [ ] `theme-btn` يبدّل ويحفظ
+- [ ] `theme-btn` يبدّل Light↔Dark ويحفظ (الافتراضي Light)
 - [ ] الشعار = استوديو الراية
 - [ ] التقويم يفتح بدون أخطاء كونسول متعلقة بمسارات الأصول
 - [ ] لا طلبات شبكة إلى `nexlink.layoutdrop.com`

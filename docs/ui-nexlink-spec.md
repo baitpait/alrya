@@ -13,7 +13,9 @@
 | المنتج | NexLink — CRM Admin Dashboard (LayoutDrop) |
 | الأساس | Bootstrap 5 |
 | الاتجاه | **RTL إلزامي** |
-| الوضع الافتراضي | **Dark** (`data-theme="dark"`) |
+| الوضع الافتراضي | **Light** (`data-theme="light"`) — لأول زيارة / بعد مسح التخزين |
+| الوضع المدعوم أيضاً | **Dark** عبر زر `theme-btn` (إلزامي) — الأدمن يدعم الوضعين |
+| حفظ التفضيل | `localStorage` بعد التبديل |
 | اللون الأساسي | `#5955D1` |
 | خط الواجهة | `"Instrument Sans", sans-serif` (400–700) |
 | أيقونات | Lucide + Font Awesome 6 + Flaticon (uicons) |
@@ -28,7 +30,7 @@
 ## 2. قواعد HTML الجذر (إلزامية)
 
 ```html
-<html lang="ar" dir="rtl" data-theme="dark">
+<html lang="ar" dir="rtl" data-theme="light">
 ```
 
 تحميل الخط و CSS:
@@ -70,8 +72,8 @@ body {
 
 ### سلوك مطلوب
 
-1. الافتراضي عند أول زيارة: **Dark**
-2. النقر يبدّل `data-theme` على `<html>` بين `dark` و `light`
+1. الافتراضي عند أول زيارة: **Light**
+2. النقر يبدّل `data-theme` على `<html>` بين `light` و `dark`
 3. يُفضّل حفظ الاختيار في `localStorage`
 4. يعمل بشكل صحيح مع RTL (لا انعكاس خاطئ للأيقونة)
 5. منطق مشابه لـ `appSettings.js` / `main.js` في الثيم
@@ -117,7 +119,7 @@ body {
 صفحة `calendar.html` في الديمو قد تكون LTR؛ في مشروعنا:
 
 - فرض `dir="rtl"` + `styles-rtl.css`
-- الإبقاء على `data-theme="dark"`
+- الإبقاء على `data-theme="light"` كافتراضي في الـ layout
 - ضبط اتجاه FullCalendar للعربية إن لزم (`direction: 'rtl'`, `locale: 'ar'`)
 
 ### مكوّنات الصفحة
@@ -207,8 +209,8 @@ assets/images/...
 ## 8. قائمة تحقق UI للمبرمج
 
 - [ ] `dir=rtl` و `lang=ar` على كل صفحات الأدمن
-- [ ] `data-theme=dark` افتراضي
-- [ ] `theme-btn` يبدّل ويحفظ التفضيل
+- [ ] `data-theme=light` افتراضي
+- [ ] `theme-btn` يبدّل Light↔Dark ويحفظ التفضيل
 - [ ] Instrument Sans محمّل ويُطبَّق على `body`
 - [ ] Primary = `#5955D1`
 - [ ] التقويم FullCalendar يعرض بيانات حقيقية
