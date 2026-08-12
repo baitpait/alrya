@@ -8,9 +8,11 @@
 ## ابدأ من هنا (بالترتيب)
 
 1. [developer-handoff.md](./developer-handoff.md) — المواصفات الكاملة والقرارات المثبّتة
-2. [production-work-plan.md](./production-work-plan.md) — **خطة الإنتاج المرحلية + بوابات الاختبار اليدوي**
+2. [team.md](./team.md) — أسماء الفريق (مصطفى / نهلة) والشركة
+3. [production-work-plan.md](./production-work-plan.md) — **خطة الإنتاج المرحلية + بوابات الاختبار اليدوي**
 3. [pm-quality-oversight.md](./pm-quality-oversight.md) — دليل مدير المشروع لمراقبة الجودة والمتابعة
-4. [whatsapp-pm-notifications.md](./whatsapp-pm-notifications.md) — إشعارات واتساب للمدير (WasenderAPI)
+4. [developer-growth-cursor.md](./developer-growth-cursor.md) — تقوية نهلة + مسار مبرمجة عالمية + شروط Cursor
+5. [whatsapp-pm-notifications.md](./whatsapp-pm-notifications.md) — إشعارات واتساب (بداية/نهاية جلسة + بوابات)
 4. [pages-inventory.md](./pages-inventory.md) — قائمة الصفحات (MVP / V2 / V3)
 5. [ui-nexlink-spec.md](./ui-nexlink-spec.md) — ثيم NexLink، RTL، Dark، التقويم، الخطوط
 6. [branding/brand-guidelines.md](./branding/brand-guidelines.md) — الشعار والألوان
@@ -49,6 +51,8 @@
 | `theme-setup.mdc` | تسهيل تثبيت الثيم (أصول، RTL، Dark، theme-btn، checklist) |
 | `production-phases.mdc` | إلزام خطة الإنتاج المرحلية + بوابات الاختبار اليدوي |
 | `pm-whatsapp-notify.mdc` | إلزام إشعار واتساب للمدير بعد المراحل/الاختبار |
+| `session-lifecycle.mdc` | كشف بداية/نهاية الجلسة من الكلمات أو وكيل جديد |
+| `developer-growth.mdc` | شروط Cursor + عقلية مبرمجة عالمية لنـهلة |
 | `public-landing.mdc` | لاندينغ + واتساب/سوشيال |
 
 ---

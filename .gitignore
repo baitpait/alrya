@@ -7,3 +7,6 @@ vendor/nexlink/
 # OS
 .DS_Store
 *.log
+
+# حالة إشعارات الجلسة (محلي)
+.cursor/pm-session-state.json

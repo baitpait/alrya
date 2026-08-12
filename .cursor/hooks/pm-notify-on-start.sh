@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# بداية جلسة Cursor → واتساب (إدارة + مبرمج بأسلوب راقٍ)
+# بداية جلسة Cursor → واتساب (مصطفى تقرير + نهلة تحفيز وثقة)
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
@@ -10,7 +10,7 @@ if [[ ! -f .env ]]; then
   exit 0
 fi
 
-FOCUS="${1:-متابعة خطة إنتاج استوديو الراية}"
+FOCUS="${1:-متابعة خطة إنتاج استوديو الراية مع المهندسة نهلة البستنجي}"
 node tools/pm-notify.mjs session-start --focus "$FOCUS" >/dev/null 2>&1 || true
 echo '{}'
 exit 0

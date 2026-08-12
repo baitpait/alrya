@@ -1,0 +1,28 @@
+---
+description: شرط الرفع التلقائي إلى GitHub (origin) بعد بوابة ناجحة أو طلب صريح
+alwaysApply: true
+---
+
+# رفع تلقائي إلى GitHub
+
+الريبو: `https://github.com/baitpait/alrya` · الفرع الافتراضي: `main`  
+الأداة: `node tools/git-auto-push.mjs`  
+التفعيل: `GIT_AUTO_PUSH=1` في `.env`
+
+## متى يُرفع تلقائياً؟
+1. بعد **بوابة مرحلة ناجحة**: `gate --pass true` (تستدعي الأداة تلقائياً من `pm-notify`)
+2. عندما يطلب المستخدم صراحة: ارفع / ادفع / push / ارفع على GitHub
+3. بعد commit محلي ناجح إذا وُجدت commits غير مرفوعة والشرط مفعّل — نفّذ `git-auto-push`
+
+## ممنوع
+- `git push --force` أو تعديل تاريخ محمي
+- الرفع إذا `GIT_AUTO_PUSH` غير مفعّل — أخبر المستخدم بدل الرفع الصامت
+- commit+push لأسرار جديدة لم تعتمدها الإدارة (إلا `.env` إن طلب المدير صراحة سابقاً)
+
+## أوامر
+```bash
+node tools/git-auto-push.mjs --reason "بوابة مرحلة N ناجحة"
+# مع الالتزام التلقائي للتغييرات (إن لزم):
+# GIT_AUTO_COMMIT=1 في .env  أو:
+node tools/git-auto-push.mjs --commit "رسالة واضحة" --reason "..."
+```

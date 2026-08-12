@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
  * إشعارات واتساب — استوديو الراية
- * إدارة: تقرير مختصر واضح
- * مبرمج: أسلوب هندسي راقٍ · مهذّب · تحفيزي
+ * إدارة (مصطفى البستنجي): تقرير مختصر واضح
+ * مهندسة (نهلة البستنجي): أسلوب راقٍ · مهذّب · تحفيزي · ثقة بالنفس
+ * التوقيع: نيابة عن بيت البرمجيات وتكنولوجيا المعلومات
  *
  * شرط: ≥ 40 ثانية بين كل رسالتين (WASENDER_SEND_GAP_MS)
  */
@@ -39,6 +40,68 @@ const API_URL =
   process.env.WASENDER_API_URL || "https://www.wasenderapi.com/api/send-message";
 const API_KEY = process.env.WASENDER_API_KEY;
 const SESSION = process.env.WASENDER_SESSION_NAME || "baitpait";
+const STATE_PATH = path.join(ROOT, ".cursor", "pm-session-state.json");
+/** منع تكرار بداية/نهاية خلال نافذة زمنية (افتراضي 25 دقيقة) */
+const DEDUPE_MS = Math.max(
+  60_000,
+  Number(process.env.SESSION_DEDUPE_MS || 25 * 60_1000) || 25 * 60_1000
+);
+
+function readSessionState() {
+  try {
+    if (!fs.existsSync(STATE_PATH)) return {};
+    return JSON.parse(fs.readFileSync(STATE_PATH, "utf8"));
+  } catch {
+    return {};
+  }
+}
+
+function writeSessionState(patch) {
+  const dir = path.dirname(STATE_PATH);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  const next = { ...readSessionState(), ...patch };
+  fs.writeFileSync(STATE_PATH, JSON.stringify(next, null, 2) + "\n");
+}
+
+/** true = يجب تخطي الإرسال (تكرار قريب) */
+function shouldDedupeSession(kind) {
+  const st = readSessionState();
+  const key = kind === "start" ? "lastStartAt" : "lastEndAt";
+  const last = Number(st[key] || 0);
+  if (!last) return false;
+  return Date.now() - last < DEDUPE_MS;
+}
+
+function markSession(kind) {
+  const patch =
+    kind === "start"
+      ? { lastStartAt: Date.now(), lastStartIso: new Date().toISOString() }
+      : { lastEndAt: Date.now(), lastEndIso: new Date().toISOString() };
+  writeSessionState(patch);
+}
+
+/** هوية الفريق — ثابتة في المراسلات */
+const ORG = {
+  company: process.env.ORG_COMPANY_NAME || "بيت البرمجيات وتكنولوجيا المعلومات",
+  companyShort: process.env.ORG_COMPANY_SHORT || "البستنجي للحلول البرمجية والتدريب",
+  managerName: process.env.ORG_MANAGER_NAME || "مصطفى البستنجي",
+  managerTitle: process.env.ORG_MANAGER_TITLE || "مدير الشركة ومدير المشروع",
+  engineerName: process.env.ORG_ENGINEER_NAME || "نهلة البستنجي",
+  engineerTitle: process.env.ORG_ENGINEER_TITLE || "المهندسة المسؤولة عن تنفيذ المشروع",
+  projectName: process.env.ORG_PROJECT_NAME || "استوديو الراية",
+};
+
+function signOff() {
+  return [
+    `— بالنيابة عن ${ORG.company}`,
+    `${ORG.managerName}`,
+    `${ORG.managerTitle}`,
+  ].join("\n");
+}
+
+function greetEngineer() {
+  return `المهندسة الفاضلة ${ORG.engineerName}،`;
+}
 
 function parseGapMs() {
   const raw = Number(process.env.WASENDER_SEND_GAP_MS || MIN_GAP_MS);
@@ -58,7 +121,7 @@ function resolveRecipients() {
     list.push({ to: n, role });
   };
   push(process.env.PM_WHATSAPP_TO_MGMT, "إدارة");
-  push(process.env.PM_WHATSAPP_TO_DEV, "مبرمج");
+  push(process.env.PM_WHATSAPP_TO_DEV, "مهندسة");
   for (const part of String(process.env.PM_WHATSAPP_TO || "").split(/[,;\s]+/)) {
     push(part, "مستلم");
   }
@@ -92,13 +155,13 @@ function manualMgmt(v) {
 
 function manualDev(v) {
   if (v === true)
-    return "نشكر التزامكم بالتحقق اليدوي — هذه العناية هي ما يرفع جودة التسليم.";
+    return "نشكر التزامَكِ بالتحقق اليدوي — هذه العناية هي ما يرفع جودة التسليم.";
   if (v === false)
-    return "نثق بقدرتكم على إكمال التحقق اليدوي قبل الانتقال؛ الجودة تستحق هذه الخطوة.";
+    return "نثق بقدرتكِ على إكمال التحقق اليدوي قبل الانتقال؛ الجودة تستحق هذه الخطوة.";
   return "نرجو تأكيد نتيجة التحقق اليدوي عند إغلاق المرحلة.";
 }
 
-/** رسائل مزدوجة: إدارة (تقرير) + مبرمج (راقي/تحفيزي) */
+/** رسائل مزدوجة: إدارة (تقرير) + مهندسة (راقي/تحفيزي) */
 function dual(mgmtBody, devBody) {
   return { mgmt: mgmtBody.trim(), dev: devBody.trim() };
 }
@@ -109,31 +172,37 @@ function buildMessages(cmd) {
   const t = stamp();
 
   if (cmd === "session-start" || cmd === "agent-start") {
-    const focus = argValue("--focus") || argValue("--summary") || "متابعة خطة الإنتاج المعتمدة";
+    const focus =
+      argValue("--focus") ||
+      argValue("--summary") ||
+      "متابعة خطة الإنتاج المعتمدة";
     return dual(
       [
-        `استوديو الراية — بدء جلسة عمل`,
+        `${ORG.projectName} — بدء جلسة عمل`,
+        `الشركة: ${ORG.company}`,
+        `المدير: ${ORG.managerName}`,
+        `المهندسة المنفّذة: ${ORG.engineerName}`,
         `الجلسة: ${SESSION}`,
         `الوقت: ${t}`,
         `التركيز: ${focus}`,
-        `الحالة: بدأت جلسة هندسية على المشروع.`,
       ].join("\n"),
       [
-        `السلام عليكم ورحمة الله،`,
+        `السلام عليكم ورحمة الله وبركاته،`,
         ``,
-        `زميلنا المهندس الفاضل،`,
+        greetEngineer(),
         ``,
-        `نبدأ معكم جلسة عمل جديدة على منصة «استوديو الراية».`,
-        `نثق بخبرتكم ودقّتكم، ونتطلع لإنجاز متين يراعي الهيكل الكامل وتدفّق البيانات.`,
+        `نفتتح معكِ جلسة عمل جديدة على منصة «${ORG.projectName}»، ونحن على ثقة تامة بقدرتكِ وكفاءتكِ.`,
+        `خبرتكِ وعنايتكِ بالتفاصيل تصنعان فرقاً حقيقياً، ونؤمن أنكِ أهلٌ لإنجاز متين يراعي الهيكل الكامل وتدفّق البيانات.`,
         ``,
-        `محور الجلسة: ${focus}`,
+        `محور هذه الجلسة: ${focus}`,
         ``,
-        `تذكير لطيف: إتمام التحقق اليدوي قبل إغلاق أي مرحلة يحفظ جودة العمل ويمهّد للمرحلة التالية بثقة.`,
-        `والأهم دائماً: أن تظهر الحجوزات بوضوح على التقويم.`,
+        `تذكير لطيف من روح الفريق: إتمام التحقق اليدوي قبل إغلاق أي مرحلة يحفظ جودة عملكِ ويمهّد للمرحلة التالية بثقة.`,
+        `والأهم دائماً في هذا المنتج: أن تظهر الحجوزات بوضوح على شاشة التقويم.`,
         ``,
-        `وفقكم الله، ونتمنى لكم جلسة منتجة ومريحة.`,
-        `— إدارة المشروع · بيت بايت`,
-        `${t}`,
+        `ابدئي بثقة… نحن معكِ، ونتطلّع لجلسة منتجة تليق باسمكِ وباسم الشركة.`,
+        ``,
+        signOff(),
+        t,
       ].join("\n")
     );
   }
@@ -143,30 +212,35 @@ function buildMessages(cmd) {
       return null;
     }
     const summary =
-      argValue("--summary") || "أُنجزت أعمال الجلسة وفق ما توفّر في هذه الفترة.";
+      argValue("--summary") ||
+      "أُنجزت أعمال الجلسة وفق ما توفّر في هذه الفترة.";
     return dual(
       [
-        `استوديو الراية — نهاية جلسة عمل`,
+        `${ORG.projectName} — نهاية جلسة عمل`,
+        `الشركة: ${ORG.company}`,
+        `المدير: ${ORG.managerName}`,
+        `المهندسة: ${ORG.engineerName}`,
         `الجلسة: ${SESSION}`,
         `الوقت: ${t}`,
         `ملخص: ${summary}`,
-        `يرجى متابعة بوابات الاختبار اليدوي في خطة الإنتاج.`,
       ].join("\n"),
       [
-        `السلام عليكم ورحمة الله،`,
+        `السلام عليكم ورحمة الله وبركاته،`,
         ``,
-        `زميلنا المهندس الفاضل،`,
+        greetEngineer(),
         ``,
-        `نختتم معكم جلسة العمل على «استوديو الراية» بكل تقدير لجهودكم.`,
+        `نختتم معكِ جلسة العمل على «${ORG.projectName}» بكل شكر وتقدير لِما بذلتِه من تعب وجهد وتركيز.`,
+        `نقدّر حرفيتكِ والصبر على التفاصيل؛ هذا النوع من الإخلاص هو ما تعتمد عليه الشركة في تسليم منتج يفتخر به العميل.`,
         ``,
-        `ملخص موجز: ${summary}`,
+        `ملخص موجز للجلسة: ${summary}`,
         ``,
-        `إن كانت هناك مرحلة بانتظار التحقق اليدوي، فإكمالها بعناية هو ما يفتح الطريق للمرحلة التالية بسلاسة.`,
-        `نعتز بمهنيّتكم، ونتطلّع لجلسات قادمة بنفس الرقي في التنفيذ.`,
+        `إن بقي تحقق يدوي معلّق، فإكماله بعنايتكِ المعتادة يفتح الطريق للمرحلة التالية بسلاسة.`,
+        `شكراً لكِ من القلب… واستريحي وأنتِ فخورة بما قدّمتِ اليوم.`,
         ``,
-        `دمتم بألقٍ وتوفيق.`,
-        `— إدارة المشروع · بيت بايت`,
-        `${t}`,
+        `مع خالص الامتنان والتقدير،`,
+        ``,
+        signOff(),
+        t,
       ].join("\n")
     );
   }
@@ -176,7 +250,8 @@ function buildMessages(cmd) {
     const title = argValue("--title") || "مرحلة";
     return dual(
       [
-        `استوديو الراية — تقرير مرحلة`,
+        `${ORG.projectName} — تقرير مرحلة`,
+        `المهندسة: ${ORG.engineerName}`,
         `المرحلة: ${id} — ${title}`,
         manualMgmt(manual),
         notes ? `ملاحظات: ${notes}` : null,
@@ -188,17 +263,18 @@ function buildMessages(cmd) {
       [
         `السلام عليكم ورحمة الله،`,
         ``,
-        `زميلنا المهندس،`,
+        greetEngineer(),
         ``,
         `تم تسجيل تقدّم على المرحلة ${id} («${title}»).`,
         manualDev(manual),
         notes ? `ملاحظة من التنفيذ: ${notes}` : null,
         ``,
-        `نقدّر انضباطكم مع خطة الإنتاج؛ الاستمرار بهذا الأسلوب يصنع منصة تليق باسم استوديو الراية.`,
+        `نعتز بانضباطكِ مع خطة الإنتاج؛ استمراركِ بهذا الأسلوب يبني منصة تليق باستوديو الراية وباسمكِ المهني.`,
         ``,
         `مع خالص التقدير،`,
-        `— إدارة المشروع · بيت بايت`,
-        `${t}`,
+        ``,
+        signOff(),
+        t,
       ]
         .filter(Boolean)
         .join("\n")
@@ -216,7 +292,8 @@ function buildMessages(cmd) {
           : status;
     return dual(
       [
-        `استوديو الراية — تحديث مهمة`,
+        `${ORG.projectName} — تحديث مهمة`,
+        `المهندسة: ${ORG.engineerName}`,
         `المهمة: ${title}`,
         `الحالة: ${statusAr}`,
         manualMgmt(manual),
@@ -228,15 +305,16 @@ function buildMessages(cmd) {
       [
         `السلام عليكم،`,
         ``,
-        `مهندسنا العزيز،`,
+        greetEngineer(),
         ``,
         `بخصوص المهمة «${title}»: حالتها الآن «${statusAr}».`,
         manualDev(manual),
         notes ? `تفاصيل: ${notes}` : null,
         ``,
-        `شكراً لحرصكم على إنجاز واضح ومهني.`,
-        `— إدارة المشروع · بيت بايت`,
-        `${t}`,
+        `شكراً لحرصكِ على إنجاز واضح ومهني.`,
+        ``,
+        signOff(),
+        t,
       ]
         .filter(Boolean)
         .join("\n")
@@ -254,13 +332,14 @@ function buildMessages(cmd) {
           : `بوابة المرحلة ${id}: قيد التوضيح`;
     const devGate =
       pass === true
-        ? `يسعدنا إبلاغكم أن بوابة المرحلة ${id} قد اجتازت التحقق. يمكنكم المضي للمرحلة التالية بعد توثيق التوقيع في الخطة.`
+        ? `يسعدنا إبلاغكِ أن بوابة المرحلة ${id} قد اجتازت التحقق. يمكنكِ المضي للمرحلة التالية بعد توثيق التوقيع في الخطة.`
         : pass === false
-          ? `بوابة المرحلة ${id} لم تُغلق بعد. لا بأس؛ نراجع السبب بهدوء ونُكمل النقص ثم نعيد التحقق. نحن معكم حتى تُغلق بجودة تليق بعملكم.`
+          ? `بوابة المرحلة ${id} لم تُغلق بعد. لا بأس؛ نراجع السبب بهدوء ونُكمل النقص ثم نعيد التحقق. نحن معكِ حتى تُغلق بجودة تليق بعملكِ.`
           : `نرجو توضيح حالة بوابة المرحلة ${id} بعد إكمال التحقق اليدوي.`;
     return dual(
       [
-        `استوديو الراية — بوابة مرحلة`,
+        `${ORG.projectName} — بوابة مرحلة`,
+        `المهندسة: ${ORG.engineerName}`,
         mgmtGate,
         manualMgmt(manual),
         notes ? `ملاحظات: ${notes}` : null,
@@ -271,22 +350,67 @@ function buildMessages(cmd) {
       [
         `السلام عليكم ورحمة الله،`,
         ``,
-        `زميلنا المهندس الفاضل،`,
+        greetEngineer(),
         ``,
         devGate,
         manualDev(manual),
         notes ? `ملاحظة: ${notes}` : null,
         ``,
         pass === true
-          ? `أحسنتم — الدقة في الاختبار اليدوي علامة مهندس محترف.`
-          : `ثقتنا بكم كبيرة؛ خطوة تحقق إضافية اليوم توفّر وقتاً غداً.`,
+          ? `أحسنتِ — الدقة في الاختبار اليدوي علامة مهندسة محترفة يُعتدّ بها.`
+          : `ثقتنا بكِ كبيرة؛ خطوة تحقق إضافية اليوم توفّر وقتاً غداً.`,
         ``,
         `مع التقدير والاحترام،`,
-        `— إدارة المشروع · بيت بايت`,
-        `${t}`,
+        ``,
+        signOff(),
+        t,
       ]
         .filter(Boolean)
         .join("\n")
+    );
+  }
+
+  if (cmd === "welcome" || cmd === "project-welcome" || cmd === "project-start") {
+    const focus =
+      argValue("--focus") ||
+      argValue("--notes") ||
+      "انطلاق منصة استوديو الراية — توثيق جاهز وريبو GitHub مفعّل";
+    return dual(
+      [
+        `${ORG.projectName} — ترحيب ببداية المشروع`,
+        `الشركة: ${ORG.company}`,
+        `المدير: ${ORG.managerName} — ${ORG.managerTitle}`,
+        `المهندسة المنفّذة: ${ORG.engineerName}`,
+        `الجلسة: ${SESSION}`,
+        `الوقت: ${t}`,
+        `الريبو: https://github.com/baitpait/alrya`,
+        `التركيز: ${focus}`,
+        `ملاحظة: تفعيل رفع تلقائي إلى GitHub بعد بوابات ناجحة (GIT_AUTO_PUSH=1)`,
+      ].join("\n"),
+      [
+        `السلام عليكم ورحمة الله وبركاته،`,
+        ``,
+        greetEngineer(),
+        ``,
+        `أهلاً بكِ في بداية مشروع «${ORG.projectName}».`,
+        `نفتتح معكِ هذه الرحلة ونحن على ثقة تامة بقدرتكِ وكفاءتكِ واحترافيتكِ.`,
+        `هذا المشروع فرصة لتبنينِ منصة إنتاجية متينة — مرحلةً مرحلة — بأسلوب مهندسة عالمية: فهم، تخطيط، تنفيذ، ثم اختبار يدوي صادق.`,
+        ``,
+        `ما هو جاهز اليوم:`,
+        `• التوثيق وخطة الإنتاج وبوابات الجودة`,
+        `• ريبو GitHub: https://github.com/baitpait/alrya`,
+        `• إشعارات واتساب للإدارة ولكِ`,
+        `• رفع تلقائي إلى GitHub بعد كل بوابة مرحلة ناجحة`,
+        ``,
+        `محور الانطلاق: ${focus}`,
+        ``,
+        `ابدئي بثقة… نحن في ${ORG.company} فخورون بقيادتكِ للتنفيذ، ونتطلّع لإنجاز يليق باسمكِ وباسم استوديو الراية.`,
+        ``,
+        `مع خالص التحية والتقدير،`,
+        ``,
+        signOff(),
+        t,
+      ].join("\n")
     );
   }
 
@@ -297,23 +421,30 @@ function buildMessages(cmd) {
       process.exit(1);
     }
     return dual(
-      [`استوديو الراية — رسالة إدارية`, body, `الوقت: ${t}`].join("\n"),
+      [
+        `${ORG.projectName} — رسالة إدارية`,
+        `من: ${ORG.managerName}`,
+        body,
+        `الوقت: ${t}`,
+      ].join("\n"),
       [
         `السلام عليكم ورحمة الله،`,
         ``,
-        `زميلنا المهندس،`,
+        greetEngineer(),
         ``,
         body,
         ``,
-        `نقدّر تعاونكم ومتابعتكم.`,
-        `— إدارة المشروع · بيت بايت`,
-        `${t}`,
+        `نقدّر تعاونكِ ومتابعتكِ.`,
+        ``,
+        signOff(),
+        t,
       ].join("\n")
     );
   }
 
   console.error(`Unknown command: ${cmd}
 Usage:
+  welcome|project-welcome [--focus "..."]
   session-start [--focus "..."]
   session-end|agent-stop [--summary "..."]
   phase|task|gate|custom ...`);
@@ -344,7 +475,7 @@ async function sendOne(to, text) {
 
 function textForRole(payload, role) {
   if (typeof payload === "string") return payload;
-  if (role === "مبرمج") return payload.dev;
+  if (role === "مهندسة" || role === "مبرمج") return payload.dev;
   return payload.mgmt;
 }
 
@@ -377,15 +508,50 @@ async function sendWhatsApp(payload) {
 async function main() {
   const cmd = process.argv[2];
   if (!cmd) {
-    console.error("Missing command. Try: session-start | session-end | phase | gate | ...");
+    console.error("Missing command. Try: welcome | session-start | session-end | phase | gate | ...");
     process.exit(1);
   }
+
+  const isStart = cmd === "session-start" || cmd === "agent-start";
+  const isEnd = cmd === "session-end" || cmd === "agent-stop";
+  if ((isStart || isEnd) && process.argv.includes("--force") === false) {
+    const kind = isStart ? "start" : "end";
+    if (shouldDedupeSession(kind)) {
+      console.log(
+        `Notification skipped (dedupe ${Math.round(DEDUPE_MS / 60000)}m): ${cmd}`
+      );
+      return;
+    }
+  }
+
   const payload = buildMessages(cmd);
   if (payload === null) {
     console.log("Notification skipped by env flag");
     return;
   }
   await sendWhatsApp(payload);
+  if (isStart) markSession("start");
+  if (isEnd) markSession("end");
+
+  // شرط الرفع التلقائي: بعد بوابة ناجحة فقط
+  if (cmd === "gate" && boolish(argValue("--pass")) === true) {
+    try {
+      const { execFileSync } = await import("child_process");
+      const id = argValue("--id") || "?";
+      console.log("git-auto-push: بوابة ناجحة — محاولة الرفع إلى GitHub…");
+      execFileSync(
+        process.execPath,
+        [
+          path.join(ROOT, "tools", "git-auto-push.mjs"),
+          "--reason",
+          `بوابة مرحلة ${id} ناجحة`,
+        ],
+        { cwd: ROOT, stdio: "inherit" }
+      );
+    } catch (e) {
+      console.error("git-auto-push بعد البوابة لم يكتمل:", e.message || e);
+    }
+  }
 }
 
 main().catch((e) => {
