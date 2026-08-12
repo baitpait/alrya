@@ -1,0 +1,97 @@
+---
+description: تسهيل تثبيت وتشغيل ثيم NexLink (RTL + Dark + أصول محلية) لاستوديو الراية
+globs: "**/public/theme/**/*,**/vendor/nexlink/**/*,**/app/**/layout.tsx,**/components/admin/**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# تسهيل الثيم — NexLink لاستوديو الراية
+
+المراجع: `docs/ui-nexlink-spec.md` · `docs/branding/brand-guidelines.md`
+
+## 1) مصادر الملفات
+
+```
+vendor/nexlink/                 ← ضع حزمة الثيم المرخّصة هنا أولاً
+apps/web/public/theme/nexlink/  ← انسخ الأصول المستخدمة للتشغيل
+  assets/css/styles-rtl.css
+  assets/css/styles.css
+  assets/libs/...               ← fullcalendar, apexcharts, bootstrap deps…
+  assets/js/main.js
+  assets/js/appSettings.js
+  assets/js/plugins/fullcalendar.js
+  assets/images/...
+```
+
+- لا تستخدم `https://nexlink.layoutdrop.com/demo/...` في الإنتاج.
+- انسخ فقط ما تحتاجه للصفحات الفعلية لتقليل الحجم.
+
+## 2) تفعيل RTL + Dark (نسخ جاهز)
+
+في layout الأدمن / الجذر للأدمن:
+
+```tsx
+<html lang="ar" dir="rtl" data-theme="dark">
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap"
+      rel="stylesheet"
+    />
+    <link href="/theme/nexlink/assets/css/styles-rtl.css" rel="stylesheet" />
+    <meta name="theme-color" content="#5955D1" />
+  </head>
+  {/* ... */}
+</html>
+```
+
+```css
+body { font-family: "Instrument Sans", sans-serif; }
+:root { --bs-primary: #5955D1; }
+```
+
+## 3) ترتيب سكربتات مقترح (عميل)
+
+حمّل بعد hydration أو عبر `next/script` حسب الحاجة:
+
+1. libs الأساسية (من `assets/libs/...`)
+2. `appSettings.js` — إعدادات الثيم
+3. `main.js` — تفاعل الشِل (سايدبار، إلخ)
+4. `plugins/fullcalendar.js` — فقط في `/admin/calendar`
+
+تجنّب تحميل سكربتات التقويم/الرسوم في كل الصفحات.
+
+## 4) زر `theme-btn` — سلوك مختصر
+
+- العنصر: `a.theme-btn` داخل `header.app-header`
+- الافتراضي: `data-theme="dark"`
+- عند النقر: بدّل `dark` ↔ `light` على `<html>`
+- احفظ في `localStorage` بمفتاح مثل `alraya-admin-theme`
+- عند التحميل: اقرأ المحفوظ؛ إن لم يوجد → `dark`
+
+## 5) براند سريع فوق الثيم
+
+- استبدل شعار/نص NexLink بـ **استوديو الراية**
+- ملف الشعار: انسخ إلى `public/branding/alraya-studio-logo.png`
+- المصدر: `docs/branding/alraya-studio-logo.png`
+- لا تغيّر هيكل السايدبار/الهيدر — غيّر المحتوى والبراند فقط
+
+## 6) صفحة التقويم (اختصار) — الأهم
+
+| المطلوب | القيمة |
+|---------|--------|
+| المسار | `/admin/calendar` |
+| المكتبة | FullCalendar من أصول الثيم |
+| الاتجاه | RTL + locale عربي إن أمكن |
+| البيانات | **كل** `EventService` بتاريخ يظهر كحجز على التقويم |
+| بعد التحويل من `/book` | الموعد يظهر على التقويم فوراً |
+| Modal | Title → زبون/خدمة · Start/End · Location · Description |
+| فشل | موعد في DB وغير ظاهر على التقويم = الثيم/المرحلة غير مقبولة |
+
+## 7) Checklist قبل اعتبار الثيم جاهزاً
+
+- [ ] `styles-rtl.css` يعمل محلياً
+- [ ] `dir=rtl` + `data-theme=dark`
+- [ ] Instrument Sans ظاهر
+- [ ] `theme-btn` يبدّل ويحفظ
+- [ ] الشعار = استوديو الراية
+- [ ] التقويم يفتح بدون أخطاء كونسول متعلقة بمسارات الأصول
+- [ ] لا طلبات شبكة إلى `nexlink.layoutdrop.com`

@@ -1,0 +1,36 @@
+---
+description: إرشادات كتابة كود نظيف وقابل للصيانة في استوديو الراية
+globs: "**/*"
+alwaysApply: false
+---
+
+# Clean Code — استوديو الراية
+
+## Constants Over Magic Numbers
+- لا تترك أرقاماً أو نصوص حالة ثابتة مبعثرة؛ استخدم enums/constants
+- حالات المناسبة والطلبات كما في `docs/data-model.md`
+
+## Meaningful Names
+- أسماء تكشف الغرض: `BookingRequest`, `remainingBalance`, ليس `data` / `tmp`
+- عربي في الواجهة فقط؛ الكود والمعرّفات بالإنجليزية
+
+## Smart Comments
+- لا تشرح الواضح؛ علّق على القرار غير الواضح أو قيد العمل
+
+## Single Responsibility
+- دالة واحدة = مهمة واحدة؛ Server Actions صغيرة ومركّزة
+
+## DRY
+- منطق المتبقي والدفعات في مكان واحد مشترك
+- مكوّنات Admin المشتركة في `components/admin/`
+
+## Structure
+- Public تحت `app/(public)/` — Admin تحت `app/(admin)/admin/`
+- Prisma في `prisma/schema.prisma` — الوصول عبر `lib/prisma.ts`
+
+## Quality
+- اترك الملف أنظف مما وجدته
+- لا تحذف بيانات من MySQL إلا بطلب صريح وتأكيد من المستخدم
+
+## Git
+- commits صغيرة وواضحة عند الطلب فقط

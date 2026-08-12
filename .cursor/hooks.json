@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": ".cursor/hooks/pm-notify-on-start.sh",
+        "timeout": 120
+      }
+    ],
+    "stop": [
+      {
+        "command": ".cursor/hooks/pm-notify-on-stop.sh",
+        "timeout": 120
+      }
+    ]
+  }
+}

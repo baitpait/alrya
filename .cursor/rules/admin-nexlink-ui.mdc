@@ -1,0 +1,39 @@
+---
+description: واجهة لوحة الإدارة NexLink RTL Dark وتقويم المواعيد
+globs: "**/app/(admin)/**/*.{ts,tsx},**/components/admin/**/*.{ts,tsx},**/public/theme/nexlink/**/*"
+alwaysApply: false
+---
+
+# Admin UI — NexLink (استوديو الراية)
+
+المرجع: `docs/ui-nexlink-spec.md`
+
+## Shell إلزامي
+```html
+<html lang="ar" dir="rtl" data-theme="dark">
+```
+- CSS: `styles-rtl.css` من أصول محلية
+- الخط: Instrument Sans
+- Primary الثيم: `#5955D1` (يمكن لاحقاً مواءمة ذهب/عنابي دون كسر الثيم)
+- براند القائمة: استوديو الراية + `alraya-studio-logo.png` — ليس NexLink
+
+## theme-btn
+- موجود في الهيدر؛ يبدّل `dark` / `light` ويُفضّل حفظه في `localStorage`
+- الافتراضي دائماً Dark لأول زيارة
+
+## التقويم — أولوية قصوى (ظهور الحجوزات)
+- مسار: `/admin/calendar`
+- FullCalendar بعروض شهر/أسبوع/يوم
+- **كل حجز بتاريخ (`EventService`) يجب أن يظهر على التقويم** — وإلا المرحلة فاشلة
+- مصادر الظهور: مناسبات الأدمن + Modal التقويم + حجوزات أونلاين بعد التحويل
+- عنوان واضح: `خدمة — اسم الزبون`
+- Modal إضافة/تعديل يكتب في DB ثم يحدّث التقويم فوراً
+- النقر على حدث = تفاصيل حقيقية (لا بيانات وهمية)
+
+## صفحات Inbox
+- `/admin/bookings` ← طلبات عرسان
+- `/admin/messages` ← رسائل `/contact`
+- بادج غير مقروء على الداشبورد/الهيدر
+
+## إعدادات الموقع
+- `/admin/settings/site`: واتساب عائم + روابط سوشيال — لا تُ硬-كود في الفرونت

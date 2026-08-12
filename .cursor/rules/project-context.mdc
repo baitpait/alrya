@@ -1,0 +1,54 @@
+---
+description: سياق مشروع استوديو الراية — التقنيات، الوثائق، والاتفاقيات العامة
+alwaysApply: true
+---
+
+# استوديو الراية — Project Context
+
+منصة إدارة استوديو تصوير + لاندينغ حجز عرسان أونلاين لعميل **استوديو الراية (Alraya Studio)**.
+
+## Stack المثبّت
+
+| الطبقة | التقنية |
+|--------|---------|
+| App | **Next.js** (App Router) + **TypeScript** |
+| ORM | **Prisma** |
+| قاعدة البيانات | **MySQL** |
+| Admin UI | ثيم **NexLink** Bootstrap 5 — RTL + Dark افتراضي |
+| Public | لاندينغ مخصص (هوية عنابي + ذهبي) |
+| تقويم | FullCalendar (أهم شاشة تشغيل) |
+
+## المرجع للمبرمج / الوكيل
+
+قبل التنفيذ اقرأ بالترتيب:
+
+1. `docs/README.md`
+2. `docs/developer-handoff.md`
+3. `docs/pages-inventory.md`
+4. `docs/ui-nexlink-spec.md`
+5. `docs/data-model.md`
+6. `docs/branding/brand-guidelines.md`
+7. `docs/wameed-system-analysis.md` (مرجع منطق وميض فقط — ليس سورس)
+
+الشعار: `docs/branding/alraya-studio-logo.png`
+
+## قرارات غير اختيارية
+
+- عربي: `lang="ar" dir="rtl"`
+- أدمن: `data-theme="dark"` افتراضي + زر `theme-btn`
+- لا تعتمد على CDN ديمو NexLink في الإنتاج — أصول محلية من `vendor/nexlink`
+- منطق وميض كمرجع وظيفي فقط — لا تنسخ سورسه
+- لا تبني POS/SMS كامل في MVP ما لم يُطلب
+
+## Conventions
+
+- اتبع الهيكل المقترح في `docs/developer-handoff.md`
+- أسماء واضحة؛ أعد استخدام المكوّنات قبل إنشاء جديد
+- لا تغيّر الاعتماديات أو تضف مجلدات جذرية دون موافقة
+- أنشئ ملفات توثيق `*.md` فقط إذا طلب المستخدم صراحة
+
+## Replies & Git
+
+- ردود مختصرة؛ ركّز على المهم
+- لا تعمل commit / push / PR إلا بطلب صريح من المستخدم
+- لا تضف `Co-Authored-By` في رسائل الـ commit

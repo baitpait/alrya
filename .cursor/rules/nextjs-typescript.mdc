@@ -1,0 +1,30 @@
+---
+description: اتفاقيات Next.js App Router و TypeScript لاستوديو الراية
+globs: "**/*.{ts,tsx,js,jsx}"
+alwaysApply: false
+---
+
+# Next.js + TypeScript — استوديو الراية
+
+## App Router
+- استخدم Server Components افتراضياً؛ أضف `"use client"` فقط عند الحاجة (تفاعل، FullCalendar، theme-btn)
+- منطق الكتابة في Server Actions أو Route Handlers — ليس في كود عميل عشوائي
+- مسارات عامة: `/`, `/book`, `/contact` — أدمن: `/admin/*`
+
+## TypeScript
+- تجنّب `any`؛ عرّف أنواعاً للنماذج والحالات
+- استخدم أنواع Prisma المولَّدة بعد الـ generate
+- تحقق من المدخلات (Zod أو ما يعادله) قبل الكتابة لـ MySQL
+
+## RTL & i18n UI
+- كل صفحات الأدمن والعامة العربية: `dir="rtl"` و `lang="ar"`
+- نصوص الواجهة عربية؛ لا تخلط إنجليزي في UI إلا للبراند (ALRAYA STUDIO)
+
+## Public vs Admin
+- اللاندينغ: هوية عنابي/ذهبي من `docs/branding/` — ليس شكل CRM
+- الأدمن: shell NexLink فقط — لا تخلط ستايل اللاندينغ داخل `/admin`
+
+## Forms
+- `/book` → `BookingRequest` فقط
+- `/contact` → `ContactMessage` فقط (منفصل عن الحجز)
+- حماية سبام أساسية (honeypot أو rate limit) على النماذج العامة

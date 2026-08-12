@@ -1,0 +1,28 @@
+---
+description: قواعد Prisma و MySQL لنموذج بيانات استوديو الراية
+globs: "**/prisma/**/*.{prisma,ts,js},**/lib/prisma.ts"
+alwaysApply: false
+---
+
+# Prisma + MySQL — استوديو الراية
+
+## Database
+- المزود: `provider = "mysql"` فقط — لا PostgreSQL في هذا المشروع
+- الاتصال عبر `DATABASE_URL` في `.env` — لا ترفع أسرار
+
+## Schema
+- المصدر: `docs/data-model.md`
+- كيانات MVP الأساسية: User, Role, Customer, Service, Offer, Event, EventService, Payment, Discount, BookingRequest, ContactMessage, Setting
+- التقويم يقرأ من `EventService.startsAt` / `endsAt`
+
+## Migrations
+- غيّر الـ schema عبر Prisma migrate — لا تعدّل جداول الإنتاج يدوياً دون سبب
+- بعد تعديل schema: `prisma generate`
+
+## Queries
+- استخدم `lib/prisma.ts` singleton لتفادي اتصالات متعددة في التطوير
+- المعادلة: `المتبقي = totalPrice - sum(discounts) - sum(payments)`
+- لا تحذف سجلات مهمة (مناسبات/دفعات) إلا بطلب صريح من المستخدم
+
+## Booking vs Contact
+- `BookingRequest` ≠ `ContactMessage` — مساران منفصلان في الـ Inbox

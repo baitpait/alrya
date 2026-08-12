@@ -1,0 +1,9 @@
+# Dependencies / build (لاحقاً)
+node_modules/
+.next/
+dist/
+vendor/nexlink/
+
+# OS
+.DS_Store
+*.log
