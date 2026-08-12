@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { Instrument_Sans } from "next/font/google";
-import { AdminShell } from "@/components/admin/AdminShell";
 import { THEME_STORAGE_KEY } from "@/components/admin/nav";
 import "./admin-shell.css";
 
@@ -17,7 +16,7 @@ export const metadata: Metadata = {
     default: "لوحة الإدارة | استوديو الراية",
     template: "%s | استوديو الراية",
   },
-  description: "لوحة إدارة استوديو الراية — المرحلة 1",
+  description: "لوحة إدارة استوديو الراية",
 };
 
 const themeBootScript = `
@@ -33,7 +32,8 @@ const themeBootScript = `
 })();
 `;
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+/** Layout مشترك: خط + ثيم — بدون شِل (الدخول لا يظهر السايدبار) */
+export default function AdminRootLayout({ children }: { children: React.ReactNode }) {
   return (
     <div
       className={`${instrumentSans.variable} admin-font-root`}
@@ -44,7 +44,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         strategy="beforeInteractive"
         dangerouslySetInnerHTML={{ __html: themeBootScript }}
       />
-      <AdminShell title="لوحة الإدارة">{children}</AdminShell>
+      {children}
     </div>
   );
 }
