@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
  * إشعارات واتساب — استوديو الراية
- * إدارة (مصطفى البستنجي): تقرير مختصر واضح
- * مهندسة (نهلة البستنجي): أسلوب راقٍ · مهذّب · تحفيزي · ثقة بالنفس
+ * إدارة (مصطفى): تقرير مختصر
+ * مهندسة (نهلة): ودّي · بشري · مرح · تحفيزي — مو روبوت ولا «الفاضلة» كل مرة
  * التوقيع: نيابة عن بيت البرمجيات وتكنولوجيا المعلومات
  *
  * شرط: ≥ 40 ثانية بين كل رسالتين (WASENDER_SEND_GAP_MS)
@@ -93,14 +93,93 @@ const ORG = {
 
 function signOff() {
   return [
-    `— بالنيابة عن ${ORG.company}`,
+    `مع التحية،`,
     `${ORG.managerName}`,
-    `${ORG.managerTitle}`,
+    `${ORG.company}`,
   ].join("\n");
 }
 
+function engineerFirstName() {
+  return String(ORG.engineerName || "نهلة").trim().split(/\s+/)[0] || "نهلة";
+}
+
+/** مخاطبات ودّية متنوعة — ممنوع تكرار نفس الصيغة روبوتياً */
 function greetEngineer() {
-  return `المهندسة الفاضلة ${ORG.engineerName}،`;
+  const n = engineerFirstName();
+  const options = [
+    `${n}،`,
+    `يا ${n}،`,
+    `${n} الغالية،`,
+    `هلا ${n}،`,
+    `أهلين ${n}،`,
+    `مرحبا ${n}،`,
+  ];
+  const st = readSessionState();
+  let idx = Number(st.lastGreetIdx);
+  if (!Number.isFinite(idx)) idx = -1;
+  idx = (idx + 1) % options.length;
+  writeSessionState({ lastGreetIdx: idx });
+  return options[idx];
+}
+
+/** جزء اليوم حسب Asia/Jerusalem */
+function dayPart() {
+  const hourStr = new Date().toLocaleString("en-GB", {
+    timeZone: "Asia/Jerusalem",
+    hour: "2-digit",
+    hour12: false,
+  });
+  const h = Number(String(hourStr).slice(0, 2));
+  if (h >= 5 && h < 12) return "morning";
+  if (h >= 12 && h < 17) return "afternoon";
+  if (h >= 17 && h < 22) return "evening";
+  return "night";
+}
+
+/**
+ * تحية حسب الوقت + تنويع لتجنّب الجمود.
+ * الوكيل يقدر يمرّر --greeting "..." لجملة مولَّدة بشرية.
+ */
+function openLine() {
+  const custom = argValue("--greeting");
+  if (custom && String(custom).trim()) return String(custom).trim().replace(/[،,]*$/, "") + "،";
+
+  const n = engineerFirstName();
+  const part = dayPart();
+  const pools = {
+    morning: [
+      "صباح الخير،",
+      `صباح الخير يا ${n}،`,
+      "صباح النور،",
+      `صباح الخير ${n}، يعطيكِ العافية،`,
+    ],
+    afternoon: [
+      "يعطيكم العافية،",
+      `أهلا ${n}،`,
+      "مرحبا،",
+      `هلا ${n}، تمام؟`,
+    ],
+    evening: [
+      "مساء الخير،",
+      `مساء الخير يا ${n}،`,
+      "مساء النور،",
+      `مساء الخير ${n}،`,
+    ],
+    night: [
+      "أهلا،",
+      `مرحبا ${n}،`,
+      "يعطيكم العافية على السهر،",
+      `أهلا ${n}،`,
+    ],
+  };
+  const options = pools[part] || pools.afternoon;
+  const st = readSessionState();
+  const key = `lastOpenIdx_${part}`;
+  let idx = Number(st[key]);
+  if (!Number.isFinite(idx)) idx = -1;
+  idx = (idx + 1) % options.length;
+  writeSessionState({ [key]: idx, lastDayPart: part });
+  return options[idx];
 }
 
 function parseGapMs() {
@@ -155,13 +234,13 @@ function manualMgmt(v) {
 
 function manualDev(v) {
   if (v === true)
-    return "نشكر التزامَكِ بالتحقق اليدوي — هذه العناية هي ما يرفع جودة التسليم.";
+    return "حلو إنكِ خلّصتي الاختبار اليدوي — هالشي بيفرق بالجودة.";
   if (v === false)
-    return "نثق بقدرتكِ على إكمال التحقق اليدوي قبل الانتقال؛ الجودة تستحق هذه الخطوة.";
-  return "نرجو تأكيد نتيجة التحقق اليدوي عند إغلاق المرحلة.";
+    return "لما تلحقي، كمّلي التحقق اليدوي قبل ما ننتقل — أحسن لنا ولكِ.";
+  return "بس أكّدي لي نتيجة الاختبار اليدوي لما تخلصي.";
 }
 
-/** رسائل مزدوجة: إدارة (تقرير) + مهندسة (راقي/تحفيزي) */
+/** رسائل مزدوجة: إدارة (تقرير) + مهندسة (ودّي بشري) */
 function dual(mgmtBody, devBody) {
   return { mgmt: mgmtBody.trim(), dev: devBody.trim() };
 }
@@ -170,6 +249,7 @@ function buildMessages(cmd) {
   const notes = argValue("--notes") || "";
   const manual = boolish(argValue("--manual-test"));
   const t = stamp();
+  const n = engineerFirstName();
 
   if (cmd === "session-start" || cmd === "agent-start") {
     const focus =
@@ -187,19 +267,15 @@ function buildMessages(cmd) {
         `التركيز: ${focus}`,
       ].join("\n"),
       [
-        `السلام عليكم ورحمة الله وبركاته،`,
+        openLine(),
         ``,
         greetEngineer(),
         ``,
-        `نفتتح معكِ جلسة عمل جديدة على منصة «${ORG.projectName}»، ونحن على ثقة تامة بقدرتكِ وكفاءتكِ.`,
-        `خبرتكِ وعنايتكِ بالتفاصيل تصنعان فرقاً حقيقياً، ونؤمن أنكِ أهلٌ لإنجاز متين يراعي الهيكل الكامل وتدفّق البيانات.`,
+        `يلا نبلش جلسة على «${ORG.projectName}» — واثقين فيكِ وفي شغلكِ.`,
+        `محور اليوم: ${focus}`,
         ``,
-        `محور هذه الجلسة: ${focus}`,
-        ``,
-        `تذكير لطيف من روح الفريق: إتمام التحقق اليدوي قبل إغلاق أي مرحلة يحفظ جودة عملكِ ويمهّد للمرحلة التالية بثقة.`,
-        `والأهم دائماً في هذا المنتج: أن تظهر الحجوزات بوضوح على شاشة التقويم.`,
-        ``,
-        `ابدئي بثقة… نحن معكِ، ونتطلّع لجلسة منتجة تليق باسمكِ وباسم الشركة.`,
+        `تذكير خفيف: قبل ما نسكّر أي مرحلة، اختبار يدوي سريع. والأهم عندنا: الحجوزات تبين على التقويم.`,
+        `ابدئي براحتكِ… إحنا معكِ 💪`,
         ``,
         signOff(),
         t,
@@ -225,19 +301,15 @@ function buildMessages(cmd) {
         `ملخص: ${summary}`,
       ].join("\n"),
       [
-        `السلام عليكم ورحمة الله وبركاته،`,
+        openLine(),
         ``,
         greetEngineer(),
         ``,
-        `نختتم معكِ جلسة العمل على «${ORG.projectName}» بكل شكر وتقدير لِما بذلتِه من تعب وجهد وتركيز.`,
-        `نقدّر حرفيتكِ والصبر على التفاصيل؛ هذا النوع من الإخلاص هو ما تعتمد عليه الشركة في تسليم منتج يفتخر به العميل.`,
+        `شكراً على تعبكِ اليوم على «${ORG.projectName}» — بنقدّر تركيزكِ وصبركِ على التفاصيل.`,
+        `ملخص سريع: ${summary}`,
         ``,
-        `ملخص موجز للجلسة: ${summary}`,
-        ``,
-        `إن بقي تحقق يدوي معلّق، فإكماله بعنايتكِ المعتادة يفتح الطريق للمرحلة التالية بسلاسة.`,
-        `شكراً لكِ من القلب… واستريحي وأنتِ فخورة بما قدّمتِ اليوم.`,
-        ``,
-        `مع خالص الامتنان والتقدير،`,
+        `لو بقي اختبار يدوي معلّق، كمّليه على مهلكِ وبجودة. واستريحي وأنتِ راضية عن اللي قدّمتي.`,
+        `يعطيكِ العافية يا ${n} 🙏`,
         ``,
         signOff(),
         t,
@@ -261,17 +333,15 @@ function buildMessages(cmd) {
         .filter(Boolean)
         .join("\n"),
       [
-        `السلام عليكم ورحمة الله،`,
+        openLine(),
         ``,
         greetEngineer(),
         ``,
-        `تم تسجيل تقدّم على المرحلة ${id} («${title}»).`,
+        `سجّلنا تقدّم على المرحلة ${id} («${title}»). تمام 👍`,
         manualDev(manual),
-        notes ? `ملاحظة من التنفيذ: ${notes}` : null,
+        notes ? `ملاحظة: ${notes}` : null,
         ``,
-        `نعتز بانضباطكِ مع خطة الإنتاج؛ استمراركِ بهذا الأسلوب يبني منصة تليق باستوديو الراية وباسمكِ المهني.`,
-        ``,
-        `مع خالص التقدير،`,
+        `كمّلي بنفس الأسلوب — خطوة خطوة وواضحة.`,
         ``,
         signOff(),
         t,
@@ -303,15 +373,15 @@ function buildMessages(cmd) {
         .filter(Boolean)
         .join("\n"),
       [
-        `السلام عليكم،`,
+        openLine(),
         ``,
         greetEngineer(),
         ``,
-        `بخصوص المهمة «${title}»: حالتها الآن «${statusAr}».`,
+        `بخصوص «${title}»: صارت حالتها «${statusAr}».`,
         manualDev(manual),
         notes ? `تفاصيل: ${notes}` : null,
         ``,
-        `شكراً لحرصكِ على إنجاز واضح ومهني.`,
+        `شكراً لحرصكِ… تحبي نكمّل اللي بعده؟`,
         ``,
         signOff(),
         t,
@@ -332,10 +402,10 @@ function buildMessages(cmd) {
           : `بوابة المرحلة ${id}: قيد التوضيح`;
     const devGate =
       pass === true
-        ? `يسعدنا إبلاغكِ أن بوابة المرحلة ${id} قد اجتازت التحقق. يمكنكِ المضي للمرحلة التالية بعد توثيق التوقيع في الخطة.`
+        ? `بوابة المرحلة ${id} نجحت ✅ تقدرِ تمشي للمرحلة الجاية بعد ما توقّعي بالخطة.`
         : pass === false
-          ? `بوابة المرحلة ${id} لم تُغلق بعد. لا بأس؛ نراجع السبب بهدوء ونُكمل النقص ثم نعيد التحقق. نحن معكِ حتى تُغلق بجودة تليق بعملكِ.`
-          : `نرجو توضيح حالة بوابة المرحلة ${id} بعد إكمال التحقق اليدوي.`;
+          ? `بوابة المرحلة ${id} لسا ما انسكرت. عادي — نشوف السبب بهدوء ونكمّل النقص ونرجع نختبر. إحنا معكِ.`
+          : `لما تخلصي الاختبار اليدوي، خبرينا حالة بوابة المرحلة ${id}.`;
     return dual(
       [
         `${ORG.projectName} — بوابة مرحلة`,
@@ -348,7 +418,7 @@ function buildMessages(cmd) {
         .filter(Boolean)
         .join("\n"),
       [
-        `السلام عليكم ورحمة الله،`,
+        openLine(),
         ``,
         greetEngineer(),
         ``,
@@ -357,10 +427,8 @@ function buildMessages(cmd) {
         notes ? `ملاحظة: ${notes}` : null,
         ``,
         pass === true
-          ? `أحسنتِ — الدقة في الاختبار اليدوي علامة مهندسة محترفة يُعتدّ بها.`
-          : `ثقتنا بكِ كبيرة؛ خطوة تحقق إضافية اليوم توفّر وقتاً غداً.`,
-        ``,
-        `مع التقدير والاحترام،`,
+          ? `أحسنتي — الاختبار اليدوي هو اللي بيفرق. فخورة فيكِ 🌟`
+          : `ثقتنا فيكِ عالية… خطوة تحقق زيادة اليوم بتريّحنا بكرا.`,
         ``,
         signOff(),
         t,
@@ -388,25 +456,19 @@ function buildMessages(cmd) {
         `ملاحظة: تفعيل رفع تلقائي إلى GitHub بعد بوابات ناجحة (GIT_AUTO_PUSH=1)`,
       ].join("\n"),
       [
-        `السلام عليكم ورحمة الله وبركاته،`,
+        `أهلا وسهلا ${n} 🎉`,
         ``,
-        greetEngineer(),
+        `فرحانين نبلش معكِ مشروع «${ORG.projectName}». واثقين فيكِ، وبدنا نمشي مرحلة مرحلة بهدوء وجودة.`,
         ``,
-        `أهلاً بكِ في بداية مشروع «${ORG.projectName}».`,
-        `نفتتح معكِ هذه الرحلة ونحن على ثقة تامة بقدرتكِ وكفاءتكِ واحترافيتكِ.`,
-        `هذا المشروع فرصة لتبنينِ منصة إنتاجية متينة — مرحلةً مرحلة — بأسلوب مهندسة عالمية: فهم، تخطيط، تنفيذ، ثم اختبار يدوي صادق.`,
+        `جاهز عندنا اليوم:`,
+        `• التوثيق وخطة الإنتاج`,
+        `• الريبو: https://github.com/baitpait/alrya`,
+        `• واتساب للإدارة ولكِ`,
+        `• رفع تلقائي على GitHub بعد كل بوابة ناجحة`,
         ``,
-        `ما هو جاهز اليوم:`,
-        `• التوثيق وخطة الإنتاج وبوابات الجودة`,
-        `• ريبو GitHub: https://github.com/baitpait/alrya`,
-        `• إشعارات واتساب للإدارة ولكِ`,
-        `• رفع تلقائي إلى GitHub بعد كل بوابة مرحلة ناجحة`,
+        `نقطة الانطلاق: ${focus}`,
         ``,
-        `محور الانطلاق: ${focus}`,
-        ``,
-        `ابدئي بثقة… نحن في ${ORG.company} فخورون بقيادتكِ للتنفيذ، ونتطلّع لإنجاز يليق باسمكِ وباسم استوديو الراية.`,
-        ``,
-        `مع خالص التحية والتقدير،`,
+        `يلا… أنتِ قدّها، وإحنا حدّك. أي سؤال صغير ابعتيه براحتكِ.`,
         ``,
         signOff(),
         t,
@@ -428,13 +490,13 @@ function buildMessages(cmd) {
         `الوقت: ${t}`,
       ].join("\n"),
       [
-        `السلام عليكم ورحمة الله،`,
+        openLine(),
         ``,
         greetEngineer(),
         ``,
         body,
         ``,
-        `نقدّر تعاونكِ ومتابعتكِ.`,
+        `أي شي تحتاجيه خبرينا — منكمل سوا.`,
         ``,
         signOff(),
         t,
@@ -442,11 +504,95 @@ function buildMessages(cmd) {
     );
   }
 
+  // مشاكل تقنية / عوائق واجهتها المهندسة أو المشروع
+  if (cmd === "issue" || cmd === "problem" || cmd === "blocker") {
+    const title = argValue("--title") || argValue("--text") || "مشكلة تقنية";
+    const severity = argValue("--severity") || "medium";
+    const sevAr =
+      severity === "high" || severity === "critical"
+        ? "عالية"
+        : severity === "low"
+          ? "منخفضة"
+          : "متوسطة";
+    return dual(
+      [
+        `${ORG.projectName} — تنبيه مشكلة`,
+        `المهندسة: ${ORG.engineerName}`,
+        `الموضوع: ${title}`,
+        `الخطورة: ${sevAr}`,
+        notes ? `تفاصيل: ${notes}` : null,
+        `الوقت: ${t}`,
+        `مطلوب: متابعة الإدارة`,
+      ]
+        .filter(Boolean)
+        .join("\n"),
+      [
+        openLine(),
+        ``,
+        greetEngineer(),
+        ``,
+        `وصلنا إن في عائق: ${title}`,
+        notes ? `التفاصيل: ${notes}` : null,
+        ``,
+        `عادي تصير مشاكل — المهم نوضحها بدري. خذِي نفس، واكتبي شو جرّبتي وشو صار بالضبط، ومنكمّل سوا خطوة خطوة.`,
+        `تحبي نبلش بتشخيص سريع هسا؟`,
+        ``,
+        signOff(),
+        t,
+      ]
+        .filter(Boolean)
+        .join("\n")
+    );
+  }
+
+  // مخالفة قوانين المشروع / الخطة / بوابات الجودة
+  if (
+    cmd === "violation" ||
+    cmd === "rules" ||
+    cmd === "alert" ||
+    cmd === "noncompliance"
+  ) {
+    const rule =
+      argValue("--rule") ||
+      argValue("--title") ||
+      argValue("--text") ||
+      "مخالفة لقواعد المشروع";
+    return dual(
+      [
+        `${ORG.projectName} — تنبيه عدم التزام بالقواعد`,
+        `المهندسة: ${ORG.engineerName}`,
+        `القاعدة/الملاحظة: ${rule}`,
+        notes ? `تفاصيل: ${notes}` : null,
+        `الوقت: ${t}`,
+        `الإجراء: تذكير ودّي + تصحيح قبل المتابعة`,
+      ]
+        .filter(Boolean)
+        .join("\n"),
+      [
+        openLine(),
+        ``,
+        greetEngineer(),
+        ``,
+        `حابين نذكّركِ بلطف بقاعدة مهمة عندنا: ${rule}`,
+        notes ? `التفصيل: ${notes}` : null,
+        ``,
+        `مو عتاب قاسي — بس القوانين موجودة عشان نحمي جودة شغلكِ والمنتج (مرحلة واحدة، اختبار يدوي، لا أزرار صامتة، بوابة قبل الانتقال).`,
+        `خلينا نعدّل المسار هسا ونكمّل صح. تحبي أوضّحلكِ المطلوب بجملة واحدة؟`,
+        ``,
+        signOff(),
+        t,
+      ]
+        .filter(Boolean)
+        .join("\n")
+    );
+  }
+
   console.error(`Unknown command: ${cmd}
 Usage:
-  welcome|project-welcome [--focus "..."]
-  session-start [--focus "..."]
-  session-end|agent-stop [--summary "..."]
+  welcome|project-welcome [--focus "..."] [--greeting "..."]
+  session-start|session-end [--greeting "..."]
+  issue|problem|blocker --title "..." [--notes "..."] [--severity low|medium|high]
+  violation|rules|alert --rule "..." [--notes "..."]
   phase|task|gate|custom ...`);
   process.exit(1);
 }

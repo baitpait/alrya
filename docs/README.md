@@ -52,7 +52,8 @@
 | `production-phases.mdc` | إلزام خطة الإنتاج المرحلية + بوابات الاختبار اليدوي |
 | `pm-whatsapp-notify.mdc` | إلزام إشعار واتساب للمدير بعد المراحل/الاختبار |
 | `session-lifecycle.mdc` | كشف بداية/نهاية الجلسة من الكلمات أو وكيل جديد |
-| `developer-growth.mdc` | شروط Cursor + عقلية مبرمجة عالمية لنـهلة |
+| `developer-growth.mdc` | شروط Cursor + تدريب نهلة + تم/نفّذ |
+| `confirm-before-execute.mdc` | ممنوع التنفيذ قبل تم+نفّذ — الوكيل معلّم مساعد |
 | `public-landing.mdc` | لاندينغ + واتساب/سوشيال |
 
 ---
