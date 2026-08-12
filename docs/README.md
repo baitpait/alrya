@@ -20,7 +20,8 @@
 6. [branding/brand-guidelines.md](./branding/brand-guidelines.md) — الشعار والألوان
 7. [data-model.md](./data-model.md) — الجداول، الحالات، المعادلات، تدفق الحجز
 8. [wameed-system-analysis.md](./wameed-system-analysis.md) — مرجع منطق نظام وميض (تحليل الديمو)
-9. [wameed-demo-qa.md](./wameed-demo-qa.md) — **دخول ديمو وميض + اختبار طاقم المناسبة** (للمبرمجة)
+9. [wameed-full-architecture.md](./wameed-full-architecture.md) — **هيكل وميض الكامل** (قوائم + طاقم + SMS/OTP)
+10. [wameed-demo-qa.md](./wameed-demo-qa.md) — دخول ديمو وميض + اختبار طاقم المناسبة
 
 ---
 
