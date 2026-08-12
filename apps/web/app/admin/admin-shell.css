@@ -1,0 +1,212 @@
+/* شِل أدمن استوديو الراية — مسار ب (محلي، جاهز لاستبدال NexLink لاحقاً) */
+:root,
+html[data-theme="light"] {
+  --admin-bg: #f4f5f9;
+  --admin-surface: #ffffff;
+  --admin-sidebar: #111827;
+  --admin-sidebar-text: #e5e7eb;
+  --admin-sidebar-muted: #9ca3af;
+  --admin-border: #e5e7eb;
+  --admin-text: #111827;
+  --admin-muted: #6b7280;
+  --admin-primary: #5955d1;
+  --bs-primary: #5955d1;
+  --admin-header: #ffffff;
+  --admin-theme-btn-bg: rgb(242, 242, 246);
+  --admin-hover: rgba(89, 85, 209, 0.08);
+}
+
+html[data-theme="dark"] {
+  --admin-bg: #0b0f19;
+  --admin-surface: #151b2b;
+  --admin-sidebar: #070a12;
+  --admin-sidebar-text: #f3f4f6;
+  --admin-sidebar-muted: #9ca3af;
+  --admin-border: #243047;
+  --admin-text: #f3f4f6;
+  --admin-muted: #9ca3af;
+  --admin-primary: #7c78ea;
+  --admin-header: #121826;
+  --admin-theme-btn-bg: #1f2937;
+  --admin-hover: rgba(124, 120, 234, 0.12);
+}
+
+.admin-body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--admin-bg);
+  color: var(--admin-text);
+  font-family: "Instrument Sans", Tahoma, sans-serif;
+}
+
+.page-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+.admin-sidebar {
+  background: var(--admin-sidebar);
+  color: var(--admin-sidebar-text);
+  padding: 1.25rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border-left: 1px solid transparent;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.65rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brand img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.brand-text strong {
+  display: block;
+  font-size: 0.98rem;
+}
+
+.brand-text span {
+  display: block;
+  color: var(--admin-sidebar-muted);
+  font-size: 0.75rem;
+}
+
+.nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.nav-list a {
+  display: block;
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.65rem;
+  color: var(--admin-sidebar-text);
+  text-decoration: none;
+  font-size: 0.92rem;
+}
+
+.nav-list a:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.nav-list a.is-active {
+  background: var(--admin-primary);
+  color: #fff;
+}
+
+.admin-main-wrap {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.app-header {
+  height: 64px;
+  background: var(--admin-header);
+  border-bottom: 1px solid var(--admin-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem;
+  gap: 1rem;
+}
+
+.app-header .header-title {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.theme-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-width: 74px;
+  height: 40px;
+  padding: 0 0.85rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--admin-theme-btn-bg);
+  color: var(--admin-text);
+  cursor: pointer;
+  font: inherit;
+}
+
+.theme-btn .icon-light,
+.theme-btn .icon-dark {
+  display: none;
+  width: 18px;
+  height: 18px;
+}
+
+html[data-theme="light"] .theme-btn .icon-dark {
+  display: block;
+}
+
+html[data-theme="dark"] .theme-btn .icon-light {
+  display: block;
+}
+
+.admin-content {
+  padding: 1.5rem;
+}
+
+.panel {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.panel h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.45rem;
+}
+
+.panel p {
+  margin: 0.35rem 0;
+  color: var(--admin-muted);
+  line-height: 1.7;
+}
+
+.badge-phase {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: var(--admin-hover);
+  color: var(--admin-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .page-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+  }
+}

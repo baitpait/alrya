@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "استوديو الراية",
+  description: "منصة إدارة استوديو الراية",
+};
 
 export default async function Home() {
   let dbOk = false;
@@ -31,7 +38,7 @@ export default async function Home() {
       }}
     >
       <h1>استوديو الراية</h1>
-      <p>المرحلة 0 — تأسيس المشروع وقاعدة البيانات</p>
+      <p>المرحلة 0 اكتملت · المرحلة 1: شِل الإدارة</p>
       <ul>
         <li>Next.js: يعمل</li>
         <li>
@@ -39,9 +46,20 @@ export default async function Home() {
           {dbOk ? `متصل · ${tableCount} جدول` : `غير متصل — ${errorMessage}`}
         </li>
       </ul>
-      <p>
-        الواجهة الإدارية (NexLink / RTL / theme-btn) تبدأ في{" "}
-        <strong>المرحلة 1</strong>.
+      <p style={{ marginTop: "1.25rem" }}>
+        <Link
+          href="/admin"
+          style={{
+            display: "inline-block",
+            padding: "0.65rem 1rem",
+            background: "#5955D1",
+            color: "#fff",
+            borderRadius: "0.6rem",
+            textDecoration: "none",
+          }}
+        >
+          الدخول إلى لوحة الإدارة
+        </Link>
       </p>
     </main>
   );
