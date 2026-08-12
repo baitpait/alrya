@@ -1,8 +1,15 @@
-# Dependencies / build (لاحقاً)
+# Dependencies / build
 node_modules/
 .next/
 dist/
 vendor/nexlink/
+
+# أسرار وبيانات محلية
+.env
+.env.local
+apps/web/.env
+apps/web/.env.local
+.mysql/
 
 # OS
 .DS_Store

@@ -1,0 +1,229 @@
+// استوديو الراية — نموذج MVP (المراحل 1–8)
+// المصدر: docs/data-model.md
+// EventService = مصدر أحداث التقويم (startsAt / endsAt)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum ServiceKind {
+  EVENT
+  SESSION
+}
+
+enum EventStatus {
+  PREPARING
+  IN_PROGRESS
+  CANCELLED
+  COMPLETED
+}
+
+enum EventServiceStatus {
+  IN_PROGRESS
+  UNDER_REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+enum BookingStatus {
+  PENDING
+  CONTACTED
+  APPROVED
+  CONVERTED
+  REJECTED
+}
+
+enum ContactMessageStatus {
+  NEW
+  READ
+  ARCHIVED
+}
+
+model Role {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String?
+  users       User[]
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  phone        String?
+  passwordHash String
+  roleId       Int
+  role         Role     @relation(fields: [roleId], references: [id])
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  assignments EventServiceEmployee[]
+  supervised  EventServiceEmployee[] @relation("Supervisor")
+}
+
+model Customer {
+  id        Int       @id @default(autoincrement())
+  firstName String
+  lastName  String
+  phone     String
+  altPhone  String?
+  email     String?
+  address   String?
+  gender    Gender?
+  createdAt DateTime  @default(now())
+  events    Event[]
+
+  convertedFrom BookingRequest[] @relation("ConvertedCustomer")
+}
+
+model Service {
+  id        Int         @id @default(autoincrement())
+  name      String
+  kind      ServiceKind @default(EVENT)
+  active    Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  offers    Offer[]
+  eventServices EventService[]
+  bookingRequests BookingRequest[]
+}
+
+model Offer {
+  id          Int     @id @default(autoincrement())
+  serviceId   Int
+  service     Service @relation(fields: [serviceId], references: [id])
+  name        String
+  audience    String?
+  price       Decimal @db.Decimal(12, 2)
+  description String? @db.Text
+
+  eventServices EventService[]
+}
+
+model SubService {
+  id          Int     @id @default(autoincrement())
+  name        String
+  type        String
+  price       Decimal @db.Decimal(12, 2)
+  hasQuantity Boolean @default(false)
+  active      Boolean @default(true)
+}
+
+model Event {
+  id         Int         @id @default(autoincrement())
+  customerId Int
+  customer   Customer    @relation(fields: [customerId], references: [id])
+  status     EventStatus @default(PREPARING)
+  totalPrice Decimal     @default(0) @db.Decimal(12, 2)
+  notes      String?     @db.Text
+  createdAt  DateTime    @default(now())
+
+  services  EventService[]
+  payments  Payment[]
+  discounts Discount[]
+
+  convertedFrom BookingRequest[] @relation("ConvertedEvent")
+}
+
+/// خدمة داخل المناسبة = موعد التقويم (قلب FullCalendar)
+model EventService {
+  id        Int                @id @default(autoincrement())
+  eventId   Int
+  event     Event              @relation(fields: [eventId], references: [id])
+  serviceId Int
+  service   Service            @relation(fields: [serviceId], references: [id])
+  offerId   Int?
+  offer     Offer?             @relation(fields: [offerId], references: [id])
+  startsAt  DateTime
+  endsAt    DateTime
+  city      String?
+  venue     String?
+  hall      String?
+  price     Decimal            @db.Decimal(12, 2)
+  status    EventServiceStatus @default(IN_PROGRESS)
+  notes     String?            @db.Text
+
+  employees EventServiceEmployee[]
+}
+
+model EventServiceEmployee {
+  id             Int          @id @default(autoincrement())
+  eventServiceId Int
+  eventService   EventService @relation(fields: [eventServiceId], references: [id])
+  userId         Int
+  user           User         @relation(fields: [userId], references: [id])
+  jobTitle       String?
+  salary         Decimal?     @db.Decimal(12, 2)
+  bonus          Decimal?     @db.Decimal(12, 2)
+  supervisorId   Int?
+  supervisor     User?        @relation("Supervisor", fields: [supervisorId], references: [id])
+}
+
+model Payment {
+  id      Int      @id @default(autoincrement())
+  eventId Int
+  event   Event    @relation(fields: [eventId], references: [id])
+  amount  Decimal  @db.Decimal(12, 2)
+  paidAt  DateTime @default(now())
+  method  String?
+  note    String?
+}
+
+model Discount {
+  id        Int      @id @default(autoincrement())
+  eventId   Int
+  event     Event    @relation(fields: [eventId], references: [id])
+  amount    Decimal  @db.Decimal(12, 2)
+  reason    String?
+  createdAt DateTime @default(now())
+}
+
+model BookingRequest {
+  id                  Int           @id @default(autoincrement())
+  groomName           String
+  brideName           String?
+  phone               String
+  altPhone            String?
+  serviceId           Int?
+  service             Service?      @relation(fields: [serviceId], references: [id])
+  preferredFrom       DateTime?
+  preferredTo         DateTime?
+  city                String?
+  venue               String?
+  hall                String?
+  notes               String?       @db.Text
+  status              BookingStatus @default(PENDING)
+  convertedEventId    Int?
+  convertedEvent      Event?        @relation("ConvertedEvent", fields: [convertedEventId], references: [id])
+  convertedCustomerId Int?
+  convertedCustomer   Customer?     @relation("ConvertedCustomer", fields: [convertedCustomerId], references: [id])
+  createdAt           DateTime      @default(now())
+}
+
+model ContactMessage {
+  id        Int                  @id @default(autoincrement())
+  name      String
+  phone     String
+  email     String?
+  subject   String?
+  body      String               @db.Text
+  status    ContactMessageStatus @default(NEW)
+  readAt    DateTime?
+  createdAt DateTime             @default(now())
+  source    String?              @default("contact_page")
+}
+
+model Setting {
+  id    Int    @id @default(autoincrement())
+  key   String @unique
+  value String @db.Text
+}
