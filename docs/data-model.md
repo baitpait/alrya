@@ -134,17 +134,23 @@ Lookup / LookupValue
 
 > هذا الجدول هو **مصدر أحداث FullCalendar**.
 
-### EventServiceEmployee (تعيين موظف — يمكن تأجيله بعد MVP)
+### EventServiceEmployee (تعيين **طاقم تغطية المناسبة**)
 
-| الحقل | النوع |
-|--------|------|
-| id | |
-| eventServiceId | FK |
-| userId | FK |
-| jobTitle | string? |
-| salary | decimal? |
-| bonus | decimal? |
-| supervisorId | FK? |
+> **المعنى:** ليسوا زبائن. هم المصورون/المساعدون الذين يغطّون الموعد.  
+> مثال: عرس الزبون **أحمد** ← يُعيَّن الطاقم **محمد** و **خليل** على نفس `EventService`.  
+> مرجع اختبار حي: [wameed-demo-qa.md](./wameed-demo-qa.md)
+
+| الحقل | النوع | ملاحظة |
+|--------|------|--------|
+| id | | |
+| eventServiceId | FK | الخدمة/الموعد داخل المناسبة |
+| userId | FK | الموظف من جدول User (الطاقم) |
+| jobTitle | string? | مصور، مساعد، مشرف… |
+| salary | decimal? | أجر هذا التكليف |
+| bonus | decimal? | مكافأة |
+| supervisorId | FK? | المشرف على الطاقم |
+
+يمكن تأجيل بناء الشاشات الكاملة لما بعد MVP (مرحلة 10)، لكن المفهوم مطلوب من الآن في فهم النموذج.
 
 ### Payment
 

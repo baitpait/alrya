@@ -223,6 +223,7 @@ Alray Studio/
 | NexLink RTL | https://nexlink.layoutdrop.com/demo/index-rtl.html |
 | NexLink Calendar | https://nexlink.layoutdrop.com/demo/calendar.html |
 | وميض ديمو | https://wameed.mostaqbalsoft.com/ControlPanel |
+| دخول الديمو للاختبار | [wameed-demo-qa.md](./wameed-demo-qa.md) — `studio-manage@wameed.com` / `Test@123` |
 | تحليل وميض | [wameed-system-analysis.md](./wameed-system-analysis.md) |
 | UI تفصيلي | [ui-nexlink-spec.md](./ui-nexlink-spec.md) |
 | البيانات | [data-model.md](./data-model.md) |
