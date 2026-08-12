@@ -8,7 +8,8 @@
 ## ابدأ من هنا (بالترتيب)
 
 1. [machine-setup.md](./machine-setup.md) — **جهاز جديد/مُفرمَت:** Cursor + Git + Node + سحب الريبو
-2. [developer-handoff.md](./developer-handoff.md) — المواصفات الكاملة والقرارات المثبّتة
+2. [workflow-map.html](./workflow-map.html) — **خريطة HTML:** هيكل النظام + المراحل 0→9 + صيانة (افتح في المتصفح)
+3. [developer-handoff.md](./developer-handoff.md) — المواصفات الكاملة والقرارات المثبّتة
 3. [team.md](./team.md) — أسماء الفريق (مصطفى / نهلة) والشركة
 4. [production-work-plan.md](./production-work-plan.md) — **خطة الإنتاج المرحلية + بوابات الاختبار اليدوي**
 5. [pm-quality-oversight.md](./pm-quality-oversight.md) — دليل مدير المشروع لمراقبة الجودة والمتابعة

@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>خريطة العمل — استوديو الراية | من المرحلة 0 إلى الصيانة</title>
+  <style>
+    :root {
+      --burgundy: #6B0012;
+      --burgundy-deep: #4A0404;
+      --gold: #C9A227;
+      --gold-soft: #E8D48B;
+      --ink: #1a1210;
+      --muted: #5c4f4a;
+      --paper: #faf7f2;
+      --card: #ffffff;
+      --line: #e6ddd3;
+      --ok: #1f7a4c;
+      --warn: #b45309;
+      --gate: #7c3aed;
+      --maint: #0e7490;
+      --shadow: 0 10px 40px rgba(74, 4, 4, 0.08);
+      --radius: 18px;
+      --font: "Segoe UI", "Tahoma", "Arial", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 100% -10%, rgba(201, 162, 39, 0.18), transparent 55%),
+        radial-gradient(900px 500px at -10% 20%, rgba(107, 0, 18, 0.12), transparent 50%),
+        var(--paper);
+      line-height: 1.7;
+    }
+
+    a { color: var(--burgundy); }
+    .wrap { width: min(1100px, calc(100% - 2rem)); margin: 0 auto; }
+
+    header.hero {
+      padding: 2.5rem 0 1.5rem;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.7), transparent);
+    }
+    .brand {
+      display: flex;
+      gap: 1.25rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .brand img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid var(--line);
+      padding: .35rem;
+    }
+    .brand h1 {
+      margin: 0 0 .25rem;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      color: var(--burgundy-deep);
+    }
+    .brand p { margin: 0; color: var(--muted); }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      margin-top: 1.25rem;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      padding: .35rem .75rem;
+      border-radius: 999px;
+      background: #fff;
+      border: 1px solid var(--line);
+      font-size: .85rem;
+      color: var(--muted);
+    }
+    .chip strong { color: var(--burgundy); font-weight: 700; }
+
+    nav.toc {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(10px);
+      background: rgba(250, 247, 242, 0.92);
+      border-bottom: 1px solid var(--line);
+      padding: .65rem 0;
+    }
+    nav.toc .wrap {
+      display: flex;
+      gap: .5rem;
+      overflow-x: auto;
+      padding-bottom: .15rem;
+    }
+    nav.toc a {
+      white-space: nowrap;
+      text-decoration: none;
+      font-size: .82rem;
+      padding: .4rem .7rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+    }
+    nav.toc a:hover { border-color: var(--gold); color: var(--burgundy); }
+
+    section { padding: 2rem 0 0.5rem; }
+    h2 {
+      margin: 0 0 1rem;
+      font-size: 1.35rem;
+      color: var(--burgundy-deep);
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+    h2 .num {
+      width: 2rem; height: 2rem;
+      border-radius: 10px;
+      display: inline-grid; place-items: center;
+      background: var(--burgundy);
+      color: #fff;
+      font-size: .9rem;
+    }
+    h3 { margin: 1.25rem 0 .5rem; color: var(--ink); font-size: 1.05rem; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    @media (max-width: 800px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.15rem 1.25rem;
+    }
+    .card.alert {
+      border-color: rgba(201, 162, 39, 0.55);
+      background: linear-gradient(135deg, #fff, #fff8e8);
+    }
+    .card.danger {
+      border-color: rgba(107, 0, 18, 0.35);
+      background: linear-gradient(135deg, #fff, #fff1f1);
+    }
+
+    ul.clean { margin: .4rem 0 0; padding: 0 1.1rem 0 0; }
+    ul.clean li { margin: .25rem 0; }
+
+    .arch {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 1rem;
+    }
+    @media (max-width: 900px) { .arch { grid-template-columns: 1fr; } }
+
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .45rem;
+      align-items: center;
+      margin: .75rem 0;
+    }
+    .flow .box {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: .45rem .7rem;
+      font-size: .85rem;
+      font-weight: 600;
+    }
+    .flow .arrow { color: var(--gold); font-weight: 700; }
+
+    .loop {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: .6rem;
+    }
+    @media (max-width: 900px) { .loop { grid-template-columns: 1fr 1fr; } }
+    .loop .step {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: .85rem;
+      text-align: center;
+      font-size: .88rem;
+    }
+    .loop .step b {
+      display: block;
+      color: var(--burgundy);
+      margin-bottom: .25rem;
+    }
+
+    .phase {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin: 0 0 1rem;
+    }
+    .phase summary {
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      gap: .85rem;
+      align-items: flex-start;
+      padding: 1rem 1.15rem;
+      user-select: none;
+    }
+    .phase summary::-webkit-details-marker { display: none; }
+    .phase[open] summary {
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(90deg, rgba(107,0,18,.05), transparent);
+    }
+    .badge {
+      flex: 0 0 auto;
+      min-width: 2.6rem;
+      height: 2.6rem;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      color: #fff;
+      background: var(--burgundy);
+    }
+    .badge.crit { background: linear-gradient(135deg, var(--burgundy), #9a1028); }
+    .badge.maint { background: var(--maint); }
+    .phase .body { padding: 1rem 1.15rem 1.2rem; }
+    .phase .title { margin: 0; font-size: 1.05rem; }
+    .phase .sub { margin: .15rem 0 0; color: var(--muted); font-size: .9rem; }
+    .tags { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .55rem; }
+    .tag {
+      font-size: .75rem;
+      padding: .2rem .55rem;
+      border-radius: 999px;
+      background: #f3eee8;
+      color: var(--muted);
+    }
+    .tag.gate { background: #f3e8ff; color: #6d28d9; }
+    .tag.cal { background: #fef3c7; color: #92400e; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .9rem;
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+    th, td {
+      padding: .7rem .75rem;
+      border-bottom: 1px solid var(--line);
+      text-align: right;
+      vertical-align: top;
+    }
+    th { background: #f6f0ea; color: var(--burgundy-deep); }
+    tr:last-child td { border-bottom: 0; }
+
+    .checklist { margin: 0; padding: 0; list-style: none; }
+    .checklist li {
+      padding: .45rem 0 .45rem 0;
+      border-bottom: 1px dashed var(--line);
+      display: flex;
+      gap: .55rem;
+    }
+    .checklist li:last-child { border-bottom: 0; }
+    .checklist .mark {
+      width: 1.15rem; height: 1.15rem;
+      border: 2px solid var(--gold);
+      border-radius: 4px;
+      flex: 0 0 auto;
+      margin-top: .2rem;
+    }
+
+    footer {
+      margin: 2.5rem 0 2rem;
+      padding: 1.25rem;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--burgundy-deep), var(--burgundy));
+      color: #f8f1e7;
+    }
+    footer a { color: var(--gold-soft); }
+    footer .small { opacity: .85; font-size: .9rem; margin-top: .5rem; }
+
+    code, .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .84em;
+      background: #f3eee8;
+      padding: .1rem .35rem;
+      border-radius: 6px;
+    }
+    footer code { background: rgba(255,255,255,.12); color: #fff; }
+
+    .print-note { display: none; }
+    @media print {
+      nav.toc, .print-hide { display: none !important; }
+      .print-note { display: block; }
+      .phase { break-inside: avoid; }
+      body { background: #fff; }
+      .card, .phase { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="brand">
+        <img src="branding/alraya-studio-logo.png" alt="شعار استوديو الراية" />
+        <div>
+          <h1>خريطة العمل وهيكيلة النظام</h1>
+          <p>استوديو الراية — من المرحلة 0 حتى الإطلاق الإنتاجي والصيانة · دليل المبرمجة نهلة البستنجي</p>
+        </div>
+      </div>
+      <div class="meta">
+        <span class="chip"><strong>الشركة:</strong> بيت البرمجيات وتكنولوجيا المعلومات</span>
+        <span class="chip"><strong>المدير:</strong> مصطفى البستنجي</span>
+        <span class="chip"><strong>التنفيذ:</strong> نهلة البستنجي</span>
+        <span class="chip"><strong>الريبو:</strong> github.com/baitpait/alrya</span>
+        <span class="chip"><strong>Stack:</strong> Next.js · TypeScript · Prisma · MySQL</span>
+      </div>
+      <p class="print-note" style="margin-top:1rem;color:var(--muted)">نسخة للطباعة/الأرشفة — المصدر: docs/workflow-map.html</p>
+    </div>
+  </header>
+
+  <nav class="toc print-hide">
+    <div class="wrap">
+      <a href="#laws">القانون الذهبي</a>
+      <a href="#arch">هيكل النظام</a>
+      <a href="#loop">دورة كل مرحلة</a>
+      <a href="#phases">المراحل 0→9</a>
+      <a href="#calendar">التقويم</a>
+      <a href="#after">بعد الإطلاق</a>
+      <a href="#maintain">الصيانة</a>
+      <a href="#cursor">قواعد Cursor</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section id="laws">
+      <h2><span class="num">!</span> القانون الذهبي (غير قابل للتفاوض)</h2>
+      <div class="grid-2">
+        <div class="card danger">
+          <h3 style="margin-top:0">ممنوع</h3>
+          <ul class="clean">
+            <li>أزرار/روابط ظاهرة صامتة أو <span class="mono">href="#"</span></li>
+            <li>الانتقال لمرحلة تالية قبل بوابة اختبار يدوي ناجحة</li>
+            <li>خلط مرحلتين في نفس الوقت</li>
+            <li>اعتماد أعمى على الذكاء الاصطناعي بدون فهم</li>
+            <li>تنفيذ الوكيل قبل أن تكتب نهلة: <strong>تم</strong> ثم <strong>نفّذ</strong></li>
+          </ul>
+        </div>
+        <div class="card alert">
+          <h3 style="margin-top:0">إلزامي في كل مرحلة</h3>
+          <ul class="clean">
+            <li>هيكل كامل ظاهر لما يخص المرحلة</li>
+            <li>تدفق بيانات مغلق: واجهة → تحقق → MySQL → عرض</li>
+            <li>اختبار يدوي + توقيع بوابة</li>
+            <li>إشعار واتساب: <span class="mono">node tools/pm-notify.mjs gate ...</span></li>
+            <li>رفع GitHub بعد بوابة ناجحة عند تفعيل <span class="mono">GIT_AUTO_PUSH=1</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="arch">
+      <h2><span class="num">⌂</span> هيكيلة النظام (سطحان)</h2>
+      <div class="arch">
+        <div class="card">
+          <h3 style="margin-top:0">1) لوحة الإدارة <span class="mono">/admin/*</span></h3>
+          <ul class="clean">
+            <li>ثيم NexLink — <strong>RTL</strong></li>
+            <li>الثيم: <strong>Light افتراضي</strong> + Dark عبر زر <span class="mono">theme-btn</span></li>
+            <li>أهم شاشة تشغيل: <strong>التقويم</strong> <span class="mono">/admin/calendar</span></li>
+            <li>زبائن · مناسبات · خدمات · دفعات · Inbox حجوزات · رسائل · إعدادات</li>
+          </ul>
+          <div class="flow">
+            <span class="box">موظف</span><span class="arrow">←</span>
+            <span class="box">Auth</span><span class="arrow">←</span>
+            <span class="box">Admin Shell</span><span class="arrow">←</span>
+            <span class="box">Prisma</span><span class="arrow">←</span>
+            <span class="box">MySQL</span>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">2) الموقع العام (لاندينغ)</h3>
+          <ul class="clean">
+            <li>هوية استوديو الراية (عنابي + ذهبي)</li>
+            <li>حجز عرسان أونلاين <span class="mono">/book</span></li>
+            <li>تواصل معنا <span class="mono">/contact</span></li>
+            <li>واتساب عائم + روابط سوشيال من الإعدادات</li>
+          </ul>
+          <div class="flow">
+            <span class="box">زائر</span><span class="arrow">←</span>
+            <span class="box">/book</span><span class="arrow">←</span>
+            <span class="box">BookingRequest</span><span class="arrow">←</span>
+            <span class="box">تحويل أدمن</span><span class="arrow">←</span>
+            <span class="box">تقويم</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="loop">
+      <h2><span class="num">↻</span> دورة عمل المبرمجة في كل مرحلة</h2>
+      <div class="loop">
+        <div class="step"><b>1. اقرأ</b>docs المرحلة + القواعد</div>
+        <div class="step"><b>2. خطّة</b>الوكيل يعرض خطة فقط</div>
+        <div class="step"><b>3. تم + نفّذ</b>بعد الفهم فقط</div>
+        <div class="step"><b>4. ابنِ + اختبر</b>يدوياً أنتِ المسؤولة</div>
+        <div class="step"><b>5. بوابة</b>gate واتساب ثم المرحلة التالية</div>
+      </div>
+      <div class="card" style="margin-top:1rem">
+        <strong>دور الوكيل:</strong> مساعد + معلّم (نهلة تحت تدريب وتطوير).  
+        <strong>ممنوع:</strong> ثقة عمياء بالذكاء الاصطناعي. أي كود لا تشرحينه في دقيقتين = غير مقبول.
+      </div>
+    </section>
+
+    <section id="calendar">
+      <h2><span class="num">★</span> معيار النجاح الذهبي — التقويم</h2>
+      <div class="card alert">
+        <p style="margin-top:0"><strong>أي حجز/موعد له تاريخ يجب أن يظهر في <span class="mono">/admin/calendar</span>.</strong></p>
+        <table>
+          <thead>
+            <tr><th>المصدر</th><th>يظهر على التقويم؟</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="mono">EventService</span> بتاريخ</td><td>نعم — إلزامي</td></tr>
+            <tr><td>تحويل حجز أونلاين → مناسبة</td><td>نعم — فوراً بعد التحويل</td></tr>
+            <tr><td>موعد من Modal التقويم</td><td>نعم — إلزامي</td></tr>
+            <tr><td>طلب <span class="mono">PENDING</span> لم يُحوَّل</td><td>لا (Inbox فقط)</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-bottom:0;color:var(--muted)">موعد في قاعدة البيانات وغير ظاهر على FullCalendar = <strong>فشل المرحلة</strong>.</p>
+      </div>
+    </section>
+
+    <section id="phases">
+      <h2><span class="num">→</span> المراحل الإنتاجية 0 ← 9</h2>
+      <p style="color:var(--muted);margin-top:-.35rem">كل سهم بين مرحلتين = اختبار يدوي ناجح + توقيع بوابة + إشعار واتساب.</p>
+
+      <details class="phase" open>
+        <summary>
+          <span class="badge">0</span>
+          <div>
+            <p class="title">تأسيس المشروع وقاعدة البيانات</p>
+            <p class="sub">Next.js يعمل محلياً + Prisma ↔ MySQL + جداول MVP</p>
+            <div class="tags"><span class="tag gate">بوابة 0</span><span class="tag">npm run dev</span><span class="tag">migrate</span></div>
+          </div>
+        </summary>
+        <div class="body">
+          <ul class="checklist">
+            <li><span class="mark"></span> Scaffold Next.js + TypeScript</li>
+            <li><span class="mark"></span> Prisma schema + migrate على MySQL</li>
+            <li><span class="mark"></span> <span class="mono">.env</span> / <span class="mono">.env.example</span> جاهزان</li>
+            <li><span class="mark"></span> اختبار: localhost + اتصال DB + جداول موجودة</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="phase">
+        <summary>
+          <span class="badge">1</span>
+          <div>
+            <p class="title">شِل الأدمن + الثيم</p>
+            <p class="sub">NexLink RTL · Light افتراضي · theme-btn · شعار الراية · لا أزرار ميتة</p>
+            <div class="tags"><span class="tag gate">بوابة 1</span><span class="tag">theme-btn</span><span class="tag">RTL</span></div>
+          </div>
+        </summary>
+        <div class="body">
+          <ul class="checklist">
+            <li><span class="mark"></span> Layout أدمن + أصول محلية (لا CDN ديمو)</li>
+            <li><span class="mark"></span> Light افتراضي / Dark بالزر + حفظ localStorage</li>
+            <li><span class="mark"></span> سايدبار: الظاهر يعمل أو مخفي حتى مرحلته</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="phase">
+        <summary>
+          <span class="badge">2</span>
+          <div>
+            <p class="title">المصادقة (Auth)</p>
+            <p class="sub">دخول/خروج حقيقي + حماية <span class="mono">/admin/*</span></p>
+            <div class="tags"><span class="tag gate">بوابة 2</span><span class="tag">جلسة</span><span class="tag">middleware</span></div>
+          </div>
+        </summary>
+        <div class="body">
+          <ul class="checklist">
+            <li><span class="mark"></span> صفحة login + مستخدم seed</li>
+            <li><span class="mark"></span> غير المسجّل يُحوَّل لـ login</li>
+            <li><span class="mark"></span> Logout يدمّر الجلسة</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="phase">
+        <summary>
+          <span class="badge">3</span>
+          <div>
+            <p class="title">الكتالوج (خدمات + باقات)</p>
+            <p class="sub">CRUD للخدمات/الباقات المرتبطة بالحجز والمناسبات</p>
+            <div class="tags"><span class="tag gate">بوابة 3</span><span class="tag">CRUD</span></div>
+          </div>
+        </summary>
+        <div class="body">
+          <ul class="checklist">
+            <li><span class="mark"></span> إنشاء/تعديل/عرض خدمات وأسعار</li>
+            <li><span class="mark"></span> بيانات تُحفظ في MySQL وتظهر بعد Refresh</li>
+            <li><span class="mark"></span> لا نماذج حفظ صامتة</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="phase">
+        <summary>
+          <span class="badge">4</span>
+          <div>
+            <p class="title">الزبائن + المناسبات + خدمات المناسبة</p>
+            <p class="sub">أساس بيانات المواعيد التي ستظهر لاحقاً على التقويم</p>
+            <div class="tags"><span class="tag gate">بوابة 4</span><span class="tag cal"> يغذّي التقويم</span><span class="tag">Customer / Event</span></div>
+          </div>
+        </summary>
+        <div class="body">
+          <ul class="checklist">
+            <li><span class="mark"></span> زبائن CRUD</li>
+            <li><span class="mark"></span> مناسبات + EventService بتواريخ</li>
+            <li><span class="mark"></span> مسار بيانات جاهز للمرحلة 5</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="phase" open>
+        <summary>
+          <span class="badge crit">5</span>
+          <div>
+            <p class="title">التقويم (FullCalendar) — الأهم تشغيلياً</p>
+            <p class="sub">كل المواعيد الحقيقية ظاهرة · فشل الظهور = فشل المرحلة</p>
+            <div class="tags"><span class="tag gate">بوابة 5</span><span class="tag cal"> معيار منتج</span><span class="tag">/admin/calendar</span></div>
+          </div>
+        </summary>
+        <div class="body">
+          <ul class="checklist">
+            <li><span class="mark"></span> عروض شهر/أسبوع/يوم</li>
+            <li><span class="mark"></span> كل EventService بتاريخ يظهر كحدث</li>
+            <li><span class="mark"></span> Modal إضافة/تعديل يكتب DB ويحدّث فوراً</li>
+            <li><span class="mark"></span> تحقق يدوي بعد Refresh</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="phase">
+        <summary>
+          <span class="badge">6</span>
+          <div>
+            <p class="title">الدفعات والخصومات</p>
+            <p class="sub">المتبقي = السعر − الخصم − المدفوع (مصدر واحد في الخادم)</p>
+            <div class="tags"><span class="tag gate">بوابة 6</span><span class="tag">Payment</span><span class="tag">Discount</span></div>
+          </div>
+        </summary>
+        <div class="body">
+          <ul class="checklist">
+            <li><span class="mark"></span> إضافة دفعة/خصم يحدّث المتبقي فوراً</li>
+            <li><span class="mark"></span> رفض مبالغ 0 أو سالبة</li>
+            <li><span class="mark"></span> الأرقام ثابتة بعد Refresh</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="phase">
+        <summary>
+          <span class="badge crit">7</span>
+          <div>
+            <p class="title">الحجز الأونلاين (لاندينغ + Inbox)</p>
+            <p class="sub">زائر يسجّل → الإدارة تحوّل → مناسبة + ظهور فوري على التقويم</p>
+            <div class="tags"><span class="tag gate">بوابة 7</span><span class="tag cal"> يغذّي التقويم</span><span class="tag">/book</span></div>
+          </div>
+        </summary>
+        <div class="body">
+          <ul class="checklist">
+            <li><span class="mark"></span> لاندينغ + نموذج حجز + صفحة شكر</li>
+            <li><span class="mark"></span> Inbox طلبات في الأدمن</li>
+            <li><span class="mark"></span> التحويل ينشئ Customer + Event + EventService</li>
+            <li><span class="mark"></span> الموعد يظهر على التقويم فوراً</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="phase">
+        <summary>
+          <span class="badge">8</span>
+          <div>
+            <p class="title">تواصل معنا + سوشيال + واتساب عائم</p>
+            <p class="sub">رسائل ContactMessage + إعدادات الموقع (لا قيم صلبة في الفرونت)</p>
+            <div class="tags"><span class="tag gate">بوابة 8</span><span class="tag">/contact</span><span class="tag">settings</span></div>
+          </div>
+        </summary>
+        <div class="body">
+          <ul class="checklist">
+            <li><span class="mark"></span> نموذج تواصل → Inbox رسائل</li>
+            <li><span class="mark"></span> واتساب عائم من الإعدادات</li>
+            <li><span class="mark"></span> إخفاء أيقونة سوشيال إن الرابط فارغ</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="phase">
+        <summary>
+          <span class="badge crit">9</span>
+          <div>
+            <p class="title">الداشبورد + تثبيت القائمة + إطلاق MVP</p>
+            <p class="sub">مؤشرات حقيقية + جولة سيناريو كاملة + لا روابط ميتة</p>
+            <div class="tags"><span class="tag gate">بوابة 9 · إطلاق</span><span class="tag">Dashboard</span></div>
+          </div>
+        </summary>
+        <div class="body">
+          <ul class="checklist">
+            <li><span class="mark"></span> بطاقات من DB حقيقية</li>
+            <li><span class="mark"></span> سيناريو عرسان كامل حتى المتبقي 0 + تقويم</li>
+            <li><span class="mark"></span> مرور على كل روابط السايدبار</li>
+            <li><span class="mark"></span> تجربة موبايل أساسية للاندينغ والحجز</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <section id="after">
+      <h2><span class="num">+</span> بعد الإطلاق (ليس قبل إغلاق بوابة 9)</h2>
+      <table>
+        <thead>
+          <tr><th>مرحلة</th><th>المحتوى</th><th>شرط البدء</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>10</td><td>موظفين / أدوار / مناسباتي</td><td>بوابة 9 ✓</td></tr>
+          <tr><td>11</td><td>تقارير Excel / PDF</td><td>بوابة 9 ✓</td></tr>
+          <tr><td>12</td><td>معرض / FAQ / من نحن</td><td>بوابة 9 ✓</td></tr>
+          <tr><td>13</td><td>POS / SMS / دفع إلكتروني</td><td>قرار منتج منفصل</td></tr>
+        </tbody>
+      </table>
+      <p style="color:var(--muted)">كل مرحلة لاحقة تتبع نفس القانون: هيكل + تدفق بيانات + اختبار يدوي قبل التالية.</p>
+    </section>
+
+    <section id="maintain">
+      <h2><span class="num">🛠</span> التشغيل الإنتاجي والصيانة</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin-top:0">بعد التسليم — تشغيل يومي</h3>
+          <ul class="clean">
+            <li>مراقبة التقويم والحجوزات الجديدة</li>
+            <li>متابعة Inbox الطلبات والرسائل</li>
+            <li>نسخ احتياطي لقاعدة MySQL بشكل دوري</li>
+            <li>مراجعة إعدادات واتساب/سوشيال</li>
+            <li>تتبع الأخطاء (لوجات / تقارير مستخدم)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">صيانة وتطوير مستمر</h3>
+          <ul class="clean">
+            <li>إصلاح عيب = فرع صغير + اختبار يدوي + gate إن لزم</li>
+            <li>تحسينات V2 فقط بعد استقرار MVP</li>
+            <li>تحديث الاعتماديات بحذر مع اختبار شاشات حرجة</li>
+            <li>أي توسّع خارج الخطة يحتاج موافقة مصطفى</li>
+            <li>نفس أسلوب <strong>تم / نفّذ</strong> مع الوكيل في الصيانة</li>
+          </ul>
+        </div>
+      </div>
+      <div class="card" style="margin-top:1rem;border-color:rgba(14,116,144,.35)">
+        <strong>تعريف صيانة ناجحة:</strong> التعديل لا يكسر التقويم، لا يُظهر أزراراً ميتة، ولا يتجاوز مرحلة غير مكتملة البوابة.
+      </div>
+    </section>
+
+    <section id="cursor">
+      <h2><span class="num">⌘</span> مسار Cursor على الجهاز</h2>
+      <ol>
+        <li>تجهيز الجهاز: <span class="mono">docs/machine-setup.md</span></li>
+        <li>سحب الريبو: <span class="mono">git clone https://github.com/baitpait/alrya.git</span></li>
+        <li>فتح المجلد في Cursor + البرومبت الأول</li>
+        <li>الوكيل يخطّط → نهلة تكتب <strong>تم</strong> ثم <strong>نفّذ</strong></li>
+        <li>مرحلة واحدة من هذه الخريطة حتى بوابة 9 ثم الصيانة</li>
+      </ol>
+      <div class="card">
+        <strong>مراجع ملزمة:</strong>
+        <ul class="clean">
+          <li><span class="mono">docs/production-work-plan.md</span> — التفاصيل الكاملة لكل بوابة</li>
+          <li><span class="mono">docs/developer-handoff.md</span> — المواصفات</li>
+          <li><span class="mono">docs/developer-growth-cursor.md</span> — التدريب وبوابة الفهم</li>
+          <li><span class="mono">.cursor/rules/</span> — قواعد الوكيل الدائمة</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <div><strong>استوديو الراية</strong> — خريطة عمل المبرمجة من التأسيس إلى الصيانة</div>
+    <div class="small">
+      بيت البرمجيات وتكنولوجيا المعلومات · مدير المشروع: مصطفى البستنجي · التنفيذ: نهلة البستنجي<br />
+      المصدر التفصيلي: <code>docs/production-work-plan.md</code> · هذا الملف: <code>docs/workflow-map.html</code><br />
+      افتحي الملف محلياً من المتصفح أو عبر GitHub بعد السحب.
+    </div>
+  </footer>
+</body>
+</html>
