@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 /**
  * إشعارات واتساب — استوديو الراية
- * إدارة (مصطفى): تقرير مختصر
- * مهندسة (نهلة): ودّي · بشري · مرح · تحفيزي — مو روبوت ولا «الفاضلة» كل مرة
- * التوقيع: نيابة عن بيت البرمجيات وتكنولوجيا المعلومات
+ *
+ * بداية/نهاية الجلسة → الإدارة فقط: تقرير عمل
+ *   (محور العمل · ما أُنجز · بداية · نهاية · مدة الجلسة)
+ * أوامر أخرى (gate/task/…) قد تبقى مزدوجة إن طُلب --to both
  *
  * شرط: ≥ 40 ثانية بين كل رسالتين (WASENDER_SEND_GAP_MS)
  */
@@ -73,11 +74,41 @@ function shouldDedupeSession(kind) {
 }
 
 function markSession(kind) {
+  const now = Date.now();
   const patch =
     kind === "start"
-      ? { lastStartAt: Date.now(), lastStartIso: new Date().toISOString() }
-      : { lastEndAt: Date.now(), lastEndIso: new Date().toISOString() };
+      ? {
+          lastStartAt: now,
+          lastStartIso: new Date(now).toISOString(),
+          lastStartLocal: stamp(),
+          sessionOpen: true,
+        }
+      : {
+          lastEndAt: now,
+          lastEndIso: new Date(now).toISOString(),
+          lastEndLocal: stamp(),
+          sessionOpen: false,
+        };
   writeSessionState(patch);
+}
+
+/** مدة الجلسة من آخر بداية مسجّلة */
+function sessionDurationLabel() {
+  const st = readSessionState();
+  const startAt = Number(st.lastStartAt || 0);
+  if (!startAt) return "غير متوفر (لا بداية مسجّلة)";
+  const ms = Date.now() - startAt;
+  if (ms < 0) return "غير متوفر";
+  const totalMin = Math.max(1, Math.round(ms / 60_000));
+  if (totalMin < 60) return `${totalMin} دقيقة`;
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  return m ? `${h} ساعة و ${m} دقيقة` : `${h} ساعة`;
+}
+
+function sessionStartLocalLabel() {
+  const st = readSessionState();
+  return st.lastStartLocal || (st.lastStartAt ? new Date(Number(st.lastStartAt)).toLocaleString("ar-PS", { timeZone: "Asia/Jerusalem" }) : "غير مسجّلة");
 }
 
 /** هوية الفريق — ثابتة في المراسلات */
@@ -260,34 +291,23 @@ function buildMessages(cmd) {
   const n = engineerFirstName();
 
   if (cmd === "session-start" || cmd === "agent-start") {
-    const focus =
+    const workedOn =
+      argValue("--worked-on") ||
       argValue("--focus") ||
       argValue("--summary") ||
-      "متابعة خطة الإنتاج المعتمدة";
+      "متابعة خطة الإنتاج حسب المرحلة الحالية";
+    // تقرير عمل للإدارة فقط — لا قالب واتساب للمبرمجة
     return dual(
       [
-        `${ORG.projectName} — بدء جلسة عمل`,
-        `الشركة: ${ORG.company}`,
-        `المدير: ${ORG.managerName}`,
-        `المهندسة المنفّذة: ${ORG.engineerName}`,
-        `الجلسة: ${SESSION}`,
-        `الوقت: ${t}`,
-        `التركيز: ${focus}`,
-      ].join("\n"),
-      [
-        openLine(),
-        ``,
-        greetEngineer(),
-        ``,
-        `يلا نبلش جلسة على «${ORG.projectName}» — واثقين فيكِ وفي شغلكِ.`,
-        `محور اليوم: ${focus}`,
-        ``,
-        `تذكير خفيف: قبل ما نسكّر أي مرحلة، اختبار يدوي سريع. والأهم عندنا: الحجوزات تبين على التقويم.`,
-        `ابدئي براحتكِ… إحنا معكِ 💪`,
-        ``,
-        signOff(),
-        t,
-      ].join("\n")
+        `${ORG.projectName} — تقرير بداية جلسة`,
+        `المهندسة: ${ORG.engineerName}`,
+        `بداية الجلسة: ${t}`,
+        `العمل عليه: ${workedOn}`,
+        notes ? `ملاحظات: ${notes}` : null,
+      ]
+        .filter(Boolean)
+        .join("\n"),
+      ""
     );
   }
 
@@ -295,33 +315,30 @@ function buildMessages(cmd) {
     if (cmd === "agent-stop" && process.env.PM_NOTIFY_ON_AGENT_STOP === "0") {
       return null;
     }
-    const summary =
+    const done =
+      argValue("--done") ||
       argValue("--summary") ||
-      "أُنجزت أعمال الجلسة وفق ما توفّر في هذه الفترة.";
+      "لم يُمرَّر ملخص إنجاز من الوكيل — راجع محادثة Cursor";
+    const workedOn =
+      argValue("--worked-on") ||
+      argValue("--focus") ||
+      "انظر بند ما أُنجز";
+    const startLabel = sessionStartLocalLabel();
+    const duration = sessionDurationLabel();
     return dual(
       [
-        `${ORG.projectName} — نهاية جلسة عمل`,
-        `الشركة: ${ORG.company}`,
-        `المدير: ${ORG.managerName}`,
+        `${ORG.projectName} — تقرير نهاية جلسة`,
         `المهندسة: ${ORG.engineerName}`,
-        `الجلسة: ${SESSION}`,
-        `الوقت: ${t}`,
-        `ملخص: ${summary}`,
-      ].join("\n"),
-      [
-        openLine(),
-        ``,
-        greetEngineer(),
-        ``,
-        `شكراً على تعبكِ اليوم على «${ORG.projectName}» — بنقدّر تركيزكِ وصبركِ على التفاصيل.`,
-        `ملخص سريع: ${summary}`,
-        ``,
-        `لو بقي اختبار يدوي معلّق، كمّليه على مهلكِ وبجودة. واستريحي وأنتِ راضية عن اللي قدّمتي.`,
-        `يعطيكِ العافية يا ${n} 🙏`,
-        ``,
-        signOff(),
-        t,
-      ].join("\n")
+        `بداية الجلسة: ${startLabel}`,
+        `نهاية الجلسة: ${t}`,
+        `مدة الجلسة: ${duration}`,
+        `العمل عليه: ${workedOn}`,
+        `ما أُنجز: ${done}`,
+        notes ? `ملاحظات: ${notes}` : null,
+      ]
+        .filter(Boolean)
+        .join("\n"),
+      ""
     );
   }
 
@@ -627,7 +644,8 @@ function buildMessages(cmd) {
   console.error(`Unknown command: ${cmd}
 Usage:
   welcome|project-welcome [--focus "..."] [--greeting "..."]
-  session-start|session-end [--greeting "..."]
+  session-start [--worked-on "|--focus "..."] [--to mgmt]   # إدارة فقط — تقرير بداية
+  session-end [--done "|--summary "..."] [--worked-on "..."]  # إدارة فقط — تقرير نهاية+مدة
   issue|problem|blocker --title "..." [--notes "..."] [--severity low|medium|high]
   violation|rules|alert --rule "..." [--notes "..."]
   prompt|custom --text "..." [--to dev|mgmt|both] [--greeting "..."]
@@ -675,17 +693,27 @@ async function sendWhatsApp(payload) {
   }
 
   const gapMs = parseGapMs();
+  let sent = 0;
   for (let i = 0; i < recipients.length; i++) {
     const { to, role } = recipients[i];
-    if (i > 0) {
+    const text = textForRole(payload, role);
+    if (!text || !String(text).trim()) {
+      console.log(`تخطي (${role}): لا نص لهذه الجهة`);
+      continue;
+    }
+    if (sent > 0) {
       console.log(
         `⏳ شرط السليب: انتظار ${Math.round(gapMs / 1000)} ثانية قبل (${role})...`
       );
       await sleep(gapMs);
     }
-    const text = textForRole(payload, role);
     const json = await sendOne(to, text);
     console.log(`OK sent to ${to} (${role})`, json.data || json);
+    sent += 1;
+  }
+  if (!sent) {
+    console.error("لم تُرسل أي رسالة (كل النصوص فارغة أو لا مستلمين)");
+    process.exit(1);
   }
 }
 
@@ -698,6 +726,12 @@ async function main() {
 
   const isStart = cmd === "session-start" || cmd === "agent-start";
   const isEnd = cmd === "session-end" || cmd === "agent-stop";
+
+  // بداية/نهاية الجلسة → واتساب للإدارة فقط (تقرير عمل)
+  if ((isStart || isEnd) && !argValue("--to")) {
+    process.argv.push("--to", "mgmt");
+  }
+
   if ((isStart || isEnd) && process.argv.includes("--force") === false) {
     const kind = isStart ? "start" : "end";
     if (shouldDedupeSession(kind)) {

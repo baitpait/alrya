@@ -104,12 +104,14 @@ node tools/pm-notify.mjs gate --id 5 --pass false --manual-test fail --notes "ا
 | التوقيع | نيابة عن **بيت البرمجيات وتكنولوجيا المعلومات** — **مصطفى البستنجي** |
 
 ### بداية / نهاية الجلسة
-- **البداية:** ثقة وتحفيز للمهندسة نهلة  
-- **النهاية:** شكر وتقدير لتعبها وجهدها نيابة عن الشركة
+- **واتساب:** تقرير عمل **للإدارة فقط** (محور العمل · ما أُنجز · بداية · نهاية · مدة)
+- **نهلة:** تواصل ودّي في Cursor فقط — بلا قوالب واتساب ثابتة لبداية/نهاية الجلسة
 
 ```bash
-node tools/pm-notify.mjs session-start --focus "المرحلة 5 — التقويم وظهور الحجوزات"
-node tools/pm-notify.mjs session-end --summary "أُنجز ربط التقويم؛ بانتظار التحقق اليدوي"
+node tools/pm-notify.mjs session-start --to mgmt --worked-on "المرحلة 0 — تأسيس Next.js + Prisma"
+node tools/pm-notify.mjs session-end --to mgmt \
+  --worked-on "تحليل وميض + برومبت أول" \
+  --done "جرد الخدمات؛ شرح تدفق التسجيل؛ برومبت أول جاهز"
 ```
 
 الوكيل يفهم البداية/النهاية من:
