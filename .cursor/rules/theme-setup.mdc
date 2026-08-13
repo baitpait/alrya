@@ -32,8 +32,9 @@ apps/web/public/theme/nexlink/  ← انسخ الأصول المستخدمة ل�
 ```tsx
 <html lang="ar" dir="rtl" data-theme="light">
   <head>
+    {/* خط الأدمن الإلزامي: Cairo — عبر next/font أو رابط Google Fonts */}
     <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link href="/theme/nexlink/assets/css/styles-rtl.css" rel="stylesheet" />
@@ -44,7 +45,7 @@ apps/web/public/theme/nexlink/  ← انسخ الأصول المستخدمة ل�
 ```
 
 ```css
-body { font-family: "Instrument Sans", sans-serif; }
+body { font-family: "Cairo", Tahoma, sans-serif; }
 :root { --bs-primary: #5955D1; }
 ```
 
@@ -90,7 +91,7 @@ body { font-family: "Instrument Sans", sans-serif; }
 
 - [ ] `styles-rtl.css` يعمل محلياً
 - [ ] `dir=rtl` + `data-theme=light`
-- [ ] Instrument Sans ظاهر
+- [ ] Cairo ظاهر على الأدمن (عربي واضح)
 - [ ] `theme-btn` يبدّل Light↔Dark ويحفظ (الافتراضي Light)
 - [ ] الشعار = استوديو الراية
 - [ ] التقويم يفتح بدون أخطاء كونسول متعلقة بمسارات الأصول

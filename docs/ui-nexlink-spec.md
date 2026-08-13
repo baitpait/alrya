@@ -17,7 +17,7 @@
 | الوضع المدعوم أيضاً | **Dark** عبر زر `theme-btn` (إلزامي) — الأدمن يدعم الوضعين |
 | حفظ التفضيل | `localStorage` بعد التبديل |
 | اللون الأساسي | `#5955D1` |
-| خط الواجهة | `"Instrument Sans", sans-serif` (400–700) |
+| خط الواجهة | **`"Cairo", Tahoma, sans-serif`** (400–700) — قرار إداري؛ أفضل للقراءة العربية |
 | أيقونات | Lucide + Font Awesome 6 + Flaticon (uicons) |
 | جداول | DataTables |
 | رسوم | ApexCharts + Chart.js |
@@ -36,7 +36,7 @@
 تحميل الخط و CSS:
 
 ```html
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
 <!-- أصول محلية من الثيم المرخّص — لا تعتمد على CDN الديمو في الإنتاج -->
 <link href="/theme/nexlink/assets/css/styles-rtl.css" rel="stylesheet">
 ```
@@ -45,7 +45,7 @@ CSS أساس:
 
 ```css
 body {
-  font-family: "Instrument Sans", sans-serif;
+  font-family: "Cairo", Tahoma, sans-serif;
 }
 :root {
   --bs-primary: #5955D1;
@@ -211,7 +211,7 @@ assets/images/...
 - [ ] `dir=rtl` و `lang=ar` على كل صفحات الأدمن
 - [ ] `data-theme=light` افتراضي
 - [ ] `theme-btn` يبدّل Light↔Dark ويحفظ التفضيل
-- [ ] Instrument Sans محمّل ويُطبَّق على `body`
+- [ ] Cairo محمّل ويُطبَّق على `body` / جذر الأدمن
 - [ ] Primary = `#5955D1`
 - [ ] التقويم FullCalendar يعرض بيانات حقيقية
 - [ ] Modal إضافة موعد يغذّي قاعدة البيانات

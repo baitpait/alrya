@@ -13,7 +13,7 @@ alwaysApply: false
 <html lang="ar" dir="rtl" data-theme="light">
 ```
 - CSS: `styles-rtl.css` من أصول محلية
-- الخط: Instrument Sans
+- الخط: **Cairo** (إلزامي — عربي + لاتيني)
 - Primary الثيم: `#5955D1` (يمكن لاحقاً مواءمة ذهب/عنابي دون كسر الثيم)
 - براند القائمة: استوديو الراية + `alraya-studio-logo.png` — ليس NexLink
 

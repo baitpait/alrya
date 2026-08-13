@@ -57,8 +57,9 @@
 | `clean-code.mdc` | كود نظيف |
 | `nextjs-typescript.mdc` | App Router + TypeScript |
 | `prisma-mysql.mdc` | Prisma + MySQL |
-| `admin-nexlink-ui.mdc` | لوحة NexLink RTL Dark + تقويم |
-| `theme-setup.mdc` | تسهيل تثبيت الثيم (أصول، RTL، Dark، theme-btn، checklist) |
+| `admin-nexlink-ui.mdc` | لوحة NexLink RTL + Light/Dark + تقويم + خط Cairo |
+| `admin-tables-ux.mdc` | جداول CRUD/فلتر · Cairo · مساعد QA + UI/UX |
+| `theme-setup.mdc` | تسهيل تثبيت الثيم (أصول، RTL، Cairo، theme-btn، checklist) |
 | `production-phases.mdc` | إلزام خطة الإنتاج المرحلية + بوابات الاختبار اليدوي |
 | `pm-whatsapp-notify.mdc` | إلزام إشعار واتساب للمدير بعد المراحل/الاختبار |
 | `session-lifecycle.mdc` | كشف بداية/نهاية الجلسة من الكلمات أو وكيل جديد |

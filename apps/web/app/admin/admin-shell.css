@@ -36,7 +36,7 @@ html[data-theme="dark"] {
   min-height: 100vh;
   background: var(--admin-bg);
   color: var(--admin-text);
-  font-family: "Instrument Sans", Tahoma, sans-serif;
+  font-family: var(--font-cairo), "Cairo", Tahoma, sans-serif;
 }
 
 .page-layout {

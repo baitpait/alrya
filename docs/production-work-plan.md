@@ -129,7 +129,7 @@ localStorage ←→ theme-btn (dark/light)
 
 ### مخرجات إلزامية
 - [x] `dir=rtl` + `lang=ar` + `data-theme=light`
-- [x] Instrument Sans + primary `#5955D1`
+- [x] خط الواجهة + primary `#5955D1` — **ملاحظة 2026-08-13:** الخط المعتمد الآن **Cairo** (راجع `admin-tables-ux.mdc`)
 - [x] شعار استوديو الراية (ليس NexLink)
 - [x] `theme-btn` يعمل ويحفظ التفضيل
 - [x] لا طلبات إلى `nexlink.layoutdrop.com`
