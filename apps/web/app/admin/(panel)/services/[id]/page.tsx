@@ -76,10 +76,12 @@ export default async function AdminServiceDetailPage({ params }: Props) {
             <input name="name" required placeholder="مثال: باقة ذهبية" />
           </label>
           <label>
-            السعر
+            السعر (₪)
             <input
+              className="input-ltr"
               name="price"
               type="number"
+              inputMode="decimal"
               step="0.01"
               min="0"
               required
@@ -114,10 +116,12 @@ export default async function AdminServiceDetailPage({ params }: Props) {
                     <input name="name" required defaultValue={offer.name} />
                   </label>
                   <label>
-                    السعر
+                    السعر (₪)
                     <input
+                      className="input-ltr"
                       name="price"
                       type="number"
+                      inputMode="decimal"
                       step="0.01"
                       min="0"
                       required

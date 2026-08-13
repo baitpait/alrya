@@ -410,3 +410,17 @@ html[data-theme="dark"] .theme-btn .icon-light {
   padding: 1rem;
   background: var(--admin-bg);
 }
+
+/* أرقام وتواريخ تُكتب من اليسار لليمين حتى لا ينعكس القلم في RTL */
+.input-ltr {
+  direction: ltr !important;
+  text-align: left !important;
+  unicode-bidi: isolate;
+}
+
+.cell-ltr {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: isolate;
+  font-variant-numeric: tabular-nums;
+}
