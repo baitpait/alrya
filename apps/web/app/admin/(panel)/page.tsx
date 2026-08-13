@@ -1,22 +1,126 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { getDashboardStats } from "@/lib/dashboard-stats";
+import { formatMoney } from "@/lib/event-finance";
 
-export const metadata: Metadata = {
-  title: "لوحة التحكم",
-};
+export const metadata: Metadata = { title: "لوحة التحكم" };
+export const dynamic = "force-dynamic";
 
-export default function AdminHomePage() {
+function formatDateTimeAr(d: Date) {
+  return d.toLocaleString("ar-EG", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
+export default async function AdminHomePage() {
+  const stats = await getDashboardStats();
+
+  const cards = [
+    {
+      label: "طلبات جديدة",
+      value: String(stats.pendingBookings),
+      href: "/admin/bookings?status=PENDING",
+    },
+    {
+      label: "رسائل غير مقروءة",
+      value: String(stats.newMessages),
+      href: "/admin/messages?status=NEW",
+    },
+    {
+      label: "مناسبات قيد التحضير",
+      value: String(stats.eventsPreparing),
+      href: "/admin/events?status=PREPARING",
+    },
+    {
+      label: "مناسبات قيد العمل",
+      value: String(stats.eventsInProgress),
+      href: "/admin/events?status=IN_PROGRESS",
+    },
+    {
+      label: "الزبائن",
+      value: String(stats.customers),
+      href: "/admin/customers",
+    },
+    {
+      label: "خدمات نشطة",
+      value: String(stats.activeServices),
+      href: "/admin/services",
+    },
+    {
+      label: "إجمالي التحصيل",
+      value: formatMoney(stats.paymentsTotal),
+      href: "/admin/payments",
+      ltr: true,
+    },
+    {
+      label: "المتبقي الكلي",
+      value: formatMoney(stats.remainingTotal),
+      href: "/admin/events",
+      ltr: true,
+    },
+  ];
+
   return (
-    <section className="panel">
-      <h1>لوحة التحكم</h1>
-      <p>
-        مرحباً بكِ في شِل الإدارة لاستوديو الراية. هذه المرحلة تثبت الإطار فقط:
-        اتجاه عربي، ثيم فاتح افتراضي، وزر التبديل للوضع الداكن.
-      </p>
-      <p>
-        مؤشرات الأرقام الحقيقية (طلبات، رسائل، مناسبات…) تُربط بقاعدة البيانات في
-        المرحلة 9. القائمة الجانبية تعرض صفحات هيكلية جاهزة لكل بند MVP.
-      </p>
-      <span className="badge-phase">المرحلة 1 — الشِل نشط الآن</span>
-    </section>
+    <div className="stack-gap">
+      <section className="panel">
+        <h1>لوحة التحكم</h1>
+        <p>أرقام حية من MySQL — كل بطاقة تفتح الصفحة المفلترة.</p>
+
+        <div className="dash-grid" aria-label="مؤشرات التشغيل">
+          {cards.map((card) => (
+            <Link key={card.href + card.label} href={card.href} className="dash-card">
+              <span>{card.label}</span>
+              <strong className={card.ltr ? "cell-ltr" : undefined}>{card.value}</strong>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="calendar-toolbar">
+          <h2>المواعيد القادمة</h2>
+          <Link className="text-link" href="/admin/calendar">
+            فتح التقويم
+          </Link>
+        </div>
+        {stats.upcoming.length === 0 ? (
+          <p>لا مواعيد قادمة — أضيفي خدمة بتاريخ من المناسبة أو من التقويم.</p>
+        ) : (
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>الخدمة</th>
+                  <th>الزبون</th>
+                  <th>من</th>
+                  <th>إلى</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {stats.upcoming.map((row) => (
+                  <tr key={row.id}>
+                    <td>{row.title}</td>
+                    <td>{row.customerName}</td>
+                    <td className="cell-ltr">{formatDateTimeAr(row.startsAt)}</td>
+                    <td className="cell-ltr">{formatDateTimeAr(row.endsAt)}</td>
+                    <td>
+                      <Link className="text-link" href={`/admin/events/${row.eventId}`}>
+                        المناسبة
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+    </div>
   );
 }
