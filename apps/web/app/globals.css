@@ -1,6 +1,12 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --brand-burgundy: #4a0404;
+  --brand-burgundy-deep: #2e0101;
+  --brand-burgundy-mid: #6b0012;
+  --brand-gold: #d4af37;
+  --brand-gold-soft: #e8d5a3;
+  --brand-cream: #f5f0e6;
 }
 
 html {
@@ -13,10 +19,12 @@ body {
   overflow-x: hidden;
 }
 
-body {
+body,
+.site-body {
   min-height: 100%;
   color: var(--foreground);
   background: var(--background);
+  font-family: var(--font-cairo), "Cairo", Tahoma, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -30,4 +38,323 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* ——— Public landing / book ——— */
+.landing {
+  color: var(--brand-cream);
+  background: var(--brand-burgundy-deep);
+}
+
+.landing-hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  align-items: end;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.landing-hero-media {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 60% at 70% 20%, rgba(212, 175, 55, 0.22), transparent 55%),
+    linear-gradient(160deg, #6b0012 0%, #4a0404 42%, #2e0101 100%);
+  animation: landing-glow 10s ease-in-out infinite alternate;
+}
+
+.landing-hero-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(46, 1, 1, 0.94) 0%,
+    rgba(46, 1, 1, 0.45) 48%,
+    transparent 78%
+  );
+}
+
+.landing-hero-content {
+  width: min(100%, 40rem);
+  padding: 2rem 1.5rem 3.5rem;
+  margin-inline: auto;
+  text-align: center;
+  animation: landing-rise 0.9s ease-out both;
+}
+
+.landing-hero-logo {
+  width: min(42vw, 200px);
+  height: auto;
+  object-fit: contain;
+  border-radius: 1rem;
+  margin: 0 auto 1.25rem;
+  display: block;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  animation: landing-rise 0.85s ease-out both;
+}
+
+.landing-headline {
+  font-size: clamp(1.15rem, 3.5vw, 1.45rem);
+  font-weight: 600;
+  line-height: 1.55;
+  margin-bottom: 0.65rem;
+  color: var(--brand-cream);
+}
+
+.landing-lead {
+  color: var(--brand-gold-soft);
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 1.75rem;
+  opacity: 0.95;
+}
+
+.landing-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1.6rem;
+  border-radius: 999px;
+  background: var(--brand-gold);
+  color: var(--brand-burgundy-deep);
+  font-weight: 700;
+  font-size: 1.05rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+}
+
+.landing-cta:hover {
+  background: var(--brand-gold-soft);
+  transform: translateY(-2px);
+}
+
+.landing-section {
+  padding: 3.5rem 1.5rem;
+  background: linear-gradient(180deg, #3a0202 0%, #2e0101 100%);
+}
+
+.landing-section-inner {
+  width: min(100%, 42rem);
+  margin-inline: auto;
+  text-align: center;
+}
+
+.landing-section h2 {
+  color: var(--brand-gold);
+  font-size: 1.45rem;
+  margin-bottom: 0.75rem;
+}
+
+.landing-section p {
+  color: var(--brand-gold-soft);
+  line-height: 1.75;
+  margin-bottom: 1.5rem;
+}
+
+.landing-admin-link {
+  color: var(--brand-gold-soft);
+  font-size: 0.9rem;
+  opacity: 0.75;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.landing-admin-link:hover {
+  opacity: 1;
+  color: var(--brand-gold);
+}
+
+@keyframes landing-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes landing-glow {
+  from {
+    filter: brightness(1);
+  }
+  to {
+    filter: brightness(1.08);
+  }
+}
+
+/* Book form */
+.book-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse 70% 50% at 20% 0%, rgba(212, 175, 55, 0.12), transparent 50%),
+    linear-gradient(180deg, #4a0404 0%, #2e0101 100%);
+  color: var(--brand-cream);
+  padding: 2rem 1.25rem 3rem;
+}
+
+.book-shell {
+  width: min(100%, 36rem);
+  margin-inline: auto;
+}
+
+.book-shell header {
+  text-align: center;
+  margin-bottom: 1.75rem;
+  animation: landing-rise 0.7s ease-out both;
+}
+
+.book-shell header img {
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+  border-radius: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.book-shell h1 {
+  color: var(--brand-gold);
+  font-size: 1.6rem;
+  margin-bottom: 0.35rem;
+}
+
+.book-shell header p {
+  color: var(--brand-gold-soft);
+  line-height: 1.6;
+}
+
+.book-form {
+  display: grid;
+  gap: 0.9rem;
+  background: rgba(245, 240, 230, 0.06);
+  border: 1px solid rgba(232, 213, 163, 0.28);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  animation: landing-rise 0.85s ease-out 0.08s both;
+}
+
+.book-form label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--brand-gold-soft);
+}
+
+.book-form input,
+.book-form select,
+.book-form textarea {
+  font: inherit;
+  border-radius: 0.55rem;
+  border: 1px solid rgba(232, 213, 163, 0.35);
+  background: rgba(46, 1, 1, 0.55);
+  color: var(--brand-cream);
+  padding: 0.65rem 0.75rem;
+}
+
+.book-form input:focus,
+.book-form select:focus,
+.book-form textarea:focus {
+  outline: 2px solid rgba(212, 175, 55, 0.55);
+  outline-offset: 1px;
+}
+
+.book-form .input-ltr {
+  direction: ltr;
+  text-align: left;
+}
+
+.book-date-fieldset {
+  border: 1px solid rgba(232, 213, 163, 0.28);
+  border-radius: 0.75rem;
+  padding: 0.85rem 0.9rem 1rem;
+  margin: 0;
+}
+
+.book-date-fieldset legend {
+  padding: 0 0.35rem;
+  color: var(--brand-gold);
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.book-date-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+@media (max-width: 520px) {
+  .book-date-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.book-form button[type="submit"] {
+  margin-top: 0.35rem;
+  border: none;
+  border-radius: 999px;
+  padding: 0.85rem 1.2rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--brand-gold);
+  color: var(--brand-burgundy-deep);
+}
+
+.book-form button[type="submit"]:hover {
+  background: var(--brand-gold-soft);
+}
+
+.book-error {
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.45);
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  border-radius: 0.55rem;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.book-back {
+  display: inline-block;
+  margin-top: 1.25rem;
+  color: var(--brand-gold-soft);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.thanks-card {
+  text-align: center;
+  padding: 2rem 1.25rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(232, 213, 163, 0.28);
+  background: rgba(245, 240, 230, 0.06);
+  animation: landing-rise 0.8s ease-out both;
+}
+
+.thanks-card h1 {
+  color: var(--brand-gold);
+  margin-bottom: 0.75rem;
+}
+
+.thanks-card p {
+  color: var(--brand-gold-soft);
+  line-height: 1.75;
+  margin-bottom: 1.25rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-hero-media,
+  .landing-hero-content,
+  .book-shell header,
+  .book-form,
+  .thanks-card {
+    animation: none;
+  }
 }
