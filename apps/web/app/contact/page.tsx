@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { PublicChrome } from "@/components/public/PublicChrome";
+import { ContactForm } from "./ContactForm";
 
-export const metadata: Metadata = { title: "تم استلام الطلب" };
+export const metadata: Metadata = { title: "تواصل معنا" };
 
-export default function BookThanksPage() {
+export default function ContactPage() {
   return (
     <PublicChrome>
       <main className="book-page">
@@ -18,17 +19,18 @@ export default function BookThanksPage() {
               height={88}
               priority
             />
+            <h1>تواصل معنا</h1>
+            <p>استفسار عام — لطلب حجز مناسبة استخدمي صفحة الحجز.</p>
           </header>
-          <div className="thanks-card">
-            <h1>شكراً لكم</h1>
-            <p>
-              وصل طلبكم لاستوديو الراية. فريقنا بيتواصل معكم قريباً لتثبيت التفاصيل
-              والموعد.
-            </p>
-            <Link className="landing-cta" href="/">
-              العودة للرئيسية
+          <ContactForm />
+          <p>
+            <Link className="book-back" href="/book">
+              طلب حجز مناسبة
             </Link>
-          </div>
+          </p>
+          <Link className="book-back" href="/">
+            ← العودة للرئيسية
+          </Link>
         </div>
       </main>
     </PublicChrome>

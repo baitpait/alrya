@@ -6,13 +6,14 @@ import { logoutAction } from "@/app/admin/logout/actions";
 type Props = {
   title: string;
   userName?: string;
+  unreadMessages?: number;
   children: React.ReactNode;
 };
 
-export function AdminShell({ title, userName, children }: Props) {
+export function AdminShell({ title, userName, unreadMessages = 0, children }: Props) {
   return (
     <div className="page-layout admin-body">
-      <AdminSidebar />
+      <AdminSidebar unreadMessages={unreadMessages} />
       <div className="admin-main-wrap">
         <header className="app-header">
           <div className="header-title">{title}</div>

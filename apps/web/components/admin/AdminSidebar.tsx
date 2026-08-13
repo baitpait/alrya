@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ADMIN_NAV } from "@/components/admin/nav";
 
-export function AdminSidebar() {
+export function AdminSidebar({ unreadMessages = 0 }: { unreadMessages?: number }) {
   const pathname = usePathname();
 
   return (
@@ -33,6 +33,9 @@ export function AdminSidebar() {
             <li key={item.href}>
               <Link href={item.href} className={active ? "is-active" : undefined}>
                 {item.label}
+                {item.href === "/admin/messages" && unreadMessages > 0 ? (
+                  <span className="nav-badge">{unreadMessages}</span>
+                ) : null}
               </Link>
             </li>
           );

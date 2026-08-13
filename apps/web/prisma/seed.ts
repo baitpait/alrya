@@ -222,6 +222,29 @@ async function seedAlrayaCatalog() {
   console.log(`Catalog seed: ${ALRAYA_CATALOG.length} services (Alraya 2026)`);
 }
 
+async function seedSiteSettings() {
+  const defaults: [string, string][] = [
+    ["whatsapp_number", "970599000000"],
+    ["whatsapp_default_message", "مرحبا، أريد الاستفسار عن تصوير مناسبة"],
+    ["phone_public", ""],
+    ["email_public", ""],
+    ["social_instagram", ""],
+    ["social_facebook", ""],
+    ["social_tiktok", ""],
+    ["social_youtube", ""],
+    ["social_snapchat", ""],
+    ["address_text", ""],
+  ];
+
+  for (const [key, value] of defaults) {
+    await prisma.setting.upsert({
+      where: { key },
+      update: {},
+      create: { key, value },
+    });
+  }
+}
+
 async function main() {
   let role = await prisma.role.findFirst({
     where: { name: "مدير الأستوديو" },
@@ -256,6 +279,7 @@ async function main() {
   });
 
   await seedAlrayaCatalog();
+  await seedSiteSettings();
 
   console.log("Seed OK");
   console.log(`email=${SEED_EMAIL}`);

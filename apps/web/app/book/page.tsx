@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
+import { PublicChrome } from "@/components/public/PublicChrome";
 import { BookForm } from "./BookForm";
 
 export const metadata: Metadata = { title: "حجز أونلاين" };
@@ -15,6 +16,7 @@ export default async function BookPage() {
   });
 
   return (
+    <PublicChrome>
     <main className="book-page">
       <div className="book-shell">
         <header>
@@ -29,10 +31,14 @@ export default async function BookPage() {
           <p>اتركوا بياناتكم ونتواصل لتأكيد الموعد — لا يُنشأ عقد تلقائياً.</p>
         </header>
         <BookForm services={services} />
-        <Link className="book-back" href="/">
+        <Link className="book-back" href="/contact">
+          تواصل معنا
+        </Link>
+        <Link className="book-back" href="/" style={{ marginInlineStart: "1rem" }}>
           ← العودة للرئيسية
         </Link>
       </div>
     </main>
+    </PublicChrome>
   );
 }

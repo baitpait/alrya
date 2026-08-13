@@ -3,9 +3,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { PublicChrome } from "@/components/public/PublicChrome";
 
-export const metadata: Metadata = { title: "تم استلام الطلب" };
+export const metadata: Metadata = { title: "تم استلام الرسالة" };
 
-export default function BookThanksPage() {
+export default function ContactThanksPage() {
   return (
     <PublicChrome>
       <main className="book-page">
@@ -20,11 +20,8 @@ export default function BookThanksPage() {
             />
           </header>
           <div className="thanks-card">
-            <h1>شكراً لكم</h1>
-            <p>
-              وصل طلبكم لاستوديو الراية. فريقنا بيتواصل معكم قريباً لتثبيت التفاصيل
-              والموعد.
-            </p>
+            <h1>وصلت رسالتكم</h1>
+            <p>شكراً لتواصلكم مع استوديو الراية. نرد عليكم في أقرب وقت.</p>
             <Link className="landing-cta" href="/">
               العودة للرئيسية
             </Link>

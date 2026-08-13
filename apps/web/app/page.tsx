@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { PublicChrome } from "@/components/public/PublicChrome";
 
 export const metadata: Metadata = {
   title: "استوديو الراية — حجز مناسبات",
@@ -9,6 +10,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
+    <PublicChrome>
     <div className="landing">
       <section className="landing-hero" aria-label="استوديو الراية">
         <div className="landing-hero-media" aria-hidden="true" />
@@ -41,6 +43,11 @@ export default function HomePage() {
               سجّل طلب حجز
             </Link>
           </p>
+          <p style={{ marginTop: "1.25rem" }}>
+            <Link className="landing-admin-link" href="/contact">
+              تواصل معنا
+            </Link>
+          </p>
           <p style={{ marginTop: "2rem" }}>
             <Link className="landing-admin-link" href="/admin">
               دخول لوحة الإدارة
@@ -49,5 +56,6 @@ export default function HomePage() {
         </div>
       </section>
     </div>
+    </PublicChrome>
   );
 }
