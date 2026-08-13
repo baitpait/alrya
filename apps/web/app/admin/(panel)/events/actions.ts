@@ -165,8 +165,97 @@ export async function deleteEvent(formData: FormData) {
   const id = Number(formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
 
+  await prisma.payment.deleteMany({ where: { eventId: id } });
+  await prisma.discount.deleteMany({ where: { eventId: id } });
   await prisma.eventService.deleteMany({ where: { eventId: id } });
   await prisma.event.delete({ where: { id } });
   revalidatePath("/admin/events");
   revalidatePath("/admin/customers");
+  revalidatePath("/admin/payments");
+  revalidatePath("/admin/calendar");
+}
+
+function parsePositiveAmount(raw: FormDataEntryValue | null, label: string) {
+  const text = String(raw ?? "").trim();
+  const amount = Number(text);
+  if (!text || !Number.isFinite(amount) || amount <= 0) {
+    throw new Error(`${label} يجب أن يكون أكبر من صفر.`);
+  }
+  return amount;
+}
+
+export async function addPayment(formData: FormData) {
+  const eventId = Number(formData.get("eventId"));
+  if (!Number.isFinite(eventId) || eventId <= 0) {
+    throw new Error("مناسبة غير صالحة.");
+  }
+
+  const amount = parsePositiveAmount(formData.get("amount"), "مبلغ الدفعة");
+  const method = String(formData.get("method") ?? "").trim() || null;
+  const note = String(formData.get("note") ?? "").trim() || null;
+  const paidDate = String(formData.get("paidDate") ?? "").trim();
+  const paidTime = String(formData.get("paidTime") ?? "").trim() || "12:00";
+  let paidAt = new Date();
+  if (paidDate) {
+    paidAt = new Date(`${paidDate}T${paidTime}`);
+    if (Number.isNaN(paidAt.getTime())) throw new Error("تاريخ الدفعة غير صالح.");
+  }
+
+  const event = await prisma.event.findUnique({ where: { id: eventId } });
+  if (!event) throw new Error("المناسبة غير موجودة.");
+
+  await prisma.payment.create({
+    data: { eventId, amount, method, note, paidAt },
+  });
+
+  revalidatePath(`/admin/events/${eventId}`);
+  revalidatePath("/admin/events");
+  revalidatePath("/admin/payments");
+}
+
+export async function deletePayment(formData: FormData) {
+  const id = Number(formData.get("id"));
+  const eventId = Number(formData.get("eventId"));
+  if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
+
+  await prisma.payment.delete({ where: { id } });
+  if (Number.isFinite(eventId) && eventId > 0) {
+    revalidatePath(`/admin/events/${eventId}`);
+  }
+  revalidatePath("/admin/payments");
+  revalidatePath("/admin/events");
+}
+
+export async function addDiscount(formData: FormData) {
+  const eventId = Number(formData.get("eventId"));
+  if (!Number.isFinite(eventId) || eventId <= 0) {
+    throw new Error("مناسبة غير صالحة.");
+  }
+
+  const amount = parsePositiveAmount(formData.get("amount"), "مبلغ الخصم");
+  const reason = String(formData.get("reason") ?? "").trim() || null;
+
+  const event = await prisma.event.findUnique({ where: { id: eventId } });
+  if (!event) throw new Error("المناسبة غير موجودة.");
+
+  await prisma.discount.create({
+    data: { eventId, amount, reason },
+  });
+
+  revalidatePath(`/admin/events/${eventId}`);
+  revalidatePath("/admin/events");
+  revalidatePath("/admin/payments");
+}
+
+export async function deleteDiscount(formData: FormData) {
+  const id = Number(formData.get("id"));
+  const eventId = Number(formData.get("eventId"));
+  if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
+
+  await prisma.discount.delete({ where: { id } });
+  if (Number.isFinite(eventId) && eventId > 0) {
+    revalidatePath(`/admin/events/${eventId}`);
+  }
+  revalidatePath("/admin/payments");
+  revalidatePath("/admin/events");
 }

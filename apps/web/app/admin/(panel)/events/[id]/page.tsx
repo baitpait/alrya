@@ -3,10 +3,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EventStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { formatMoney, getEventFinance } from "@/lib/event-finance";
 import {
+  addDiscount,
   addEventService,
+  addPayment,
+  deleteDiscount,
   deleteEvent,
   deleteEventService,
+  deletePayment,
   updateEventStatus,
 } from "../actions";
 
@@ -52,7 +57,7 @@ export default async function AdminEventDetailPage({ params }: Props) {
   const id = Number(idRaw);
   if (!Number.isFinite(id) || id <= 0) notFound();
 
-  const [event, services] = await Promise.all([
+  const [event, services, finance] = await Promise.all([
     prisma.event.findUnique({
       where: { id },
       include: {
@@ -61,6 +66,8 @@ export default async function AdminEventDetailPage({ params }: Props) {
           orderBy: { startsAt: "asc" },
           include: { service: true, offer: true },
         },
+        payments: { orderBy: { paidAt: "desc" } },
+        discounts: { orderBy: { createdAt: "desc" } },
       },
     }),
     prisma.service.findMany({
@@ -68,6 +75,7 @@ export default async function AdminEventDetailPage({ params }: Props) {
       orderBy: { name: "asc" },
       include: { offers: { orderBy: { name: "asc" } } },
     }),
+    getEventFinance(id),
   ]);
 
   if (!event) notFound();
@@ -76,6 +84,7 @@ export default async function AdminEventDetailPage({ params }: Props) {
   defaultStart.setMinutes(0, 0, 0);
   const defaultEnd = new Date(defaultStart);
   defaultEnd.setHours(defaultEnd.getHours() + 2);
+  const today = toDateInputValue(new Date());
 
   return (
     <div className="stack-gap">
@@ -94,7 +103,29 @@ export default async function AdminEventDetailPage({ params }: Props) {
           </Link>{" "}
           — {event.customer.phone}
         </p>
-        <p>الإجمالي المحسوب من الخدمات: {Number(event.totalPrice).toFixed(2)}</p>
+
+        <div className="finance-grid" aria-label="ملخص مالي">
+          <div className="finance-card">
+            <span>الإجمالي</span>
+            <strong className="cell-ltr">{formatMoney(finance.totalPrice)}</strong>
+          </div>
+          <div className="finance-card">
+            <span>الخصومات</span>
+            <strong className="cell-ltr">{formatMoney(finance.discountsTotal)}</strong>
+          </div>
+          <div className="finance-card">
+            <span>المدفوع</span>
+            <strong className="cell-ltr">{formatMoney(finance.paymentsTotal)}</strong>
+          </div>
+          <div
+            className={`finance-card finance-card-remaining${
+              finance.remaining <= 0 ? " is-zero" : ""
+            }`}
+          >
+            <span>المتبقي</span>
+            <strong className="cell-ltr">{formatMoney(finance.remaining)}</strong>
+          </div>
+        </div>
 
         <form action={updateEventStatus} className="inline-form">
           <h2>الحالة · الاتفاقية · الملاحظات</h2>
@@ -125,9 +156,7 @@ export default async function AdminEventDetailPage({ params }: Props) {
               name="deliveryDueAt"
               type="date"
               defaultValue={
-                event.deliveryDueAt
-                  ? toDateInputValue(event.deliveryDueAt)
-                  : ""
+                event.deliveryDueAt ? toDateInputValue(event.deliveryDueAt) : ""
               }
             />
           </label>
@@ -144,6 +173,157 @@ export default async function AdminEventDetailPage({ params }: Props) {
             حذف المناسبة
           </button>
         </form>
+      </section>
+
+      <section className="panel">
+        <h2>الدفعات</h2>
+        <form action={addPayment} className="inline-form">
+          <input type="hidden" name="eventId" value={event.id} />
+          <label>
+            المبلغ (₪)
+            <input
+              className="input-ltr"
+              name="amount"
+              type="number"
+              inputMode="decimal"
+              step="0.01"
+              min="0.01"
+              required
+              placeholder="0.00"
+            />
+          </label>
+          <label>
+            تاريخ الدفع
+            <input
+              className="input-ltr"
+              type="date"
+              name="paidDate"
+              defaultValue={today}
+              required
+            />
+          </label>
+          <label>
+            الوقت
+            <input
+              className="input-ltr"
+              type="time"
+              name="paidTime"
+              defaultValue="12:00"
+            />
+          </label>
+          <label>
+            طريقة الدفع
+            <select name="method" defaultValue="">
+              <option value="">—</option>
+              <option value="نقدي">نقدي</option>
+              <option value="تحويل">تحويل</option>
+              <option value="بطاقة">بطاقة</option>
+              <option value="شيك">شيك</option>
+            </select>
+          </label>
+          <label>
+            ملاحظة
+            <input name="note" />
+          </label>
+          <button type="submit">إضافة دفعة</button>
+        </form>
+
+        {event.payments.length === 0 ? (
+          <p>لا دفعات بعد.</p>
+        ) : (
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>التاريخ</th>
+                  <th>المبلغ</th>
+                  <th>الطريقة</th>
+                  <th>ملاحظة</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {event.payments.map((p) => (
+                  <tr key={p.id}>
+                    <td className="cell-ltr">{formatDateTimeAr(p.paidAt)}</td>
+                    <td className="cell-ltr">{Number(p.amount).toFixed(2)}</td>
+                    <td>{p.method || "—"}</td>
+                    <td>{p.note || "—"}</td>
+                    <td>
+                      <form action={deletePayment}>
+                        <input type="hidden" name="id" value={p.id} />
+                        <input type="hidden" name="eventId" value={event.id} />
+                        <button type="submit" className="btn-danger">
+                          حذف
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      <section className="panel">
+        <h2>الخصومات</h2>
+        <form action={addDiscount} className="inline-form">
+          <input type="hidden" name="eventId" value={event.id} />
+          <label>
+            المبلغ (₪)
+            <input
+              className="input-ltr"
+              name="amount"
+              type="number"
+              inputMode="decimal"
+              step="0.01"
+              min="0.01"
+              required
+              placeholder="0.00"
+            />
+          </label>
+          <label>
+            السبب
+            <input name="reason" placeholder="مثال: خصم عرسان" />
+          </label>
+          <button type="submit">إضافة خصم</button>
+        </form>
+
+        {event.discounts.length === 0 ? (
+          <p>لا خصومات بعد.</p>
+        ) : (
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>التاريخ</th>
+                  <th>المبلغ</th>
+                  <th>السبب</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {event.discounts.map((d) => (
+                  <tr key={d.id}>
+                    <td className="cell-ltr">{formatDateTimeAr(d.createdAt)}</td>
+                    <td className="cell-ltr">{Number(d.amount).toFixed(2)}</td>
+                    <td>{d.reason || "—"}</td>
+                    <td>
+                      <form action={deleteDiscount}>
+                        <input type="hidden" name="id" value={d.id} />
+                        <input type="hidden" name="eventId" value={event.id} />
+                        <button type="submit" className="btn-danger">
+                          حذف
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </section>
 
       <section className="panel">
@@ -287,9 +467,10 @@ export default async function AdminEventDetailPage({ params }: Props) {
                     <td className="cell-ltr">{formatDateTimeAr(es.startsAt)}</td>
                     <td className="cell-ltr">{formatDateTimeAr(es.endsAt)}</td>
                     <td>
-                      {[es.city, es.venue, es.hall].filter(Boolean).join(" · ") || "—"}
+                      {[es.city, es.venue, es.hall].filter(Boolean).join(" · ") ||
+                        "—"}
                     </td>
-                    <td>{Number(es.price).toFixed(2)}</td>
+                    <td className="cell-ltr">{Number(es.price).toFixed(2)}</td>
                     <td>
                       <form action={deleteEventService}>
                         <input type="hidden" name="id" value={es.id} />
