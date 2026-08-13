@@ -225,5 +225,6 @@ Alray Studio/
 | وميض ديمو | https://wameed.mostaqbalsoft.com/ControlPanel |
 | دخول الديمو للاختبار | [wameed-demo-qa.md](./wameed-demo-qa.md) — `studio-manage@wameed.com` / `Test@123` |
 | تحليل وميض | [wameed-system-analysis.md](./wameed-system-analysis.md) |
+| **كتالوج + اتفاقية الراية 2026** | [alraya-client-catalog-2026.md](./alraya-client-catalog-2026.md) — أسعار العميل الحقيقية |
 | UI تفصيلي | [ui-nexlink-spec.md](./ui-nexlink-spec.md) |
 | البيانات | [data-model.md](./data-model.md) |

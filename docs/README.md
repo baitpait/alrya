@@ -25,6 +25,7 @@
 5. [ui-nexlink-spec.md](./ui-nexlink-spec.md) — ثيم NexLink، RTL، Dark، التقويم، الخطوط
 6. [branding/brand-guidelines.md](./branding/brand-guidelines.md) — الشعار والألوان
 7. [data-model.md](./data-model.md) — الجداول، الحالات، المعادلات، تدفق الحجز
+7b. [alraya-client-catalog-2026.md](./alraya-client-catalog-2026.md) — **مرجع عميل الراية:** عروض موسم 2026 + اتفاقية التصوير (صور في `client/`)
 8. [wameed-system-analysis.md](./wameed-system-analysis.md) — مرجع منطق نظام وميض (تحليل الديمو)
 9. [wameed-full-architecture.md](./wameed-full-architecture.md) — **هيكل وميض الكامل** (قوائم + طاقم + SMS/OTP)
 10. [wameed-demo-qa.md](./wameed-demo-qa.md) — دخول ديمو وميض + اختبار طاقم المناسبة
@@ -39,7 +40,7 @@
 | العميل | استوديو الراية |
 | الشعار | [`branding/alraya-studio-logo.png`](./branding/alraya-studio-logo.png) |
 | الهوية | عنابي + ذهبي — «علامة الجودة والاحتراف» |
-| المرجع الوظيفي | وميض (mostaqbalsoft) — منطق فقط |
+| المرجع الوظيفي | وميض — منطق فقط · **أسعار/عقد الراية:** [alraya-client-catalog-2026.md](./alraya-client-catalog-2026.md) |
 | التقنية | Next.js + TypeScript + Prisma + **MySQL** |
 | واجهة الإدارة | NexLink Bootstrap 5 — RTL · Light افتراضي · Dark عبر **theme-btn** |
 | العام | لاندينغ + تسجيل أونلاين + تواصل معنا + واتساب عائم + سوشيال |

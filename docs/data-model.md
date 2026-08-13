@@ -1,7 +1,8 @@
 # نموذج البيانات — استوديو الراية
 
 > مستخرج من تحليل وميض + متطلبات الحجز الأونلاين  
-> المرجع الوظيفي التفصيلي: [wameed-system-analysis.md](./wameed-system-analysis.md)
+> المرجع الوظيفي التفصيلي: [wameed-system-analysis.md](./wameed-system-analysis.md)  
+> **أسعار وشروط عميل الراية (موسم 2026):** [alraya-client-catalog-2026.md](./alraya-client-catalog-2026.md)
 
 ---
 
