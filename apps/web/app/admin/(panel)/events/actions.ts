@@ -144,6 +144,7 @@ export async function addEventService(formData: FormData) {
   await refreshEventTotal(eventId);
   revalidatePath("/admin/events");
   revalidatePath(`/admin/events/${eventId}`);
+  revalidatePath("/admin/calendar");
 }
 
 export async function deleteEventService(formData: FormData) {
@@ -157,6 +158,7 @@ export async function deleteEventService(formData: FormData) {
     revalidatePath(`/admin/events/${eventId}`);
   }
   revalidatePath("/admin/events");
+  revalidatePath("/admin/calendar");
 }
 
 export async function deleteEvent(formData: FormData) {

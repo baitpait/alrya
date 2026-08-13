@@ -438,3 +438,276 @@ html[data-theme="dark"] .theme-btn .icon-light {
   unicode-bidi: isolate;
   font-variant-numeric: tabular-nums;
 }
+
+.btn-primary {
+  border: none;
+  border-radius: 0.55rem;
+  padding: 0.65rem 0.9rem;
+  font: inherit;
+  cursor: pointer;
+  background: var(--admin-primary);
+  color: #fff;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.calendar-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.calendar-wrap {
+  direction: rtl;
+  --fc-border-color: var(--admin-border);
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: var(--admin-hover);
+  --fc-list-event-hover-bg-color: var(--admin-hover);
+  --fc-today-bg-color: color-mix(in srgb, var(--admin-primary) 10%, transparent);
+  --fc-highlight-color: color-mix(in srgb, var(--admin-primary) 14%, transparent);
+  --fc-button-bg-color: var(--admin-primary);
+  --fc-button-border-color: var(--admin-primary);
+  --fc-button-hover-bg-color: color-mix(in srgb, var(--admin-primary) 88%, #000);
+  --fc-button-hover-border-color: color-mix(in srgb, var(--admin-primary) 88%, #000);
+  --fc-button-active-bg-color: color-mix(in srgb, var(--admin-primary) 78%, #000);
+  --fc-button-active-border-color: color-mix(in srgb, var(--admin-primary) 78%, #000);
+  --fc-event-bg-color: var(--admin-primary);
+  --fc-event-border-color: var(--admin-primary);
+  --fc-event-text-color: #fff;
+  --fc-now-indicator-color: var(--admin-primary);
+}
+
+.calendar-wrap .fc {
+  font-family: inherit;
+  color: var(--admin-text);
+}
+
+.calendar-wrap .fc .fc-toolbar {
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.calendar-wrap .fc .fc-toolbar-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--admin-text);
+}
+
+.calendar-wrap .fc .fc-button {
+  font-family: inherit;
+  font-weight: 600;
+  text-transform: none;
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  box-shadow: none !important;
+}
+
+.calendar-wrap .fc .fc-button-group > .fc-button {
+  border-radius: 0;
+}
+
+.calendar-wrap .fc .fc-button-group > .fc-button:first-child {
+  border-start-start-radius: 0.5rem;
+  border-end-start-radius: 0.5rem;
+}
+
+.calendar-wrap .fc .fc-button-group > .fc-button:last-child {
+  border-start-end-radius: 0.5rem;
+  border-end-end-radius: 0.5rem;
+}
+
+.calendar-wrap .fc .fc-scrollgrid,
+.calendar-wrap .fc .fc-scrollgrid-section > td,
+.calendar-wrap .fc .fc-scrollgrid-section > th {
+  border-color: var(--admin-border);
+}
+
+.calendar-wrap .fc .fc-scrollgrid {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+}
+
+.calendar-wrap .fc .fc-col-header-cell {
+  background: var(--admin-hover);
+  padding: 0.65rem 0.25rem;
+}
+
+.calendar-wrap .fc .fc-col-header-cell-cushion {
+  color: var(--admin-muted);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.calendar-wrap .fc .fc-daygrid-day {
+  min-height: 6.5rem;
+  transition: background 0.15s ease;
+}
+
+.calendar-wrap .fc .fc-daygrid-day:hover {
+  background: color-mix(in srgb, var(--admin-primary) 6%, transparent);
+}
+
+.calendar-wrap .fc .fc-daygrid-day-number {
+  color: var(--admin-text);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.45rem 0.55rem;
+  text-decoration: none;
+}
+
+.calendar-wrap .fc .fc-day-other .fc-daygrid-day-number {
+  color: var(--admin-muted);
+  opacity: 0.65;
+}
+
+.calendar-wrap .fc .fc-day-today .fc-daygrid-day-number {
+  background: var(--admin-primary);
+  color: #fff;
+  border-radius: 999px;
+  width: 1.85rem;
+  height: 1.85rem;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  margin: 0.35rem;
+}
+
+.calendar-wrap .fc .fc-daygrid-event,
+.calendar-wrap .fc .fc-timegrid-event,
+.calendar-wrap .fc .fc-list-event {
+  cursor: pointer;
+}
+
+.calendar-wrap .fc .fc-daygrid-event {
+  border-radius: 0.4rem;
+  margin: 0.1rem 0.25rem;
+  padding: 0.1rem 0.2rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
+}
+
+.calendar-wrap .fc .fc-daygrid-dot-event {
+  padding: 0.15rem 0.3rem;
+}
+
+.calendar-wrap .fc .fc-daygrid-event .fc-event-title {
+  padding: 0 0.15rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.calendar-wrap .fc .fc-daygrid-more-link {
+  color: var(--admin-primary);
+  font-weight: 700;
+  font-size: 0.75rem;
+  margin: 0.15rem 0.35rem;
+}
+
+.calendar-wrap .fc .fc-timegrid-slot {
+  height: 2.4rem;
+}
+
+.calendar-wrap .fc .fc-timegrid-slot-label-cushion,
+.calendar-wrap .fc .fc-timegrid-axis-cushion {
+  color: var(--admin-muted);
+  font-size: 0.75rem;
+}
+
+.calendar-wrap .fc .fc-timegrid-event {
+  border-radius: 0.45rem;
+  border: none;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.15);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.calendar-wrap .fc .fc-list {
+  border: 1px solid var(--admin-border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.calendar-wrap .fc .fc-list-day-cushion {
+  background: var(--admin-hover);
+  color: var(--admin-text);
+  font-weight: 700;
+}
+
+.calendar-wrap .fc .fc-list-event td {
+  border-color: var(--admin-border);
+}
+
+.calendar-wrap .fc .fc-list-event-dot {
+  border-color: var(--admin-primary);
+}
+
+.calendar-wrap .fc .fc-list-event-title a {
+  color: var(--admin-text);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.calendar-wrap .fc .fc-popover {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: 0.65rem;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+  color: var(--admin-text);
+}
+
+.calendar-wrap .fc .fc-popover-header {
+  background: var(--admin-hover);
+  color: var(--admin-text);
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .calendar-wrap .fc .fc-toolbar-title {
+    font-size: 1rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  .calendar-wrap .fc .fc-daygrid-day {
+    min-height: 4.75rem;
+  }
+
+  .calendar-wrap .fc .fc-button {
+    padding: 0.35rem 0.55rem;
+    font-size: 0.8rem;
+  }
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  z-index: 50;
+}
+
+.modal-panel {
+  width: min(100%, 560px);
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.detail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 1rem;
+  display: grid;
+  gap: 0.4rem;
+  color: var(--admin-text);
+}
