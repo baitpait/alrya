@@ -35,10 +35,26 @@ export default async function Home() {
         maxWidth: "40rem",
         margin: "0 auto",
         lineHeight: 1.7,
+        textAlign: "center",
       }}
     >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/branding/alraya-studio-logo.png"
+        alt="استوديو الراية — علامة الجودة والاحتراف"
+        width={160}
+        height={160}
+        style={{
+          width: 160,
+          height: 160,
+          objectFit: "contain",
+          borderRadius: "0.75rem",
+          marginBottom: "1rem",
+        }}
+      />
       <h1>استوديو الراية</h1>
-      <p>المرحلة 0 اكتملت · المرحلة 1: شِل الإدارة</p>
+      <p style={{ color: "#6b7280", marginTop: 0 }}>علامة الجودة والاحتراف</p>
+      <p>لوحة الإدارة جاهزة للتشغيل</p>
       <ul>
         <li>Next.js: يعمل</li>
         <li>

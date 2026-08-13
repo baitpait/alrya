@@ -9,10 +9,11 @@
 | البند | القيمة |
 |--------|--------|
 | الملف | [`alraya-studio-logo.png`](./alraya-studio-logo.png) |
-| المسار في المشروع | `docs/branding/alraya-studio-logo.png` |
-| المسار المقترح عند البناء | `apps/web/public/branding/alraya-studio-logo.png` |
-| الشكل | دائري |
-| الاستخدام | هيدر اللاندينغ، فافيكون (نسخة مربعة لاحقاً)، سايدبار الأدمن بدل NexLink |
+| المسار في التوثيق | `docs/branding/alraya-studio-logo.png` |
+| المسار في التطبيق | `apps/web/public/branding/alraya-studio-logo.png` → `/branding/alraya-studio-logo.png` |
+| الشكل | علامة كاملة (عربي + ALRAYA STUDIO + الشعار اللفظي) على خلفية كريمية |
+| الاستخدام المثبّت | سايدبار الأدمن · صفحة الدخول · الصفحة الرئيسية |
+| مؤقت قديم | `alraya-mark.svg` — لا تستخدمه بعد تثبيت الشعار الرسمي |
 
 ### عناصر الشعار
 

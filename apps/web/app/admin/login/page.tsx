@@ -17,12 +17,14 @@ export default async function AdminLoginPage() {
     <div className="login-page admin-body">
       <section className="login-card panel">
         <img
-          src="/branding/alraya-mark.svg"
-          alt="استوديو الراية"
-          width={56}
-          height={56}
+          className="login-logo"
+          src="/branding/alraya-studio-logo.png"
+          alt="استوديو الراية — علامة الجودة والاحتراف"
+          width={120}
+          height={120}
         />
         <h1>استوديو الراية</h1>
+        <p className="login-tagline">علامة الجودة والاحتراف</p>
         <p>دخول لوحة الإدارة</p>
         <LoginForm />
       </section>

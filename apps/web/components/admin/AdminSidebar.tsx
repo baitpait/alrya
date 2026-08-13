@@ -10,8 +10,12 @@ export function AdminSidebar() {
   return (
     <aside className="admin-sidebar" aria-label="قائمة الإدارة">
       <Link href="/admin" className="brand">
-        {/* مؤقت حتى يتوفر docs/branding/alraya-studio-logo.png */}
-        <img src="/branding/alraya-mark.svg" alt="استوديو الراية" width={44} height={44} />
+        <img
+          src="/branding/alraya-studio-logo.png"
+          alt="استوديو الراية — علامة الجودة والاحتراف"
+          width={56}
+          height={56}
+        />
         <div className="brand-text">
           <strong>استوديو الراية</strong>
           <span>ALRAYA STUDIO</span>
