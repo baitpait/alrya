@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# نهاية جلسة/وكيل → واتساب للإدارة فقط (تقرير: بداية/نهاية/مدة/منجز)
-# الملخص الحقيقي يفضَّل من الوكيل عند «نهاية جلسة» عبر --done / --worked-on
+# نهاية جلسة/وكيل → واتساب: تقرير للإدارة + شكر ودّي لنـهلة
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
@@ -11,9 +10,9 @@ if [[ ! -f .env ]]; then
   exit 0
 fi
 
-node tools/pm-notify.mjs session-end --to mgmt \
+node tools/pm-notify.mjs session-end --to both \
   --worked-on "جلسة Cursor (إغلاق تلقائي من الـ hook)" \
-  --done "أُغلقت الجلسة تلقائياً — إن وُجد ملخص أدق أرسله الوكيل يدوياً عند نهاية الجلسة" \
+  --done "أُغلقت الجلسة تلقائياً — إن وُجد ملخص أدق أرسله الوكيل عند نهاية الجلسة" \
   >/dev/null 2>&1 || true
 echo '{}'
 exit 0

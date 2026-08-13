@@ -2,9 +2,9 @@
 /**
  * إشعارات واتساب — استوديو الراية
  *
- * بداية/نهاية الجلسة → الإدارة فقط: تقرير عمل
- *   (محور العمل · ما أُنجز · بداية · نهاية · مدة الجلسة)
- * أوامر أخرى (gate/task/…) قد تبقى مزدوجة إن طُلب --to both
+ * بداية/نهاية الجلسة → الاثنان:
+ *   إدارة: تقرير عمل (محور · منجز · بداية · نهاية · مدة)
+ *   مهندسة: رسالة ودّية قصيرة متغيّرة (أو --text من الوكيل)
  *
  * شرط: ≥ 40 ثانية بين كل رسالتين (WASENDER_SEND_GAP_MS)
  */
@@ -109,6 +109,64 @@ function sessionDurationLabel() {
 function sessionStartLocalLabel() {
   const st = readSessionState();
   return st.lastStartLocal || (st.lastStartAt ? new Date(Number(st.lastStartAt)).toLocaleString("ar-PS", { timeZone: "Asia/Jerusalem" }) : "غير مسجّلة");
+}
+
+/** تدوير صياغات لتجنّب قالب واحد جامد */
+function pickRotating(key, options) {
+  const st = readSessionState();
+  let idx = Number(st[key]);
+  if (!Number.isFinite(idx)) idx = -1;
+  idx = (idx + 1) % options.length;
+  writeSessionState({ [key]: idx });
+  return options[idx];
+}
+
+/** رسالة ودّية لنهلة — بداية جلسة (متغيّرة أو --text) */
+function warmSessionStartDev(workedOn) {
+  const custom = argValue("--text");
+  if (custom && String(custom).trim()) {
+    return [
+      openLine(),
+      ``,
+      greetEngineer(),
+      ``,
+      String(custom).trim(),
+      ``,
+      signOff(),
+    ].join("\n");
+  }
+  const n = engineerFirstName();
+  const body = pickRotating("lastSessionStartDevIdx", [
+    `يلا نبلش جلسة على «${ORG.projectName}».\nمحور اليوم: ${workedOn}\nخطوة خطوة — وإحنا معكِ.`,
+    `يلا الشغل يا ${n}.\nاليوم نركّز على: ${workedOn}\nاختبار يدوي قبل ما نسكّر أي بوابة.`,
+    `أهلاً ${n} — جلسة جديدة.\nالشغل اليوم: ${workedOn}\nخذيها بهدوء وجودة، ومنكمّل سوا.`,
+    `يلا ${n} نكمّل «${ORG.projectName}».\nالمطلوب الآن: ${workedOn}\nواثقين فيكِ 💪`,
+  ]);
+  return [openLine(), ``, greetEngineer(), ``, body, ``, signOff()].join("\n");
+}
+
+/** رسالة ودّية لنهلة — نهاية جلسة */
+function warmSessionEndDev(workedOn, done) {
+  const custom = argValue("--text");
+  if (custom && String(custom).trim()) {
+    return [
+      openLine(),
+      ``,
+      greetEngineer(),
+      ``,
+      String(custom).trim(),
+      ``,
+      signOff(),
+    ].join("\n");
+  }
+  const n = engineerFirstName();
+  const body = pickRotating("lastSessionEndDevIdx", [
+    `شكراً على تعبكِ اليوم على «${ORG.projectName}».\nالشغل كان على: ${workedOn}\nالمنجز: ${done}\nاستريحي وأنتِ راضية عن اللي قدّمتي 🙏`,
+    `خلّصنا جلسة مرتبة يا ${n}.\nأنجزتي بخصوص: ${done}\nلو بقي اختبار يدوي معلّق، كمّليه على مهلكِ وبجودة.`,
+    `يعطيكِ العافية ${n}.\nملخص سريع: ${done}\nشكراً لتركيزكِ — إلى جلسة جاية إن شاء الله.`,
+    `نهاية جلسة على «${ORG.projectName}».\nالعمل عليه كان: ${workedOn}\nما أُنجز: ${done}\nأحسنتي — خذي نفس واستريحي.`,
+  ]);
+  return [openLine(), ``, greetEngineer(), ``, body, ``, signOff()].join("\n");
 }
 
 /** هوية الفريق — ثابتة في المراسلات */
@@ -296,7 +354,7 @@ function buildMessages(cmd) {
       argValue("--focus") ||
       argValue("--summary") ||
       "متابعة خطة الإنتاج حسب المرحلة الحالية";
-    // تقرير عمل للإدارة فقط — لا قالب واتساب للمبرمجة
+    // إدارة = تقرير · مهندسة = رسالة ودّية متغيّرة
     return dual(
       [
         `${ORG.projectName} — تقرير بداية جلسة`,
@@ -307,7 +365,7 @@ function buildMessages(cmd) {
       ]
         .filter(Boolean)
         .join("\n"),
-      ""
+      warmSessionStartDev(workedOn)
     );
   }
 
@@ -338,7 +396,7 @@ function buildMessages(cmd) {
       ]
         .filter(Boolean)
         .join("\n"),
-      ""
+      warmSessionEndDev(workedOn, done)
     );
   }
 
@@ -627,14 +685,12 @@ function buildMessages(cmd) {
         ``,
         greetEngineer(),
         ``,
-        `حابين نذكّركِ بلطف بقاعدة مهمة عندنا: ${rule}`,
-        notes ? `التفصيل: ${notes}` : null,
+        `تذكير خفيف: ${rule}`,
         ``,
-        `مو عتاب قاسي — بس القوانين موجودة عشان نحمي جودة شغلكِ والمنتج (مرحلة واحدة، اختبار يدوي، لا أزرار صامتة، بوابة قبل الانتقال).`,
-        `خلينا نعدّل المسار هسا ونكمّل صح. تحبي أوضّحلكِ المطلوب بجملة واحدة؟`,
+        `منشتغل مرحلة واحدة، وباب اختبار قبل اللي بعدها. مو عتاب — بس عشان نحمي جودة شغلكِ.`,
+        `خلينا نكمّل المرحلة الحالية فقط بعد ما تكتبي تم ونفّذ. إحنا معكِ خطوة خطوة.`,
         ``,
         signOff(),
-        t,
       ]
         .filter(Boolean)
         .join("\n")
@@ -727,9 +783,9 @@ async function main() {
   const isStart = cmd === "session-start" || cmd === "agent-start";
   const isEnd = cmd === "session-end" || cmd === "agent-stop";
 
-  // بداية/نهاية الجلسة → واتساب للإدارة فقط (تقرير عمل)
+  // بداية/نهاية الجلسة → إدارة (تقرير) + مهندسة (ودّي) ما لم يُحدَّد --to
   if ((isStart || isEnd) && !argValue("--to")) {
-    process.argv.push("--to", "mgmt");
+    process.argv.push("--to", "both");
   }
 
   if ((isStart || isEnd) && process.argv.includes("--force") === false) {
