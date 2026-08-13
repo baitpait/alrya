@@ -23,10 +23,20 @@ export async function createCustomer(formData: FormData) {
   const altPhone = String(formData.get("altPhone") ?? "").trim() || null;
   const email = String(formData.get("email") ?? "").trim() || null;
   const address = String(formData.get("address") ?? "").trim() || null;
+  const nationalId = String(formData.get("nationalId") ?? "").trim() || null;
   const gender = parseGender(String(formData.get("gender") ?? ""));
 
   await prisma.customer.create({
-    data: { firstName, lastName, phone, altPhone, email, address, gender },
+    data: {
+      firstName,
+      lastName,
+      phone,
+      altPhone,
+      email,
+      address,
+      nationalId,
+      gender,
+    },
   });
 
   revalidatePath("/admin/customers");
@@ -43,11 +53,21 @@ export async function updateCustomer(formData: FormData) {
   const altPhone = String(formData.get("altPhone") ?? "").trim() || null;
   const email = String(formData.get("email") ?? "").trim() || null;
   const address = String(formData.get("address") ?? "").trim() || null;
+  const nationalId = String(formData.get("nationalId") ?? "").trim() || null;
   const gender = parseGender(String(formData.get("gender") ?? ""));
 
   await prisma.customer.update({
     where: { id },
-    data: { firstName, lastName, phone, altPhone, email, address, gender },
+    data: {
+      firstName,
+      lastName,
+      phone,
+      altPhone,
+      email,
+      address,
+      nationalId,
+      gender,
+    },
   });
 
   revalidatePath("/admin/customers");

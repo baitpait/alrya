@@ -75,12 +75,21 @@ export async function createOffer(formData: FormData) {
 
   const audience = String(formData.get("audience") ?? "").trim() || null;
   const description = String(formData.get("description") ?? "").trim() || null;
+  const listPriceRaw = String(formData.get("listPrice") ?? "").trim();
+  let listPrice: number | null = null;
+  if (listPriceRaw) {
+    listPrice = Number(listPriceRaw);
+    if (!Number.isFinite(listPrice) || listPrice < 0) {
+      throw new Error("سعر البدل يجب أن يكون رقماً صالحاً.");
+    }
+  }
 
   await prisma.offer.create({
     data: {
       serviceId,
       name,
       price,
+      listPrice,
       audience,
       description,
     },
@@ -106,10 +115,18 @@ export async function updateOffer(formData: FormData) {
 
   const audience = String(formData.get("audience") ?? "").trim() || null;
   const description = String(formData.get("description") ?? "").trim() || null;
+  const listPriceRaw = String(formData.get("listPrice") ?? "").trim();
+  let listPrice: number | null = null;
+  if (listPriceRaw) {
+    listPrice = Number(listPriceRaw);
+    if (!Number.isFinite(listPrice) || listPrice < 0) {
+      throw new Error("سعر البدل يجب أن يكون رقماً صالحاً.");
+    }
+  }
 
   await prisma.offer.update({
     where: { id },
-    data: { name, price, audience, description },
+    data: { name, price, listPrice, audience, description },
   });
 
   revalidatePath("/admin/services");

@@ -66,10 +66,19 @@ export async function updateEventStatus(formData: FormData) {
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف المناسبة غير صالح.");
   const status = parseStatus(String(formData.get("status") ?? "PREPARING"));
   const notes = String(formData.get("notes") ?? "").trim() || null;
+  const agreementNo = String(formData.get("agreementNo") ?? "").trim() || null;
+  const deliveryRaw = String(formData.get("deliveryDueAt") ?? "").trim();
+  let deliveryDueAt: Date | null = null;
+  if (deliveryRaw) {
+    deliveryDueAt = new Date(`${deliveryRaw}T12:00:00`);
+    if (Number.isNaN(deliveryDueAt.getTime())) {
+      throw new Error("آخر موعد للاستلام غير صالح.");
+    }
+  }
 
   await prisma.event.update({
     where: { id },
-    data: { status, notes },
+    data: { status, notes, agreementNo, deliveryDueAt },
   });
 
   revalidatePath("/admin/events");

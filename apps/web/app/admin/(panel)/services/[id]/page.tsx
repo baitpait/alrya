@@ -76,7 +76,7 @@ export default async function AdminServiceDetailPage({ params }: Props) {
             <input name="name" required placeholder="مثال: باقة ذهبية" />
           </label>
           <label>
-            السعر (₪)
+            السعر / المبلغ (₪)
             <input
               className="input-ltr"
               name="price"
@@ -89,8 +89,20 @@ export default async function AdminServiceDetailPage({ params }: Props) {
             />
           </label>
           <label>
-            الجمهور (اختياري)
-            <input name="audience" placeholder="نساء / رجال / مختلط" />
+            بدل (اختياري)
+            <input
+              className="input-ltr"
+              name="listPrice"
+              type="number"
+              inputMode="decimal"
+              step="0.01"
+              min="0"
+              placeholder="سعر مرجعي"
+            />
+          </label>
+          <label>
+            الجمهور / الطاقم (اختياري)
+            <input name="audience" placeholder="شخص واحد / شخصين" />
           </label>
           <label>
             الوصف (اختياري)
@@ -116,7 +128,7 @@ export default async function AdminServiceDetailPage({ params }: Props) {
                     <input name="name" required defaultValue={offer.name} />
                   </label>
                   <label>
-                    السعر (₪)
+                    السعر / المبلغ (₪)
                     <input
                       className="input-ltr"
                       name="price"
@@ -129,7 +141,21 @@ export default async function AdminServiceDetailPage({ params }: Props) {
                     />
                   </label>
                   <label>
-                    الجمهور
+                    بدل (₪)
+                    <input
+                      className="input-ltr"
+                      name="listPrice"
+                      type="number"
+                      inputMode="decimal"
+                      step="0.01"
+                      min="0"
+                      defaultValue={
+                        offer.listPrice != null ? Number(offer.listPrice) : ""
+                      }
+                    />
+                  </label>
+                  <label>
+                    الجمهور / الطاقم
                     <input
                       name="audience"
                       defaultValue={offer.audience ?? ""}

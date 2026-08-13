@@ -67,6 +67,7 @@ Lookup / LookupValue
 | altPhone | string? | |
 | email | string? | |
 | address | string? | العنوان |
+| nationalId | string? | رقم الهوية — اتفاقية الراية |
 | gender | enum? | MALE / FEMALE |
 | createdAt | datetime | |
 
@@ -87,8 +88,9 @@ Lookup / LookupValue
 | id | | |
 | serviceId | FK | |
 | name | string | اسم العرض |
-| audience | string? | نساء فقط / رجال / مختلط… |
-| price | decimal | |
+| audience | string? | جمهور أو حجم طاقم (شخص/شخصين) |
+| price | decimal | المبلغ (سعر العرض) |
+| listPrice | decimal? | البدل — سعر مرجعي من جدول الراية |
 | description | text? | |
 
 ### SubService
@@ -110,6 +112,8 @@ Lookup / LookupValue
 | status | enum | انظر الحالات |
 | totalPrice | decimal | سعر المناسبة |
 | notes | text? | |
+| agreementNo | string? | رقم اتفاقية التصوير الورقية |
+| deliveryDueAt | datetime? | آخر موعد للاستلام |
 | createdAt | datetime | |
 | branchId | FK? | لاحقاً إن تعدد الفروع |
 

@@ -97,7 +97,7 @@ export default async function AdminEventDetailPage({ params }: Props) {
         <p>الإجمالي المحسوب من الخدمات: {Number(event.totalPrice).toFixed(2)}</p>
 
         <form action={updateEventStatus} className="inline-form">
-          <h2>الحالة والملاحظات</h2>
+          <h2>الحالة · الاتفاقية · الملاحظات</h2>
           <input type="hidden" name="id" value={event.id} />
           <label>
             الحالة
@@ -110,10 +110,32 @@ export default async function AdminEventDetailPage({ params }: Props) {
             </select>
           </label>
           <label>
+            رقم الاتفاقية
+            <input
+              className="input-ltr"
+              name="agreementNo"
+              placeholder="000020"
+              defaultValue={event.agreementNo ?? ""}
+            />
+          </label>
+          <label>
+            آخر موعد للاستلام
+            <input
+              className="input-ltr"
+              name="deliveryDueAt"
+              type="date"
+              defaultValue={
+                event.deliveryDueAt
+                  ? toDateInputValue(event.deliveryDueAt)
+                  : ""
+              }
+            />
+          </label>
+          <label>
             ملاحظات
             <textarea name="notes" rows={2} defaultValue={event.notes ?? ""} />
           </label>
-          <button type="submit">حفظ الحالة</button>
+          <button type="submit">حفظ</button>
         </form>
 
         <form action={deleteEvent} style={{ marginTop: "0.75rem" }}>

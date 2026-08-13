@@ -45,6 +45,10 @@ export default async function AdminCustomersPage() {
             <input name="address" />
           </label>
           <label>
+            رقم الهوية
+            <input className="input-ltr" name="nationalId" placeholder="اختياري" />
+          </label>
+          <label>
             الجنس
             <select name="gender" defaultValue="">
               <option value="">—</option>

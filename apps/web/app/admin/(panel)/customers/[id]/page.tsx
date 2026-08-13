@@ -68,6 +68,15 @@ export default async function AdminCustomerDetailPage({ params }: Props) {
             <input name="address" defaultValue={customer.address ?? ""} />
           </label>
           <label>
+            رقم الهوية
+            <input
+              className="input-ltr"
+              name="nationalId"
+              defaultValue={customer.nationalId ?? ""}
+              placeholder="من اتفاقية التصوير"
+            />
+          </label>
+          <label>
             الجنس
             <select name="gender" defaultValue={customer.gender ?? ""}>
               <option value="">—</option>
