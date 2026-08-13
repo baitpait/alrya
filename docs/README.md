@@ -14,7 +14,7 @@
 1d. [phase-2-completion.md](./phase-2-completion.md) — **سجل إنجاز المرحلة 2** (المصادقة)
 1e. [dev-credentials.md](./dev-credentials.md) — بيانات دخول تجريبية (محلي)
 1f. [phase-3-completion.md](./phase-3-completion.md) — **سجل إنجاز المرحلة 3** (الخدمات والباقات)
-1g. [phase-4-progress.md](./phase-4-progress.md) — **تقدم المرحلة 4** (زبائن/مناسبات — محفوظ 2026-08-13)
+1g. [phase-4-completion.md](./phase-4-completion.md) — **سجل إنجاز المرحلة 4** (زبائن/مناسبات)
 2. [workflow-map.html](./workflow-map.html) — **خريطة HTML:** هيكل النظام + المراحل 0→9 + صيانة (افتح في المتصفح)
 3. [developer-handoff.md](./developer-handoff.md) — المواصفات الكاملة والقرارات المثبّتة
 3. [team.md](./team.md) — أسماء الفريق (مصطفى / نهلة) والشركة
