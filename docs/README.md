@@ -16,7 +16,8 @@
 1f. [phase-3-completion.md](./phase-3-completion.md) — **سجل إنجاز المرحلة 3** (الخدمات والباقات)
 1g. [phase-4-completion.md](./phase-4-completion.md) — **سجل إنجاز المرحلة 4** (زبائن/مناسبات)
 1h. [phase-5-completion.md](./phase-5-completion.md) … [phase-9-completion.md](./phase-9-completion.md) — مراحل 5→9 (تقويم حتى إطلاق MVP)
-1i. ملخص البوابات 0→9 محدَّث في [production-work-plan.md](./production-work-plan.md) — **MVP مغلق** · التالي: 10–13
+1i. ملخص البوابات في [production-work-plan.md](./production-work-plan.md) — **MVP 0→9 مغلق** · المرحلة 10 ✓ · التالي: 11–13
+1j. [phase-10-completion.md](./phase-10-completion.md) — موظفين / أدوار / مناسباتي
 2. [workflow-map.html](./workflow-map.html) — **خريطة HTML:** هيكل النظام + المراحل 0→9 + صيانة (افتح في المتصفح)
 3. [developer-handoff.md](./developer-handoff.md) — المواصفات الكاملة والقرارات المثبّتة
 3. [team.md](./team.md) — أسماء الفريق (مصطفى / نهلة) والشركة

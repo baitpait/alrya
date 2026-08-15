@@ -14,6 +14,8 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { href: "/admin/customers", label: "الزبائن", phase: 4 },
   { href: "/admin/services", label: "الخدمات", phase: 3 },
   { href: "/admin/events", label: "المناسبات", phase: 4 },
+  { href: "/admin/employees", label: "الموظفين", phase: 10 },
+  { href: "/admin/my-assignments", label: "مناسباتي", phase: 10 },
   { href: "/admin/payments", label: "الدفعات", phase: 6 },
   { href: "/admin/settings", label: "الإعدادات", phase: 8 },
 ];

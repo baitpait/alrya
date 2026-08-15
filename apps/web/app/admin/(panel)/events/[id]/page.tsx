@@ -8,10 +8,12 @@ import {
   addDiscount,
   addEventService,
   addPayment,
+  assignEmployeeToService,
   deleteDiscount,
   deleteEvent,
   deleteEventService,
   deletePayment,
+  unassignEmployee,
   updateEventStatus,
 } from "../actions";
 
@@ -57,14 +59,20 @@ export default async function AdminEventDetailPage({ params }: Props) {
   const id = Number(idRaw);
   if (!Number.isFinite(id) || id <= 0) notFound();
 
-  const [event, services, finance] = await Promise.all([
+  const [event, services, staff] = await Promise.all([
     prisma.event.findUnique({
       where: { id },
       include: {
         customer: true,
         services: {
           orderBy: { startsAt: "asc" },
-          include: { service: true, offer: true },
+          include: {
+            service: true,
+            offer: true,
+            employees: {
+              include: { user: true, supervisor: true },
+            },
+          },
         },
         payments: { orderBy: { paidAt: "desc" } },
         discounts: { orderBy: { createdAt: "desc" } },
@@ -75,8 +83,13 @@ export default async function AdminEventDetailPage({ params }: Props) {
       orderBy: { name: "asc" },
       include: { offers: { orderBy: { name: "asc" } } },
     }),
-    getEventFinance(id),
+    prisma.user.findMany({
+      where: { active: true },
+      orderBy: { name: "asc" },
+      include: { role: true },
+    }),
   ]);
+  const finance = await getEventFinance(id);
 
   if (!event) notFound();
 
@@ -454,6 +467,7 @@ export default async function AdminEventDetailPage({ params }: Props) {
                   <th>إلى</th>
                   <th>المكان</th>
                   <th>السعر</th>
+                  <th>الطاقم</th>
                   <th></th>
                 </tr>
               </thead>
@@ -472,6 +486,11 @@ export default async function AdminEventDetailPage({ params }: Props) {
                     </td>
                     <td className="cell-ltr">{Number(es.price).toFixed(2)}</td>
                     <td>
+                      {es.employees.length === 0
+                        ? "—"
+                        : es.employees.map((e) => e.user.name).join("، ")}
+                    </td>
+                    <td>
                       <form action={deleteEventService}>
                         <input type="hidden" name="id" value={es.id} />
                         <input type="hidden" name="eventId" value={event.id} />
@@ -485,6 +504,133 @@ export default async function AdminEventDetailPage({ params }: Props) {
               </tbody>
             </table>
           </div>
+        )}
+      </section>
+
+      <section className="panel">
+        <h2>طاقم التغطية</h2>
+        <p>التعيين على خدمة بتاريخ (مثال: محمد على حنا أحمد الخميس — مش على العرس كله).</p>
+        {event.services.length === 0 ? (
+          <p>أضيفي خدمة مناسبة أولاً ثم عيّني الطاقم.</p>
+        ) : staff.length === 0 ? (
+          <p>
+            لا موظفين نشطين — أضيفي من{" "}
+            <Link className="text-link" href="/admin/employees">
+              الموظفين
+            </Link>
+            .
+          </p>
+        ) : (
+          event.services.map((es) => (
+            <div key={es.id} className="crew-block">
+              <h3>
+                {es.service.name}{" "}
+                <span className="cell-ltr">{formatDateTimeAr(es.startsAt)}</span>
+              </h3>
+              <form action={assignEmployeeToService} className="inline-form">
+                <input type="hidden" name="eventId" value={event.id} />
+                <input type="hidden" name="eventServiceId" value={es.id} />
+                <label>
+                  الموظف
+                  <select name="userId" required defaultValue="">
+                    <option value="" disabled>
+                      اختاري موظفاً
+                    </option>
+                    {staff.map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.name} — {u.role.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  الوظيفة في هذا الموعد
+                  <input name="jobTitle" placeholder="مصور / مساعد / مشرف" />
+                </label>
+                <label>
+                  الراتب (₪)
+                  <input
+                    className="input-ltr"
+                    name="salary"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                  />
+                </label>
+                <label>
+                  المكافأة (₪)
+                  <input
+                    className="input-ltr"
+                    name="bonus"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                  />
+                </label>
+                <label>
+                  المشرف (اختياري)
+                  <select name="supervisorId" defaultValue="">
+                    <option value="">—</option>
+                    {staff.map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <button type="submit">تعيين</button>
+              </form>
+              {es.employees.length === 0 ? (
+                <p>لا طاقم على هذا الموعد بعد.</p>
+              ) : (
+                <div className="table-wrap">
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>الموظف</th>
+                        <th>الوظيفة</th>
+                        <th>راتب</th>
+                        <th>مكافأة</th>
+                        <th>مشرف</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {es.employees.map((asg) => (
+                        <tr key={asg.id}>
+                          <td>
+                            <Link
+                              className="text-link"
+                              href={`/admin/employees/${asg.userId}`}
+                            >
+                              {asg.user.name}
+                            </Link>
+                          </td>
+                          <td>{asg.jobTitle || "—"}</td>
+                          <td className="cell-ltr">
+                            {asg.salary != null ? Number(asg.salary).toFixed(2) : "—"}
+                          </td>
+                          <td className="cell-ltr">
+                            {asg.bonus != null ? Number(asg.bonus).toFixed(2) : "—"}
+                          </td>
+                          <td>{asg.supervisor?.name || "—"}</td>
+                          <td>
+                            <form action={unassignEmployee}>
+                              <input type="hidden" name="id" value={asg.id} />
+                              <input type="hidden" name="eventId" value={event.id} />
+                              <button type="submit" className="btn-danger">
+                                إزالة
+                              </button>
+                            </form>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          ))
         )}
       </section>
     </div>

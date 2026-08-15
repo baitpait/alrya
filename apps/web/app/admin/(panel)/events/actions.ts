@@ -152,6 +152,7 @@ export async function deleteEventService(formData: FormData) {
   const eventId = Number(formData.get("eventId"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
 
+  await prisma.eventServiceEmployee.deleteMany({ where: { eventServiceId: id } });
   await prisma.eventService.delete({ where: { id } });
   if (Number.isFinite(eventId) && eventId > 0) {
     await refreshEventTotal(eventId);
@@ -159,12 +160,25 @@ export async function deleteEventService(formData: FormData) {
   }
   revalidatePath("/admin/events");
   revalidatePath("/admin/calendar");
+  revalidatePath("/admin/employees");
+  revalidatePath("/admin/my-assignments");
 }
 
 export async function deleteEvent(formData: FormData) {
   const id = Number(formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
 
+  const serviceIds = (
+    await prisma.eventService.findMany({
+      where: { eventId: id },
+      select: { id: true },
+    })
+  ).map((s) => s.id);
+  if (serviceIds.length > 0) {
+    await prisma.eventServiceEmployee.deleteMany({
+      where: { eventServiceId: { in: serviceIds } },
+    });
+  }
   await prisma.payment.deleteMany({ where: { eventId: id } });
   await prisma.discount.deleteMany({ where: { eventId: id } });
   await prisma.eventService.deleteMany({ where: { eventId: id } });
@@ -173,6 +187,8 @@ export async function deleteEvent(formData: FormData) {
   revalidatePath("/admin/customers");
   revalidatePath("/admin/payments");
   revalidatePath("/admin/calendar");
+  revalidatePath("/admin/employees");
+  revalidatePath("/admin/my-assignments");
 }
 
 function parsePositiveAmount(raw: FormDataEntryValue | null, label: string) {
@@ -258,4 +274,75 @@ export async function deleteDiscount(formData: FormData) {
   }
   revalidatePath("/admin/payments");
   revalidatePath("/admin/events");
+}
+
+export async function assignEmployeeToService(formData: FormData) {
+  const eventId = Number(formData.get("eventId"));
+  const eventServiceId = Number(formData.get("eventServiceId"));
+  const userId = Number(formData.get("userId"));
+  if (!Number.isFinite(eventServiceId) || eventServiceId <= 0) {
+    throw new Error("خدمة المناسبة غير صالحة.");
+  }
+  if (!Number.isFinite(userId) || userId <= 0) {
+    throw new Error("اختاري موظفاً.");
+  }
+
+  const user = await prisma.user.findFirst({
+    where: { id: userId, active: true },
+  });
+  if (!user) throw new Error("الموظف غير موجود أو معطّل.");
+
+  const dup = await prisma.eventServiceEmployee.findFirst({
+    where: { eventServiceId, userId },
+  });
+  if (dup) throw new Error("هذا الموظف معيّن مسبقاً على نفس الموعد.");
+
+  const jobTitle = String(formData.get("jobTitle") ?? "").trim() || null;
+  const salaryRaw = String(formData.get("salary") ?? "").trim();
+  const bonusRaw = String(formData.get("bonus") ?? "").trim();
+  const supervisorRaw = String(formData.get("supervisorId") ?? "").trim();
+  const salary = salaryRaw ? Number(salaryRaw) : null;
+  const bonus = bonusRaw ? Number(bonusRaw) : null;
+  if (salaryRaw && (!Number.isFinite(salary) || (salary ?? 0) < 0)) {
+    throw new Error("الراتب غير صالح.");
+  }
+  if (bonusRaw && (!Number.isFinite(bonus) || (bonus ?? 0) < 0)) {
+    throw new Error("المكافأة غير صالحة.");
+  }
+  const supervisorId = supervisorRaw ? Number(supervisorRaw) : null;
+  if (supervisorId && supervisorId === userId) {
+    throw new Error("المشرف لا يكون نفس الموظف.");
+  }
+
+  await prisma.eventServiceEmployee.create({
+    data: {
+      eventServiceId,
+      userId,
+      jobTitle,
+      salary,
+      bonus,
+      supervisorId:
+        supervisorId && Number.isFinite(supervisorId) ? supervisorId : null,
+    },
+  });
+
+  if (Number.isFinite(eventId) && eventId > 0) {
+    revalidatePath(`/admin/events/${eventId}`);
+  }
+  revalidatePath("/admin/employees");
+  revalidatePath(`/admin/employees/${userId}`);
+  revalidatePath("/admin/my-assignments");
+}
+
+export async function unassignEmployee(formData: FormData) {
+  const id = Number(formData.get("id"));
+  const eventId = Number(formData.get("eventId"));
+  if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
+
+  await prisma.eventServiceEmployee.delete({ where: { id } });
+  if (Number.isFinite(eventId) && eventId > 0) {
+    revalidatePath(`/admin/events/${eventId}`);
+  }
+  revalidatePath("/admin/employees");
+  revalidatePath("/admin/my-assignments");
 }
