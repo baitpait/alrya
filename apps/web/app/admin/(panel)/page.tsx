@@ -69,7 +69,12 @@ export default async function AdminHomePage() {
     <div className="stack-gap">
       <section className="panel">
         <h1>لوحة التحكم</h1>
-        <p>أرقام حية من MySQL — كل بطاقة تفتح الصفحة المفلترة.</p>
+        <p>
+          أرقام حية من MySQL — كل بطاقة تفتح الصفحة المفلترة.{" "}
+          <Link className="text-link" href="/admin/reports">
+            التقارير
+          </Link>
+        </p>
 
         <div className="dash-grid" aria-label="مؤشرات التشغيل">
           {cards.map((card) => (

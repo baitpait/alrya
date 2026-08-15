@@ -833,3 +833,41 @@ html[data-theme="dark"] .theme-btn .icon-light {
   gap: 0.4rem;
   color: var(--admin-text);
 }
+
+.report-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.75rem 0 1rem;
+}
+
+.report-toolbar .btn-secondary {
+  text-decoration: none;
+}
+
+@media print {
+  .admin-sidebar,
+  .app-header,
+  .report-print-hide {
+    display: none !important;
+  }
+
+  .page-layout {
+    display: block;
+    background: #fff;
+  }
+
+  .admin-main-wrap,
+  .admin-content,
+  .panel {
+    box-shadow: none;
+    background: #fff;
+    color: #111;
+  }
+
+  .data-table th,
+  .data-table td {
+    border-color: #ccc;
+  }
+}
