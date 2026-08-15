@@ -1,4 +1,5 @@
 import { getSiteSettings } from "@/lib/site-settings";
+import { SiteHeader } from "@/components/public/SiteHeader";
 import { SiteFooter } from "@/components/public/SiteFooter";
 import { WhatsAppFloat } from "@/components/public/WhatsAppFloat";
 
@@ -7,7 +8,8 @@ export async function PublicChrome({ children }: { children: React.ReactNode }) 
 
   return (
     <div className="public-chrome">
-      {children}
+      <SiteHeader />
+      <div className="public-main">{children}</div>
       <SiteFooter settings={settings} />
       <WhatsAppFloat
         number={settings.whatsapp_number}

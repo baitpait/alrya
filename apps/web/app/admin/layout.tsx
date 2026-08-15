@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Cairo } from "next/font/google";
-import { THEME_STORAGE_KEY } from "@/components/admin/nav";
 import "./admin-shell.css";
 
 const cairo = Cairo({
@@ -19,32 +17,15 @@ export const metadata: Metadata = {
   description: "لوحة إدارة استوديو الراية",
 };
 
-const themeBootScript = `
-(function () {
-  try {
-    var key = ${JSON.stringify(THEME_STORAGE_KEY)};
-    var saved = localStorage.getItem(key);
-    var theme = saved === "dark" || saved === "light" ? saved : "light";
-    document.documentElement.setAttribute("data-theme", theme);
-  } catch (e) {
-    document.documentElement.setAttribute("data-theme", "light");
-  }
-})();
-`;
-
-/** Layout مشترك: خط Cairo + ثيم — بدون شِل (الدخول لا يظهر السايدبار) */
+/** Layout مشترك: خط Cairo — ثيم الأدمن يُحمَّل من الجذر قبل الرسم */
 export default function AdminRootLayout({ children }: { children: React.ReactNode }) {
   return (
     <div
       className={`${cairo.variable} admin-font-root`}
       style={{ fontFamily: "var(--font-cairo), Tahoma, sans-serif" }}
     >
-      <Script
-        id="alraya-theme-boot"
-        strategy="beforeInteractive"
-        dangerouslySetInnerHTML={{ __html: themeBootScript }}
-      />
       {children}
     </div>
   );
 }
+

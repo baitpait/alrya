@@ -11,6 +11,8 @@ export const SITE_SETTING_KEYS = [
   "social_youtube",
   "social_snapchat",
   "address_text",
+  "about_headline",
+  "about_body",
 ] as const;
 
 export type SiteSettingKey = (typeof SITE_SETTING_KEYS)[number];
@@ -28,6 +30,8 @@ const EMPTY: SiteSettings = {
   social_youtube: "",
   social_snapchat: "",
   address_text: "",
+  about_headline: "",
+  about_body: "",
 };
 
 export async function getSiteSettings(): Promise<SiteSettings> {

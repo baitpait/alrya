@@ -234,6 +234,78 @@ async function seedStaffRoles() {
   }
 }
 
+async function seedGalleryAndFaq() {
+  if ((await prisma.galleryItem.count()) === 0) {
+    await prisma.galleryItem.createMany({
+      data: [
+        {
+          title: "ليلة العرس",
+          caption: "تصوير داخل الصالة — فيديو وفوتو",
+          imageUrl: "/portfolio/sample-wedding.svg",
+          sortOrder: 1,
+          published: true,
+        },
+        {
+          title: "ليلة الحنا",
+          caption: "توثيق لحظات الحنا قبل ليلة العرس",
+          imageUrl: "/portfolio/sample-henna.svg",
+          sortOrder: 2,
+          published: true,
+        },
+        {
+          title: "جلسة تصوير",
+          caption: "جلسات خارجية وداخل الاستوديو",
+          imageUrl: "/portfolio/sample-session.svg",
+          sortOrder: 3,
+          published: true,
+        },
+      ],
+    });
+  }
+
+  if ((await prisma.faqItem.count()) === 0) {
+    await prisma.faqItem.createMany({
+      data: [
+        {
+          question: "كيف أحجز تصوير مناسبة؟",
+          answer:
+            "من صفحة «احجز الآن» اترك اسم العريس والجوال والتاريخ المفضّل. الطلب يصل للإدارة ونتواصل لتأكيد الموعد — لا يُنشأ عقد تلقائياً.",
+          sortOrder: 1,
+          published: true,
+        },
+        {
+          question: "هل يلزم دفع كامل المبلغ قبل التصوير؟",
+          answer:
+            "نعم حسب اتفاقية الاستوديو: يُدفع المبلغ المتفق عليه قبل بدء العمل، ولا يُسلَّم العمل قبل السداد الكامل.",
+          sortOrder: 2,
+          published: true,
+        },
+        {
+          question: "متى أستلم الصور والفيديو؟",
+          answer:
+            "موعد التسليم يُتفق عليه في العقد (آخر موعد للاستلام). بعد التصوير يُحفظ العمل مدة محدودة — راجعي الإدارة للتفاصيل.",
+          sortOrder: 3,
+          published: true,
+        },
+        {
+          question: "أقدر أضيف حديقة أو زفة على الباقة؟",
+          answer:
+            "نعم. الباقة الرئيسية داخل الصالة، والإضافات (حديقة، زفة، سهرة، غداء، برومو…) تُختار حسب مناسبتكم بأسعار منفصلة.",
+          sortOrder: 4,
+          published: true,
+        },
+        {
+          question: "وين الاستوديو؟",
+          answer:
+            "استوديو الراية في دورا. العنوان ورقم واتساب يظهران في تذييل الموقع من الإعدادات. للحجز أو الاستفسار استخدمي «احجز الآن» أو «تواصل معنا».",
+          sortOrder: 5,
+          published: true,
+        },
+      ],
+    });
+  }
+}
+
 async function seedSiteSettings() {
   const defaults: [string, string][] = [
     ["whatsapp_number", "970599000000"],
@@ -246,6 +318,11 @@ async function seedSiteSettings() {
     ["social_youtube", ""],
     ["social_snapchat", ""],
     ["address_text", ""],
+    ["about_headline", "استوديو الراية"],
+    [
+      "about_body",
+      "استوديو الراية في دورا يوثّق أعراسكم وجلساتكم باحتراف: من ليلة الحنا إلى ليلة العرس. شعارنا علامة الجودة والاحتراف — فريق قريب منكم خطوة بخطوة حتى تسليم الصور والفيديو.",
+    ],
   ];
 
   for (const [key, value] of defaults) {
@@ -293,6 +370,7 @@ async function main() {
   await seedStaffRoles();
   await seedAlrayaCatalog();
   await seedSiteSettings();
+  await seedGalleryAndFaq();
 
   console.log("Seed OK");
   console.log(`email=${SEED_EMAIL}`);

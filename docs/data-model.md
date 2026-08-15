@@ -231,10 +231,32 @@ Lookup / LookupValue
 | social_tiktok | URL | |
 | social_youtube | URL | |
 | social_snapchat | URL | |
-| address_text | | صفحة تواصل |
+| address_text | | صفحة تواصل / من نحن |
+| about_headline | استوديو الراية | صفحة `/about` |
+| about_body | نص القصة | صفحة `/about` |
 | map_embed_url | | اختياري V2 |
 
 الأيقونات التي بلا رابط تُخفى في الواجهة.
+
+### GalleryItem (معرض الأعمال — مرحلة 12)
+
+| الحقل | النوع | ملاحظة |
+|--------|------|--------|
+| title | string | عنوان العمل |
+| caption | text? | وصف قصير |
+| imageUrl | string? | مسار محلي أو رابط |
+| videoUrl | string? | يوتيوب أو غيره |
+| sortOrder | int | ترتيب العرض |
+| published | bool | يظهر على `/portfolio` إن true |
+
+### FaqItem (الأسئلة الشائعة — مرحلة 12)
+
+| الحقل | النوع | ملاحظة |
+|--------|------|--------|
+| question | string | |
+| answer | text | |
+| sortOrder | int | |
+| published | bool | يظهر على `/faq` إن true |
 
 ### Setting
 

@@ -236,3 +236,23 @@ model Setting {
   key   String @unique
   value String @db.Text
 }
+
+model GalleryItem {
+  id        Int      @id @default(autoincrement())
+  title     String
+  caption   String?  @db.Text
+  imageUrl  String?  @db.VarChar(500)
+  videoUrl  String?  @db.VarChar(500)
+  sortOrder Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model FaqItem {
+  id        Int      @id @default(autoincrement())
+  question  String   @db.VarChar(500)
+  answer    String   @db.Text
+  sortOrder Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+}

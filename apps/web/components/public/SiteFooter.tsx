@@ -14,6 +14,9 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
         <p className="site-footer-brand">استوديو الراية · علامة الجودة والاحتراف</p>
         <nav className="site-footer-nav" aria-label="روابط عامة">
           <Link href="/">الرئيسية</Link>
+          <Link href="/portfolio">أعمالنا</Link>
+          <Link href="/about">من نحن</Link>
+          <Link href="/faq">الأسئلة</Link>
           <Link href="/book">احجز الآن</Link>
           <Link href="/contact">تواصل معنا</Link>
         </nav>

@@ -43,11 +43,12 @@ export default function HomePage() {
               سجّل طلب حجز
             </Link>
           </p>
-          <p style={{ marginTop: "1.25rem" }}>
-            <Link className="landing-admin-link" href="/contact">
-              تواصل معنا
-            </Link>
-          </p>
+          <nav className="landing-more" aria-label="صفحات الموقع">
+            <Link href="/portfolio">أعمالنا</Link>
+            <Link href="/about">من نحن</Link>
+            <Link href="/faq">الأسئلة الشائعة</Link>
+            <Link href="/contact">تواصل معنا</Link>
+          </nav>
           <p style={{ marginTop: "2rem" }}>
             <Link className="landing-admin-link" href="/admin">
               دخول لوحة الإدارة

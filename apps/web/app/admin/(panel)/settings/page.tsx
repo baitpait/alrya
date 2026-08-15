@@ -14,7 +14,7 @@ export default async function AdminSettingsPage() {
         <h1>إعدادات الموقع</h1>
         <p>
           رقم واتساب وروابط السوشيال تظهر على الصفحات العامة فوراً. اتركي الرابط
-          فارغاً لإخفاء الأيقونة.
+          فارغاً لإخفاء الأيقونة. نص «من نحن» يظهر في `/about`.
         </p>
 
         <form action={saveSiteSettings} className="inline-form">
@@ -56,6 +56,16 @@ export default async function AdminSettingsPage() {
           <label>
             العنوان
             <input name="address_text" defaultValue={settings.address_text} />
+          </label>
+
+          <h2>من نحن</h2>
+          <label>
+            عنوان الصفحة
+            <input name="about_headline" defaultValue={settings.about_headline} />
+          </label>
+          <label>
+            نص القصة
+            <textarea name="about_body" rows={5} defaultValue={settings.about_body} />
           </label>
 
           <h2>السوشيال</h2>

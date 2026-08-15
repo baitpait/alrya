@@ -18,4 +18,7 @@ export async function saveSiteSettings(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/book");
   revalidatePath("/contact");
+  revalidatePath("/about");
+  revalidatePath("/faq");
+  revalidatePath("/portfolio");
 }
