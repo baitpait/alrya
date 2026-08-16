@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Cairo } from "next/font/google";
 import { THEME_STORAGE_KEY } from "@/components/admin/nav";
+import { ThemeSync } from "@/components/admin/ThemeSync";
 import "./globals.css";
 
 const cairo = Cairo({
@@ -18,20 +20,20 @@ export const metadata: Metadata = {
   description: "استوديو الراية — علامة الجودة والاحتراف · حجز مناسبات وتصوير",
 };
 
-const themeBootScript = `(function(){try{if(location.pathname.indexOf("/admin")!==0)return;var k=${JSON.stringify(THEME_STORAGE_KEY)};var s=localStorage.getItem(k);var t=s==="dark"||s==="light"?s:"light";document.documentElement.setAttribute("data-theme",t);}catch(e){document.documentElement.setAttribute("data-theme","light");}})();`;
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const jar = await cookies();
+  const saved = jar.get(THEME_STORAGE_KEY)?.value;
+  const theme = saved === "dark" ? "dark" : "light";
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ar" dir="rtl" data-theme="light" suppressHydrationWarning>
+    <html lang="ar" dir="rtl" data-theme={theme} suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#4A0404" />
-        <script
-          id="alraya-theme-boot"
-          dangerouslySetInnerHTML={{ __html: themeBootScript }}
-        />
       </head>
-      <body className={`${cairo.variable} site-body`}>{children}</body>
+      <body className={`${cairo.variable} site-body`}>
+        <ThemeSync />
+        {children}
+      </body>
     </html>
   );
 }
-

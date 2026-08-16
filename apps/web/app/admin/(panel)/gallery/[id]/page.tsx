@@ -41,7 +41,7 @@ export default async function AdminGalleryItemPage({ params }: Props) {
           />
         ) : null}
 
-        <form action={updateGalleryItem} encType="multipart/form-data" className="inline-form">
+        <form action={updateGalleryItem} className="inline-form">
           <input type="hidden" name="id" value={item.id} />
           <label>
             العنوان

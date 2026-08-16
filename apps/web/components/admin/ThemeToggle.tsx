@@ -9,6 +9,7 @@ function applyTheme(theme: "light" | "dark") {
   } catch {
     /* تجاهل قيود التخزين */
   }
+  document.cookie = `${THEME_STORAGE_KEY}=${theme}; path=/; max-age=31536000; SameSite=Lax`;
 }
 
 export function ThemeToggle() {

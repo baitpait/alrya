@@ -62,7 +62,7 @@ export default async function AdminGalleryPage({ searchParams }: Props) {
           ) : null}
         </form>
 
-        <form action={createGalleryItem} encType="multipart/form-data" className="inline-form">
+        <form action={createGalleryItem} className="inline-form">
           <h2>إضافة عمل</h2>
           <label>
             العنوان

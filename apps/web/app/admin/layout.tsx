@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   description: "لوحة إدارة استوديو الراية",
 };
 
-/** Layout مشترك: خط Cairo — ثيم الأدمن يُحمَّل من الجذر قبل الرسم */
+/** Layout مشترك: خط Cairo — الثيم من كوكي الجذر بدون script */
 export default function AdminRootLayout({ children }: { children: React.ReactNode }) {
   return (
     <div
