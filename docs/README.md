@@ -8,6 +8,7 @@
 ## ابدأ من هنا (بالترتيب)
 
 0. [pm-updates-2026-08-13.md](./pm-updates-2026-08-13.md) — **آخر تحديثات الإدارة (كتالوج · شعار · واتساب) — اسحبي أولاً**
+0b. [quality-gaps-map.md](./quality-gaps-map.md) — **خريطة فجوات أمن/توسّع للمبرمج** (موجات A→E بعد فحص الكود)
 1. [machine-setup.md](./machine-setup.md) — **جهاز جديد/مُفرمَت:** Cursor + Git + Node + سحب الريبو
 1b. [phase-0-completion.md](./phase-0-completion.md) — **سجل إنجاز المرحلة 0** (Next.js + Prisma + MySQL)
 1c. [phase-1-completion.md](./phase-1-completion.md) — **سجل إنجاز المرحلة 1** (شِل الأدمن + الثيم)
