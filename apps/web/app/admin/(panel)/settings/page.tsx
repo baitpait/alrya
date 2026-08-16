@@ -70,7 +70,7 @@ export default async function AdminSettingsPage() {
 
           <h2>السوشيال</h2>
           <label>
-            إنستغرام
+            إنستغرام (https فقط)
             <input
               className="input-ltr"
               name="social_instagram"
@@ -79,7 +79,7 @@ export default async function AdminSettingsPage() {
             />
           </label>
           <label>
-            فيسبوك
+            فيسبوك (https فقط)
             <input
               className="input-ltr"
               name="social_facebook"

@@ -2,12 +2,20 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { PublicChrome } from "@/components/public/PublicChrome";
+import { isSafeHttpUrl, isSafeLocalPath } from "@/lib/safe-url";
 
 export const metadata: Metadata = {
   title: "أعمالنا",
   description: "معرض أعمال استوديو الراية — أعراس وجلسات تصوير",
 };
 export const dynamic = "force-dynamic";
+
+function safeMediaSrc(raw: string | null | undefined) {
+  const s = (raw ?? "").trim();
+  if (!s) return null;
+  if (isSafeLocalPath(s) || isSafeHttpUrl(s)) return s;
+  return null;
+}
 
 export default async function PortfolioPage() {
   const items = await prisma.galleryItem.findMany({
@@ -27,25 +35,30 @@ export default async function PortfolioPage() {
             <p>المعرض قيد التحديث — تقدروا تشوفوا نماذج بعد إضافة الأعمال من لوحة الإدارة.</p>
           ) : (
             <ul className="portfolio-grid">
-              {items.map((item) => (
-                <li key={item.id} className="portfolio-card">
-                  {item.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.imageUrl} alt={item.title} />
-                  ) : (
-                    <div className="portfolio-placeholder">{item.title}</div>
-                  )}
-                  <div className="portfolio-card-body">
-                    <h2>{item.title}</h2>
-                    {item.caption ? <p>{item.caption}</p> : null}
-                    {item.videoUrl ? (
-                      <a href={item.videoUrl} target="_blank" rel="noopener noreferrer">
-                        شاهد الفيديو
-                      </a>
-                    ) : null}
-                  </div>
-                </li>
-              ))}
+              {items.map((item) => {
+                const imageSrc = safeMediaSrc(item.imageUrl);
+                const videoHref =
+                  item.videoUrl && isSafeHttpUrl(item.videoUrl) ? item.videoUrl : null;
+                return (
+                  <li key={item.id} className="portfolio-card">
+                    {imageSrc ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={imageSrc} alt={item.title} />
+                    ) : (
+                      <div className="portfolio-placeholder">{item.title}</div>
+                    )}
+                    <div className="portfolio-card-body">
+                      <h2>{item.title}</h2>
+                      {item.caption ? <p>{item.caption}</p> : null}
+                      {videoHref ? (
+                        <a href={videoHref} target="_blank" rel="noopener noreferrer">
+                          شاهد الفيديو
+                        </a>
+                      ) : null}
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           )}
           <p>

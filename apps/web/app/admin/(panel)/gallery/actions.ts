@@ -5,6 +5,11 @@ import path from "path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import {
+  assertSafeImageUpload,
+  sanitizeExternalHttpUrl,
+  sanitizePublicMediaUrl,
+} from "@/lib/safe-url";
 
 function requireText(value: FormDataEntryValue | null, label: string) {
   const text = String(value ?? "").trim();
@@ -22,19 +27,9 @@ function parseSort(raw: FormDataEntryValue | null) {
   return Number.isFinite(n) ? Math.trunc(n) : 0;
 }
 
-function optionalUrl(raw: FormDataEntryValue | null) {
-  const s = String(raw ?? "").trim();
-  return s || null;
-}
-
 async function saveGalleryUpload(file: File | null) {
   if (!file || file.size === 0) return null;
-  if (file.size > 4 * 1024 * 1024) throw new Error("الصورة أكبر من 4 ميغابايت.");
-  const name = file.name.toLowerCase();
-  const ext = name.slice(name.lastIndexOf(".") + 1);
-  if (!["jpg", "jpeg", "png", "webp", "gif", "svg"].includes(ext)) {
-    throw new Error("صيغة الصورة غير مدعومة.");
-  }
+  const ext = assertSafeImageUpload(file);
   const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
   const dir = path.join(process.cwd(), "public", "uploads", "gallery");
   await mkdir(dir, { recursive: true });
@@ -52,8 +47,12 @@ export async function createGalleryItem(formData: FormData) {
   const title = requireText(formData.get("title"), "العنوان");
   const caption = String(formData.get("caption") ?? "").trim() || null;
   const uploaded = await saveGalleryUpload(formData.get("image") as File | null);
-  const imageUrl = uploaded ?? optionalUrl(formData.get("imageUrl"));
-  const videoUrl = optionalUrl(formData.get("videoUrl"));
+  const imageUrl =
+    uploaded ?? sanitizePublicMediaUrl(String(formData.get("imageUrl") ?? ""), "رابط الصورة");
+  const videoUrl = sanitizeExternalHttpUrl(
+    String(formData.get("videoUrl") ?? ""),
+    "رابط الفيديو",
+  );
   if (!imageUrl && !videoUrl) {
     throw new Error("أضيفي صورة أو رابط فيديو.");
   }
@@ -78,8 +77,12 @@ export async function updateGalleryItem(formData: FormData) {
   const title = requireText(formData.get("title"), "العنوان");
   const caption = String(formData.get("caption") ?? "").trim() || null;
   const uploaded = await saveGalleryUpload(formData.get("image") as File | null);
-  const imageUrl = uploaded ?? optionalUrl(formData.get("imageUrl"));
-  const videoUrl = optionalUrl(formData.get("videoUrl"));
+  const imageUrl =
+    uploaded ?? sanitizePublicMediaUrl(String(formData.get("imageUrl") ?? ""), "رابط الصورة");
+  const videoUrl = sanitizeExternalHttpUrl(
+    String(formData.get("videoUrl") ?? ""),
+    "رابط الفيديو",
+  );
   if (!imageUrl && !videoUrl) {
     throw new Error("أضيفي صورة أو رابط فيديو.");
   }

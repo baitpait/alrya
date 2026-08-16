@@ -74,14 +74,14 @@ export default async function AdminGalleryPage({ searchParams }: Props) {
           </label>
           <label>
             رفع صورة
-            <input name="image" type="file" accept="image/*,.svg" />
+            <input name="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif,.jpg,.jpeg,.png,.webp,.gif" />
           </label>
           <label>
-            أو رابط صورة
+            أو رابط صورة (http/https أو /مسار — بدون SVG)
             <input className="input-ltr" name="imageUrl" placeholder="/portfolio/… أو https://…" />
           </label>
           <label>
-            رابط فيديو (اختياري)
+            رابط فيديو https فقط (اختياري)
             <input className="input-ltr" name="videoUrl" placeholder="https://youtube.com/…" />
           </label>
           <label>

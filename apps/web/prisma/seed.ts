@@ -5,6 +5,7 @@ const prisma = new PrismaClient();
 
 /** حساب تجريبي محلي فقط — لا تستخدمه في الإنتاج كما هو */
 const SEED_EMAIL = "admin@alray.studio";
+/** معروف للتطوير المحلي — غيّريه فوراً على أي سيرفر مشترك؛ لا تشغّلي seed على الإنتاج */
 const SEED_PASSWORD = "Admin@123456";
 
 /**
@@ -372,7 +373,7 @@ async function main() {
   await seedSiteSettings();
   await seedGalleryAndFaq();
 
-  console.log("Seed OK");
+  console.log("Seed OK (محلي فقط — غيّري كلمة الأدمن على أي بيئة مشتركة)");
   console.log(`email=${SEED_EMAIL}`);
   console.log(`password=${SEED_PASSWORD}`);
 }

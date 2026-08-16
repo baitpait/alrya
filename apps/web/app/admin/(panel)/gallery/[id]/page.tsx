@@ -53,14 +53,18 @@ export default async function AdminGalleryItemPage({ params }: Props) {
           </label>
           <label>
             استبدال الصورة (رفع)
-            <input name="image" type="file" accept="image/*,.svg" />
+            <input
+              name="image"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif,.jpg,.jpeg,.png,.webp,.gif"
+            />
           </label>
           <label>
-            رابط الصورة
+            رابط الصورة (http/https أو /مسار — بدون SVG)
             <input className="input-ltr" name="imageUrl" defaultValue={item.imageUrl ?? ""} />
           </label>
           <label>
-            رابط فيديو
+            رابط فيديو (https فقط)
             <input className="input-ltr" name="videoUrl" defaultValue={item.videoUrl ?? ""} />
           </label>
           <label>

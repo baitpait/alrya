@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { isSafeHttpUrl } from "@/lib/safe-url";
 
 export const SITE_SETTING_KEYS = [
   "whatsapp_number",
@@ -70,5 +71,5 @@ export function visibleSocialLinks(settings: SiteSettings): SocialLink[] {
   ];
   return items
     .map((item) => ({ ...item, href: settings[item.key].trim() }))
-    .filter((item) => item.href.length > 0);
+    .filter((item) => item.href.length > 0 && isSafeHttpUrl(item.href));
 }
