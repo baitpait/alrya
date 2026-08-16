@@ -22,6 +22,7 @@ export async function loginWithCredentials(
 
   const user = await prisma.user.findUnique({
     where: { email: normalized },
+    include: { role: true },
   });
 
   if (!user || !user.active) {
@@ -37,6 +38,8 @@ export async function loginWithCredentials(
     sub: String(user.id),
     email: user.email,
     name: user.name,
+    roleId: user.roleId,
+    roleName: user.role.name,
   };
   const token = await createSessionToken(session);
   await setSessionCookie(token);

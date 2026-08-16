@@ -4,8 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ADMIN_NAV } from "@/components/admin/nav";
 
-export function AdminSidebar({ unreadMessages = 0 }: { unreadMessages?: number }) {
+export function AdminSidebar({
+  unreadMessages = 0,
+  isManager = true,
+}: {
+  unreadMessages?: number;
+  isManager?: boolean;
+}) {
   const pathname = usePathname();
+  const items = ADMIN_NAV.filter((item) => isManager || !item.managerOnly);
 
   return (
     <aside className="admin-sidebar" aria-label="قائمة الإدارة">
@@ -23,7 +30,7 @@ export function AdminSidebar({ unreadMessages = 0 }: { unreadMessages?: number }
       </Link>
 
       <ul className="nav-list">
-        {ADMIN_NAV.map((item) => {
+        {items.map((item) => {
           const active =
             item.href === "/admin"
               ? pathname === "/admin"

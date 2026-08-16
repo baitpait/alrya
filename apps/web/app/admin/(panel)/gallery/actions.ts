@@ -1,5 +1,6 @@
 "use server";
 
+import { requireManager } from "@/lib/authz";
 import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { revalidatePath } from "next/cache";
@@ -44,6 +45,7 @@ function revalidatePublic() {
 }
 
 export async function createGalleryItem(formData: FormData) {
+  await requireManager();
   const title = requireText(formData.get("title"), "العنوان");
   const caption = String(formData.get("caption") ?? "").trim() || null;
   const uploaded = await saveGalleryUpload(formData.get("image") as File | null);
@@ -71,6 +73,7 @@ export async function createGalleryItem(formData: FormData) {
 }
 
 export async function updateGalleryItem(formData: FormData) {
+  await requireManager();
   const id = Number(formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
 
@@ -104,6 +107,7 @@ export async function updateGalleryItem(formData: FormData) {
 }
 
 export async function deleteGalleryItem(formData: FormData) {
+  await requireManager();
   const id = Number(formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
   await prisma.galleryItem.delete({ where: { id } });

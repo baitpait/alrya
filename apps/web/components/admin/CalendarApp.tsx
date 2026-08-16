@@ -2,7 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
-import type { DateSelectArg, EventClickArg, PluginDef } from "@fullcalendar/core";
+import type {
+  DateSelectArg,
+  EventClickArg,
+  LocaleInput,
+  PluginDef,
+} from "@fullcalendar/core";
 import type FullCalendarType from "@fullcalendar/react";
 import {
   createCalendarAppointment,
@@ -22,6 +27,8 @@ type Props = {
   services: Option[];
   offers: OfferOption[];
   events: EventOption[];
+  /** المدير يعدّل المواعيد — الطاقم يشاهد فقط */
+  canEdit?: boolean;
 };
 
 type ModalMode = "closed" | "create" | "detail";
@@ -55,6 +62,7 @@ export function CalendarApp({
   services,
   offers,
   events,
+  canEdit = true,
 }: Props) {
   const [eventsState, setEventsState] = useState(initialEvents);
   const [mode, setMode] = useState<ModalMode>("closed");
@@ -72,7 +80,7 @@ export function CalendarApp({
     null,
   );
   const [plugins, setPlugins] = useState<PluginDef[]>([]);
-  const [arLocale, setArLocale] = useState<object | null>(null);
+  const [arLocale, setArLocale] = useState<LocaleInput | null>(null);
 
   const reload = useCallback(async () => {
     const res = await fetch("/api/admin/calendar/events", { cache: "no-store" });
@@ -136,6 +144,7 @@ export function CalendarApp({
   }
 
   function onSelect(arg: DateSelectArg) {
+    if (!canEdit) return;
     openCreate(arg.start, arg.end);
   }
 
@@ -179,11 +188,17 @@ export function CalendarApp({
         <div className="calendar-toolbar">
           <div>
             <h1>التقويم</h1>
-            <p>كل المواعيد من EventService في قاعدة البيانات — بدون أحداث وهمية.</p>
+            <p>
+              {canEdit
+                ? "كل المواعيد من EventService في قاعدة البيانات — بدون أحداث وهمية."
+                : "عرض المواعيد فقط — إضافة/تعديل الموعد للمدير."}
+            </p>
           </div>
-          <button type="button" className="btn-primary" onClick={() => openCreate()}>
-            إضافة موعد
-          </button>
+          {canEdit ? (
+            <button type="button" className="btn-primary" onClick={() => openCreate()}>
+              إضافة موعد
+            </button>
+          ) : null}
         </div>
 
         <div className="calendar-wrap">
@@ -206,8 +221,8 @@ export function CalendarApp({
                 list: "قائمة",
               }}
               height="auto"
-              selectable
-              selectMirror
+              selectable={canEdit}
+              selectMirror={canEdit}
               dayMaxEvents={3}
               moreLinkText="المزيد"
               eventDisplay="block"
@@ -230,7 +245,7 @@ export function CalendarApp({
             aria-modal="true"
             onClick={(e) => e.stopPropagation()}
           >
-            {mode === "create" ? (
+            {mode === "create" && canEdit ? (
               <>
                 <h2>إضافة موعد</h2>
                 <p>يُنشأ EventService حقيقي ويظهر فوراً على التقويم.</p>
@@ -426,6 +441,7 @@ export function CalendarApp({
                   </li>
                 </ul>
 
+                {canEdit ? (
                 <form action={onUpdateSubmit} className="inline-form">
                   <h3>تعديل الموعد</h3>
                   <input type="hidden" name="id" value={selected.extendedProps.eventServiceId} />
@@ -518,6 +534,23 @@ export function CalendarApp({
                     </button>
                   </div>
                 </form>
+                ) : (
+                  <div className="row-actions">
+                    <Link
+                      className="text-link"
+                      href={`/admin/events/${selected.extendedProps.eventId}`}
+                    >
+                      فتح المناسبة
+                    </Link>
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      onClick={() => setMode("closed")}
+                    >
+                      إغلاق
+                    </button>
+                  </div>
+                )}
               </>
             ) : null}
           </div>

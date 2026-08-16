@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getSession } from "@/lib/session";
+import { getVerifiedSession } from "@/lib/authz";
 
 export const metadata: Metadata = { title: "مناسباتي" };
 export const dynamic = "force-dynamic";
@@ -19,7 +19,7 @@ function formatDateTimeAr(d: Date) {
 }
 
 export default async function MyAssignmentsPage() {
-  const session = await getSession();
+  const session = await getVerifiedSession();
   if (!session) redirect("/admin/login");
   const userId = Number(session.sub);
 

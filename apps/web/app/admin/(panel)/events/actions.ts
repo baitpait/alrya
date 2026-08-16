@@ -1,5 +1,6 @@
 "use server";
 
+import { requireManager } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
 import { EventStatus, EventServiceStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -45,6 +46,7 @@ async function refreshEventTotal(eventId: number) {
 }
 
 export async function createEvent(formData: FormData) {
+  await requireManager();
   const customerId = Number(formData.get("customerId"));
   if (!Number.isFinite(customerId) || customerId <= 0) {
     throw new Error("اختاري زبوناً.");
@@ -62,6 +64,7 @@ export async function createEvent(formData: FormData) {
 }
 
 export async function updateEventStatus(formData: FormData) {
+  await requireManager();
   const id = Number(formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف المناسبة غير صالح.");
   const status = parseStatus(String(formData.get("status") ?? "PREPARING"));
@@ -86,6 +89,7 @@ export async function updateEventStatus(formData: FormData) {
 }
 
 export async function addEventService(formData: FormData) {
+  await requireManager();
   const eventId = Number(formData.get("eventId"));
   const serviceId = Number(formData.get("serviceId"));
   const offerIdRaw = String(formData.get("offerId") ?? "").trim();
@@ -148,6 +152,7 @@ export async function addEventService(formData: FormData) {
 }
 
 export async function deleteEventService(formData: FormData) {
+  await requireManager();
   const id = Number(formData.get("id"));
   const eventId = Number(formData.get("eventId"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
@@ -165,6 +170,7 @@ export async function deleteEventService(formData: FormData) {
 }
 
 export async function deleteEvent(formData: FormData) {
+  await requireManager();
   const id = Number(formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
 
@@ -201,6 +207,7 @@ function parsePositiveAmount(raw: FormDataEntryValue | null, label: string) {
 }
 
 export async function addPayment(formData: FormData) {
+  await requireManager();
   const eventId = Number(formData.get("eventId"));
   if (!Number.isFinite(eventId) || eventId <= 0) {
     throw new Error("مناسبة غير صالحة.");
@@ -230,6 +237,7 @@ export async function addPayment(formData: FormData) {
 }
 
 export async function deletePayment(formData: FormData) {
+  await requireManager();
   const id = Number(formData.get("id"));
   const eventId = Number(formData.get("eventId"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
@@ -243,6 +251,7 @@ export async function deletePayment(formData: FormData) {
 }
 
 export async function addDiscount(formData: FormData) {
+  await requireManager();
   const eventId = Number(formData.get("eventId"));
   if (!Number.isFinite(eventId) || eventId <= 0) {
     throw new Error("مناسبة غير صالحة.");
@@ -264,6 +273,7 @@ export async function addDiscount(formData: FormData) {
 }
 
 export async function deleteDiscount(formData: FormData) {
+  await requireManager();
   const id = Number(formData.get("id"));
   const eventId = Number(formData.get("eventId"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
@@ -277,6 +287,7 @@ export async function deleteDiscount(formData: FormData) {
 }
 
 export async function assignEmployeeToService(formData: FormData) {
+  await requireManager();
   const eventId = Number(formData.get("eventId"));
   const eventServiceId = Number(formData.get("eventServiceId"));
   const userId = Number(formData.get("userId"));
@@ -335,6 +346,7 @@ export async function assignEmployeeToService(formData: FormData) {
 }
 
 export async function unassignEmployee(formData: FormData) {
+  await requireManager();
   const id = Number(formData.get("id"));
   const eventId = Number(formData.get("eventId"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");

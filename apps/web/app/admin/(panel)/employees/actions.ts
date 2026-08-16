@@ -1,9 +1,9 @@
 "use server";
 
+import { requireManager } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/password";
-import { getSession } from "@/lib/session";
 
 function requireText(value: FormDataEntryValue | null, label: string) {
   const text = String(value ?? "").trim();
@@ -17,6 +17,7 @@ function parseActive(raw: FormDataEntryValue | null) {
 }
 
 export async function createRole(formData: FormData) {
+  await requireManager();
   const name = requireText(formData.get("name"), "اسم الدور");
   const description = String(formData.get("description") ?? "").trim() || null;
   const exists = await prisma.role.findFirst({ where: { name } });
@@ -26,6 +27,7 @@ export async function createRole(formData: FormData) {
 }
 
 export async function deleteRole(formData: FormData) {
+  await requireManager();
   const id = Number(formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
   const users = await prisma.user.count({ where: { roleId: id } });
@@ -35,6 +37,7 @@ export async function deleteRole(formData: FormData) {
 }
 
 export async function createEmployee(formData: FormData) {
+  await requireManager();
   const name = requireText(formData.get("name"), "الاسم");
   const email = requireText(formData.get("email"), "البريد").toLowerCase();
   const phone = String(formData.get("phone") ?? "").trim() || null;
@@ -61,6 +64,7 @@ export async function createEmployee(formData: FormData) {
 }
 
 export async function updateEmployee(formData: FormData) {
+  const session = await requireManager();
   const id = Number(formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
 
@@ -73,8 +77,7 @@ export async function updateEmployee(formData: FormData) {
 
   if (!Number.isFinite(roleId) || roleId <= 0) throw new Error("اختاري دوراً.");
 
-  const session = await getSession();
-  if (session && String(id) === session.sub && !active) {
+  if (String(id) === session.sub && !active) {
     throw new Error("لا يمكن تعطيل حسابك الحالي.");
   }
 
@@ -103,11 +106,11 @@ export async function updateEmployee(formData: FormData) {
 }
 
 export async function deleteEmployee(formData: FormData) {
+  const session = await requireManager();
   const id = Number(formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
 
-  const session = await getSession();
-  if (session && String(id) === session.sub) {
+  if (String(id) === session.sub) {
     throw new Error("لا يمكن حذف حسابك الحالي.");
   }
 

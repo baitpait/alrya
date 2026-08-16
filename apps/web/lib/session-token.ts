@@ -6,6 +6,8 @@ export type SessionPayload = {
   sub: string;
   email: string;
   name: string;
+  roleId: number;
+  roleName: string;
 };
 
 function getSecret() {
@@ -17,7 +19,12 @@ function getSecret() {
 }
 
 export async function createSessionToken(payload: SessionPayload): Promise<string> {
-  return new SignJWT({ email: payload.email, name: payload.name })
+  return new SignJWT({
+    email: payload.email,
+    name: payload.name,
+    roleId: payload.roleId,
+    roleName: payload.roleName,
+  })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(payload.sub)
     .setIssuedAt()
@@ -31,10 +38,18 @@ export async function verifySessionToken(token: string): Promise<SessionPayload 
     if (!payload.sub || typeof payload.email !== "string" || typeof payload.name !== "string") {
       return null;
     }
+    const roleId = typeof payload.roleId === "number" ? payload.roleId : Number(payload.roleId);
+    const roleName = typeof payload.roleName === "string" ? payload.roleName : "";
+    if (!Number.isFinite(roleId) || roleId <= 0 || !roleName) {
+      // جلسة قديمة بلا دور — أبطليها لإعادة الدخول
+      return null;
+    }
     return {
       sub: payload.sub,
       email: payload.email,
       name: payload.name,
+      roleId,
+      roleName,
     };
   } catch {
     return null;

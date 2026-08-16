@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { listCalendarEvents } from "@/lib/calendar-events";
-import { getSession } from "@/lib/session";
+import { getVerifiedSession } from "@/lib/authz";
 
 export async function GET() {
-  const session = await getSession();
+  const session = await getVerifiedSession();
   if (!session) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
   }

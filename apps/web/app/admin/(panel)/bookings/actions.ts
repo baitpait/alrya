@@ -1,5 +1,6 @@
 "use server";
 
+import { requireManager } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { BookingStatus, EventServiceStatus, EventStatus } from "@prisma/client";
@@ -40,6 +41,7 @@ function revalidateBookingPaths(eventId?: number, customerId?: number) {
 
 /** تحويل طلب حجز → زبون + مناسبة + EventService (يظهر على التقويم) */
 export async function convertBookingRequest(formData: FormData) {
+  await requireManager();
   const id = Number(formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
 
@@ -156,6 +158,7 @@ export async function convertBookingRequest(formData: FormData) {
 }
 
 export async function rejectBookingRequest(formData: FormData) {
+  await requireManager();
   const id = Number(formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
 
@@ -183,6 +186,7 @@ export async function rejectBookingRequest(formData: FormData) {
 }
 
 export async function markBookingContacted(formData: FormData) {
+  await requireManager();
   const id = Number(formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
 

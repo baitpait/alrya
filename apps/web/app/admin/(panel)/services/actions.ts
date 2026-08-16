@@ -1,5 +1,6 @@
 "use server";
 
+import { requireManager } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { ServiceKind } from "@prisma/client";
@@ -13,6 +14,7 @@ function requireName(value: FormDataEntryValue | null, label: string) {
 }
 
 export async function createService(formData: FormData) {
+  await requireManager();
   const name = requireName(formData.get("name"), "اسم الخدمة");
   const kindRaw = String(formData.get("kind") ?? "EVENT");
   const kind = kindRaw === "SESSION" ? ServiceKind.SESSION : ServiceKind.EVENT;
@@ -25,6 +27,7 @@ export async function createService(formData: FormData) {
 }
 
 export async function updateService(formData: FormData) {
+  await requireManager();
   const id = Number(formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) {
     throw new Error("معرّف الخدمة غير صالح.");
@@ -45,6 +48,7 @@ export async function updateService(formData: FormData) {
 }
 
 export async function setServiceActive(formData: FormData) {
+  await requireManager();
   const id = Number(formData.get("id"));
   const active = formData.get("active") === "true";
   if (!Number.isFinite(id) || id <= 0) {
@@ -61,6 +65,7 @@ export async function setServiceActive(formData: FormData) {
 }
 
 export async function createOffer(formData: FormData) {
+  await requireManager();
   const serviceId = Number(formData.get("serviceId"));
   if (!Number.isFinite(serviceId) || serviceId <= 0) {
     throw new Error("معرّف الخدمة غير صالح.");
@@ -100,6 +105,7 @@ export async function createOffer(formData: FormData) {
 }
 
 export async function updateOffer(formData: FormData) {
+  await requireManager();
   const id = Number(formData.get("id"));
   const serviceId = Number(formData.get("serviceId"));
   if (!Number.isFinite(id) || id <= 0 || !Number.isFinite(serviceId) || serviceId <= 0) {
@@ -134,6 +140,7 @@ export async function updateOffer(formData: FormData) {
 }
 
 export async function deleteOffer(formData: FormData) {
+  await requireManager();
   const id = Number(formData.get("id"));
   const serviceId = Number(formData.get("serviceId"));
   if (!Number.isFinite(id) || id <= 0) {

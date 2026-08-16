@@ -7,13 +7,20 @@ type Props = {
   title: string;
   userName?: string;
   unreadMessages?: number;
+  isManager?: boolean;
   children: React.ReactNode;
 };
 
-export function AdminShell({ title, userName, unreadMessages = 0, children }: Props) {
+export function AdminShell({
+  title,
+  userName,
+  unreadMessages = 0,
+  isManager = true,
+  children,
+}: Props) {
   return (
     <div className="page-layout admin-body">
-      <AdminSidebar unreadMessages={unreadMessages} />
+      <AdminSidebar unreadMessages={unreadMessages} isManager={isManager} />
       <div className="admin-main-wrap">
         <header className="app-header">
           <div className="header-title">{title}</div>

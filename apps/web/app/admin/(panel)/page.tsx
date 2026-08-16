@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getDashboardStats } from "@/lib/dashboard-stats";
 import { formatMoney } from "@/lib/event-finance";
+import { getVerifiedSession } from "@/lib/authz";
 
 export const metadata: Metadata = { title: "لوحة التحكم" };
 export const dynamic = "force-dynamic";
@@ -18,9 +19,11 @@ function formatDateTimeAr(d: Date) {
 }
 
 export default async function AdminHomePage() {
+  const session = await getVerifiedSession();
+  const isManager = session?.isManager ?? false;
   const stats = await getDashboardStats();
 
-  const cards = [
+  const managerCards = [
     {
       label: "طلبات جديدة",
       value: String(stats.pendingBookings),
@@ -65,22 +68,60 @@ export default async function AdminHomePage() {
     },
   ];
 
+  const staffCards = [
+    {
+      label: "مناسبات قيد التحضير",
+      value: String(stats.eventsPreparing),
+      href: "/admin/events?status=PREPARING",
+    },
+    {
+      label: "مناسبات قيد العمل",
+      value: String(stats.eventsInProgress),
+      href: "/admin/events?status=IN_PROGRESS",
+    },
+    {
+      label: "مواعيدي",
+      value: "افتح",
+      href: "/admin/my-assignments",
+    },
+    {
+      label: "التقويم",
+      value: "افتح",
+      href: "/admin/calendar",
+    },
+  ];
+
+  const cards = isManager ? managerCards : staffCards;
+
   return (
     <div className="stack-gap">
       <section className="panel">
         <h1>لوحة التحكم</h1>
         <p>
-          أرقام حية من MySQL — كل بطاقة تفتح الصفحة المفلترة.{" "}
-          <Link className="text-link" href="/admin/reports">
-            التقارير
-          </Link>
+          {isManager ? (
+            <>
+              أرقام حية من MySQL — كل بطاقة تفتح الصفحة المفلترة.{" "}
+              <Link className="text-link" href="/admin/reports">
+                التقارير
+              </Link>
+            </>
+          ) : (
+            <>
+              مرحباً {session?.name ?? ""} — هذي شاشة الطاقم: مواعيدك والتقويم.{" "}
+              <Link className="text-link" href="/admin/my-assignments">
+                مناسباتي
+              </Link>
+            </>
+          )}
         </p>
 
         <div className="dash-grid" aria-label="مؤشرات التشغيل">
           {cards.map((card) => (
             <Link key={card.href + card.label} href={card.href} className="dash-card">
               <span>{card.label}</span>
-              <strong className={card.ltr ? "cell-ltr" : undefined}>{card.value}</strong>
+              <strong className={"ltr" in card && card.ltr ? "cell-ltr" : undefined}>
+                {card.value}
+              </strong>
             </Link>
           ))}
         </div>

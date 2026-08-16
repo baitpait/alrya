@@ -1,5 +1,6 @@
 "use server";
 
+import { requireManager } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
 import { EventServiceStatus, EventStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -30,6 +31,7 @@ async function refreshEventTotal(eventId: number) {
 
 /** إضافة موعد من التقويم → EventService حقيقي (+ مناسبة جديدة إن لزم) */
 export async function createCalendarAppointment(formData: FormData) {
+  await requireManager();
   const customerId = Number(formData.get("customerId"));
   const serviceId = Number(formData.get("serviceId"));
   let eventId = Number(formData.get("eventId") || 0);
@@ -107,6 +109,7 @@ export async function createCalendarAppointment(formData: FormData) {
 }
 
 export async function updateCalendarAppointment(formData: FormData) {
+  await requireManager();
   const id = Number(formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف الموعد غير صالح.");
 

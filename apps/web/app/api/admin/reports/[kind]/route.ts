@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/session";
+import { getVerifiedSession } from "@/lib/authz";
 import {
   formatDateAr,
   parseEventStatus,
@@ -17,9 +17,12 @@ export async function GET(
   req: Request,
   ctx: { params: Promise<{ kind: string }> },
 ) {
-  const session = await getSession();
+  const session = await getVerifiedSession();
   if (!session) {
     return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
+  }
+  if (!session.isManager) {
+    return NextResponse.json({ error: "صلاحية المدير مطلوبة" }, { status: 403 });
   }
 
   const { kind: rawKind } = await ctx.params;

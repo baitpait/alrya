@@ -1,5 +1,6 @@
 "use server";
 
+import { requireManager } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { SITE_SETTING_KEYS, type SiteSettingKey } from "@/lib/site-settings";
@@ -14,6 +15,7 @@ const SOCIAL_KEYS = new Set<SiteSettingKey>([
 ]);
 
 export async function saveSiteSettings(formData: FormData) {
+  await requireManager();
   for (const key of SITE_SETTING_KEYS) {
     let value = String(formData.get(key) ?? "").trim();
     if (SOCIAL_KEYS.has(key) && value) {

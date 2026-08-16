@@ -16,6 +16,7 @@ import {
   unassignEmployee,
   updateEventStatus,
 } from "../actions";
+import { getVerifiedSession } from "@/lib/authz";
 
 const STATUS_LABEL: Record<EventStatus, string> = {
   PREPARING: "قيد التحضير",
@@ -55,6 +56,8 @@ function formatDateTimeAr(d: Date) {
 }
 
 export default async function AdminEventDetailPage({ params }: Props) {
+  const session = await getVerifiedSession();
+  const isManager = session?.isManager ?? false;
   const { id: idRaw } = await params;
   const id = Number(idRaw);
   if (!Number.isFinite(id) || id <= 0) notFound();
@@ -78,20 +81,101 @@ export default async function AdminEventDetailPage({ params }: Props) {
         discounts: { orderBy: { createdAt: "desc" } },
       },
     }),
-    prisma.service.findMany({
-      where: { active: true },
-      orderBy: { name: "asc" },
-      include: { offers: { orderBy: { name: "asc" } } },
-    }),
-    prisma.user.findMany({
-      where: { active: true },
-      orderBy: { name: "asc" },
-      include: { role: true },
-    }),
+    isManager
+      ? prisma.service.findMany({
+          where: { active: true },
+          orderBy: { name: "asc" },
+          include: { offers: { orderBy: { name: "asc" } } },
+        })
+      : Promise.resolve([]),
+    isManager
+      ? prisma.user.findMany({
+          where: { active: true },
+          orderBy: { name: "asc" },
+          include: { role: true },
+        })
+      : Promise.resolve([]),
   ]);
   const finance = await getEventFinance(id);
 
   if (!event) notFound();
+
+  if (!isManager) {
+    return (
+      <div className="stack-gap">
+        <p>
+          <Link className="text-link" href="/admin/events">
+            ← رجوع للمناسبات
+          </Link>
+        </p>
+        <section className="panel">
+          <h1>مناسبة #{event.id}</h1>
+          <p>
+            الزبون: {event.customer.firstName} {event.customer.lastName} —{" "}
+            <span className="cell-ltr">{event.customer.phone}</span>
+          </p>
+          <p>الحالة: {STATUS_LABEL[event.status]}</p>
+          <div className="finance-grid" aria-label="ملخص مالي">
+            <div className="finance-card">
+              <span>الإجمالي</span>
+              <strong className="cell-ltr">{formatMoney(finance.totalPrice)}</strong>
+            </div>
+            <div className="finance-card">
+              <span>المدفوع</span>
+              <strong className="cell-ltr">{formatMoney(finance.paymentsTotal)}</strong>
+            </div>
+            <div className="finance-card">
+              <span>المتبقي</span>
+              <strong className="cell-ltr">{formatMoney(finance.remaining)}</strong>
+            </div>
+          </div>
+          <p className="muted">عرض للطاقم — التعديل والدفعات للمدير فقط.</p>
+        </section>
+        <section className="panel">
+          <h2>المواعيد / الخدمات</h2>
+          {event.services.length === 0 ? (
+            <p>لا خدمات مسجّلة.</p>
+          ) : (
+            <div className="table-wrap">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>الخدمة</th>
+                    <th>من</th>
+                    <th>إلى</th>
+                    <th>المكان</th>
+                    <th>الطاقم</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {event.services.map((s) => (
+                    <tr key={s.id}>
+                      <td>{s.service.name}</td>
+                      <td className="cell-ltr">{formatDateTimeAr(s.startsAt)}</td>
+                      <td className="cell-ltr">{formatDateTimeAr(s.endsAt)}</td>
+                      <td>
+                        {[s.city, s.venue, s.hall].filter(Boolean).join(" · ") || "—"}
+                      </td>
+                      <td>
+                        {s.employees.length === 0
+                          ? "—"
+                          : s.employees.map((e) => e.user.name).join("، ")}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+        <p>
+          <Link className="text-link" href="/admin/my-assignments">
+            مناسباتي
+          </Link>
+        </p>
+      </div>
+    );
+  }
 
   const defaultStart = new Date();
   defaultStart.setMinutes(0, 0, 0);

@@ -1,5 +1,6 @@
 "use server";
 
+import { requireManager } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
 import { Gender } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -17,6 +18,7 @@ function parseGender(raw: string): Gender | null {
 }
 
 export async function createCustomer(formData: FormData) {
+  await requireManager();
   const firstName = requireText(formData.get("firstName"), "الاسم الأول");
   const lastName = requireText(formData.get("lastName"), "اسم العائلة");
   const phone = requireText(formData.get("phone"), "الهاتف");
@@ -44,6 +46,7 @@ export async function createCustomer(formData: FormData) {
 }
 
 export async function updateCustomer(formData: FormData) {
+  await requireManager();
   const id = Number(formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف الزبون غير صالح.");
 
@@ -76,6 +79,7 @@ export async function updateCustomer(formData: FormData) {
 }
 
 export async function deleteCustomer(formData: FormData) {
+  await requireManager();
   const id = Number(formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف الزبون غير صالح.");
 

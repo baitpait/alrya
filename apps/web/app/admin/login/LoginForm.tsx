@@ -17,7 +17,8 @@ export function LoginForm() {
           name="email"
           autoComplete="username"
           required
-          defaultValue="admin@alray.studio"
+          defaultValue=""
+          placeholder="admin@alray.studio أو photographer@…"
         />
       </label>
       <label>
