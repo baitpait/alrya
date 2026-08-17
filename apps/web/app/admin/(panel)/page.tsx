@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { getDashboardStats } from "@/lib/dashboard-stats";
 import { formatMoney } from "@/lib/event-finance";
 
@@ -68,13 +69,15 @@ export default async function AdminHomePage() {
   return (
     <div className="stack-gap">
       <section className="panel">
-        <h1>لوحة التحكم</h1>
-        <p>
-          أرقام حية من النظام — كل بطاقة تفتح الصفحة المفلترة.{" "}
-          <Link className="text-link" href="/admin/reports">
-            التقارير
-          </Link>
-        </p>
+        <div className="calendar-toolbar">
+          <h1>لوحة التحكم</h1>
+          <ActionIconLink
+            href="/admin/reports"
+            label="فتح التقارير"
+            kind="reports"
+          />
+        </div>
+        <p>أرقام حية من النظام — كل بطاقة تفتح الصفحة المفلترة.</p>
 
         <div className="dash-grid" aria-label="مؤشرات التشغيل">
           {cards.map((card) => (
@@ -89,9 +92,11 @@ export default async function AdminHomePage() {
       <section className="panel">
         <div className="calendar-toolbar">
           <h2>المواعيد القادمة</h2>
-          <Link className="text-link" href="/admin/calendar">
-            فتح التقويم
-          </Link>
+          <ActionIconLink
+            href="/admin/calendar"
+            label="فتح التقويم"
+            kind="calendar"
+          />
         </div>
         {stats.upcoming.length === 0 ? (
           <p>لا مواعيد قادمة — أضيفي خدمة بتاريخ من المناسبة أو من التقويم.</p>
@@ -104,7 +109,7 @@ export default async function AdminHomePage() {
                   <th>الزبون</th>
                   <th>من</th>
                   <th>إلى</th>
-                  <th></th>
+                  <th>إجراءات</th>
                 </tr>
               </thead>
               <tbody>
@@ -114,10 +119,12 @@ export default async function AdminHomePage() {
                     <td>{row.customerName}</td>
                     <td className="cell-ltr">{formatDateTimeAr(row.startsAt)}</td>
                     <td className="cell-ltr">{formatDateTimeAr(row.endsAt)}</td>
-                    <td>
-                      <Link className="text-link" href={`/admin/events/${row.eventId}`}>
-                        المناسبة
-                      </Link>
+                    <td className="row-actions row-actions--icons">
+                      <ActionIconLink
+                        href={`/admin/events/${row.eventId}`}
+                        label={`فتح المناسبة #${row.eventId} — ${row.customerName}`}
+                        kind="event"
+                      />
                     </td>
                   </tr>
                 ))}

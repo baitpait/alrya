@@ -102,7 +102,7 @@ export default async function AdminPaymentsPage({ searchParams }: Props) {
                       <ActionIconLink
                         href={`/admin/events/${p.eventId}`}
                         label={`فتح المناسبة #${p.eventId}`}
-                        kind="open"
+                        kind="event"
                       />
                       <ConfirmDelete
                         action={deletePayment}

@@ -95,7 +95,7 @@ export default async function ReportStaffPage({ searchParams }: Props) {
                         <ActionIconLink
                           href={`/admin/events/${r.eventId}`}
                           label={`فتح المناسبة #${r.eventId}`}
-                          kind="open"
+                          kind="event"
                         />
                       </td>
                     </tr>

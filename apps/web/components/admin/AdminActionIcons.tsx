@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-/** أيقونات إجراءات الجدول — SVG مضمّن (بدون حزمة جديدة) */
+/** أيقونات إجراءات الأدمن — SVG مضمّن · اختر kind المناسب للمصطلح */
 
 function EyeIcon() {
   return (
@@ -30,6 +30,37 @@ function FolderOpenIcon() {
   );
 }
 
+/** تقويم — لفتح شاشة التقويم */
+function CalendarIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <path d="M16 2v4M8 2v4M3 10h18" />
+    </svg>
+  );
+}
+
+/** مناسبة — فتح تفاصيل المناسبة (عرس/حفل…) */
+function EventIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <path d="M8 7V3m8 4V3M3 11h18" />
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <path d="M9 15l2 2 4-4" />
+    </svg>
+  );
+}
+
+/** تقارير */
+function ChartIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <path d="M4 19V5M4 19h16" />
+      <path d="M8 17V10M12 17V7M16 17v-4" />
+    </svg>
+  );
+}
+
 export function TrashIcon() {
   return (
     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -46,6 +77,9 @@ const ICONS = {
   view: EyeIcon,
   edit: PencilIcon,
   open: FolderOpenIcon,
+  calendar: CalendarIcon,
+  event: EventIcon,
+  reports: ChartIcon,
   delete: TrashIcon,
 } as const;
 
@@ -59,7 +93,7 @@ type ActionIconLinkProps = {
   className?: string;
 };
 
-/** رابط إجراء صف جدول: أيقونة بدل كلمة «عرض» */
+/** رابط إجراء: أيقونة تطابق معنى الإجراء — لا تستخدم عيناً لـ «تقويم» */
 export function ActionIconLink({
   href,
   label,

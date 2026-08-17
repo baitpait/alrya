@@ -88,8 +88,8 @@ export default async function ReportEventsPage({ searchParams }: Props) {
                       <td className="row-actions report-print-hide">
                         <ActionIconLink
                           href={`/admin/events/${r.id}`}
-                          label={`عرض المناسبة #${r.id}`}
-                          kind="view"
+                          label={`فتح المناسبة #${r.id}`}
+                          kind="event"
                         />
                       </td>
                     </tr>
