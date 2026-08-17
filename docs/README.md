@@ -7,8 +7,16 @@
 
 ## ابدأ من هنا (بالترتيب)
 
-0. [pm-updates-2026-08-13.md](./pm-updates-2026-08-13.md) — **آخر تحديثات الإدارة (كتالوج · شعار · واتساب) — اسحبي أولاً**
-0b. [quality-gaps-map.md](./quality-gaps-map.md) — خريطة فجوات · موجة A ✓ · موجة B قيد الاختبار — [wave-b-progress.md](./wave-b-progress.md)
+0. [pm-updates-2026-08-17.md](./pm-updates-2026-08-17.md) — **آخر قرار إدارة (مرحلة 13 + ترقيم 14→18) — اسحبي أولاً**
+0a. [pm-updates-2026-08-13.md](./pm-updates-2026-08-13.md) — كتالوج · شعار · واتساب
+0b. [quality-gaps-map.md](./quality-gaps-map.md) — تفاصيل فجوات · المراحل 14→18 (= موجات A→E)
+0c. [phase-13-decision.md](./phase-13-decision.md) — قرار: لا POS · لا دفع إلكتروني حالياً · SMS معلّق
+0d. [phase-14-completion.md](./phase-14-completion.md) · [wave-a-completion.md](./wave-a-completion.md) — أمن سريع ✓
+0e. [admin-row-actions.md](./admin-row-actions.md) — **أيقونات إجراءات الجداول + توحيد مودال التقويم**
+0f. [admin-ui-copy.md](./admin-ui-copy.md) — **لغة الواجهة بدون EventService/MySQL/Inbox**
+0g. [pm-login-admin-only.md](./pm-login-admin-only.md) — **دخول اللوحة للمسؤول فقط · الطاقم بلا login (مرحلة 15)**
+0h. [admin-ui-buttons-sidebar.md](./admin-ui-buttons-sidebar.md) — **هوية أزرار موحّدة · سايدبار عرض ثابت + Cairo**
+0i. [wave-b-progress.md](./wave-b-progress.md) — تقدّم صلاحيات الجلسة (قبل قرار الدخول للمسؤول فقط)
 1. [machine-setup.md](./machine-setup.md) — **جهاز جديد/مُفرمَت:** Cursor + Git + Node + سحب الريبو
 1b. [phase-0-completion.md](./phase-0-completion.md) — **سجل إنجاز المرحلة 0** (Next.js + Prisma + MySQL)
 1c. [phase-1-completion.md](./phase-1-completion.md) — **سجل إنجاز المرحلة 1** (شِل الأدمن + الثيم)
@@ -17,7 +25,7 @@
 1f. [phase-3-completion.md](./phase-3-completion.md) — **سجل إنجاز المرحلة 3** (الخدمات والباقات)
 1g. [phase-4-completion.md](./phase-4-completion.md) — **سجل إنجاز المرحلة 4** (زبائن/مناسبات)
 1h. [phase-5-completion.md](./phase-5-completion.md) … [phase-9-completion.md](./phase-9-completion.md) — مراحل 5→9 (تقويم حتى إطلاق MVP)
-1i. ملخص البوابات في [production-work-plan.md](./production-work-plan.md) — **MVP 0→9 مغلق** · 10 ✓ · 11 ✓ · 12 ✓ · التالي: [quality-gaps-map.md](./quality-gaps-map.md) موجة A
+1i. ملخص البوابات في [production-work-plan.md](./production-work-plan.md) — **0→14 مغلق (13 قرار · 14 أمن)** · **التالي: 15 صلاحيات**
 1j. [phase-10-completion.md](./phase-10-completion.md) — موظفين / أدوار / مناسباتي
 1k. [phase-11-completion.md](./phase-11-completion.md) — تقارير Excel/PDF
 1l. [phase-12-completion.md](./phase-12-completion.md) — معرض / FAQ / من نحن

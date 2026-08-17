@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AdminBackLink } from "@/components/admin/AdminBackLink";
+import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
 import { prisma } from "@/lib/prisma";
 import {
   createOffer,
@@ -34,11 +36,7 @@ export default async function AdminServiceDetailPage({ params }: Props) {
 
   return (
     <div className="stack-gap">
-      <p>
-        <Link className="text-link" href="/admin/services">
-          ← رجوع للخدمات
-        </Link>
-      </p>
+      <AdminBackLink href="/admin/services" label="رجوع للخدمات" />
 
       <section className="panel">
         <h1>تعديل الخدمة</h1>
@@ -170,16 +168,20 @@ export default async function AdminServiceDetailPage({ params }: Props) {
                     />
                   </label>
                   <div className="row-actions">
-                    <button type="submit">تحديث العرض</button>
+                    <button type="submit" className="btn-primary">
+                      تحديث العرض
+                    </button>
                   </div>
                 </form>
-                <form action={deleteOffer}>
-                  <input type="hidden" name="id" value={offer.id} />
-                  <input type="hidden" name="serviceId" value={service.id} />
-                  <button type="submit" className="btn-danger">
-                    حذف العرض
-                  </button>
-                </form>
+                <div className="row-actions row-actions--icons" style={{ marginTop: "0.5rem" }}>
+                  <ConfirmDelete
+                    action={deleteOffer}
+                    id={offer.id}
+                    fieldName="recordId"
+                    hiddenFields={{ serviceId: service.id }}
+                    label={`حذف العرض ${offer.name}`}
+                  />
+                </div>
               </div>
             ))}
           </div>

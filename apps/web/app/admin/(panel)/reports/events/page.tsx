@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { ReportToolbar } from "@/components/admin/ReportToolbar";
 import { EVENT_STATUS_AR, formatDateAr, parseEventStatus, reportEvents } from "@/lib/reports";
 
@@ -85,7 +86,11 @@ export default async function ReportEventsPage({ searchParams }: Props) {
                       <td>{r.payments}</td>
                       <td>{formatDateAr(r.createdAt)}</td>
                       <td className="row-actions report-print-hide">
-                        <Link href={`/admin/events/${r.id}`}>عرض</Link>
+                        <ActionIconLink
+                          href={`/admin/events/${r.id}`}
+                          label={`فتح المناسبة #${r.id}`}
+                          kind="event"
+                        />
                       </td>
                     </tr>
                   ))}

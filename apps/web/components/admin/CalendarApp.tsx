@@ -190,8 +190,8 @@ export function CalendarApp({
             <h1>التقويم</h1>
             <p>
               {canEdit
-                ? "كل المواعيد من EventService في قاعدة البيانات — بدون أحداث وهمية."
-                : "عرض المواعيد فقط — إضافة/تعديل الموعد للمدير."}
+                ? "كل المواعيد من سجل الاستوديو — مواعيد حقيقية فقط، بدون تجريب وهمي."
+                : "عرض المواعيد فقط — إضافة وتعديل الموعد للمدير."}
             </p>
           </div>
           {canEdit ? (
@@ -248,7 +248,7 @@ export function CalendarApp({
             {mode === "create" && canEdit ? (
               <>
                 <h2>إضافة موعد</h2>
-                <p>يُنشأ EventService حقيقي ويظهر فوراً على التقويم.</p>
+                <p>يُحفظ الموعد ويظهر فوراً على التقويم.</p>
                 <form action={onCreateSubmit} className="inline-form">
                   <label>
                     الزبون
@@ -389,8 +389,8 @@ export function CalendarApp({
                     <textarea name="notes" rows={2} />
                   </label>
                   {error ? <p className="login-error">{error}</p> : null}
-                  <div className="row-actions">
-                    <button type="submit" disabled={pending}>
+                  <div className="modal-footer-actions">
+                    <button type="submit" className="btn-primary" disabled={pending}>
                       {pending ? "جاري الحفظ…" : "حفظ الموعد"}
                     </button>
                     <button
@@ -444,7 +444,12 @@ export function CalendarApp({
                 {canEdit ? (
                 <form action={onUpdateSubmit} className="inline-form">
                   <h3>تعديل الموعد</h3>
-                  <input type="hidden" name="id" value={selected.extendedProps.eventServiceId} />
+                  {/* eventServiceId وليس name=id — name=id يظلل form.id في المتصفح */}
+                  <input
+                    type="hidden"
+                    name="eventServiceId"
+                    value={selected.extendedProps.eventServiceId}
+                  />
                   <label>
                     تاريخ البداية
                     <input
@@ -515,12 +520,12 @@ export function CalendarApp({
                     <textarea name="notes" rows={2} />
                   </label>
                   {error ? <p className="login-error">{error}</p> : null}
-                  <div className="row-actions">
-                    <button type="submit" disabled={pending}>
+                  <div className="modal-footer-actions">
+                    <button type="submit" className="btn-primary" disabled={pending}>
                       {pending ? "جاري الحفظ…" : "حفظ التعديل"}
                     </button>
                     <Link
-                      className="text-link"
+                      className="btn-secondary"
                       href={`/admin/events/${selected.extendedProps.eventId}`}
                     >
                       فتح المناسبة

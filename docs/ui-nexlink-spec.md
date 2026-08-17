@@ -214,6 +214,10 @@ assets/images/...
 - [ ] Cairo محمّل ويُطبَّق على `body` / جذر الأدمن
 - [ ] Primary = `#5955D1`
 - [ ] التقويم FullCalendar يعرض بيانات حقيقية
-- [ ] Modal إضافة موعد يغذّي قاعدة البيانات
+- [ ] Modal إضافة/تعديل موعد: أزرار موحّدة (`.modal-footer-actions`) — لا خلط رابط تحتي مع زر بارتفاع مختلف
+- [ ] إجراءات الجداول: أيقونات `ActionIconLink` بدل كلمة «عرض» — انظر [admin-row-actions.md](./admin-row-actions.md)
+- [ ] أزرار الأدمن بهوية موحّدة (`btn-primary` / `btn-secondary`) — لا خلط مع text-link في نفس الشريط — [admin-ui-buttons-sidebar.md](./admin-ui-buttons-sidebar.md)
+- [ ] سايدبار عرض ثابت 260px + Cairo Cairo مناسب للقائمة
+- [ ] لا مصطلحات تقنية في النصوص الظاهرة (`EventService` / `MySQL` / `Inbox`…) — [admin-ui-copy.md](./admin-ui-copy.md)
 - [ ] الشعار والنصوص: استوديو الراية
 - [ ] اللاندينغ العام **لا** يستخدم شكل سايدبار NexLink

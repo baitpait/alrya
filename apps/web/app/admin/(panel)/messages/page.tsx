@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ContactMessageStatus } from "@prisma/client";
+import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = { title: "رسائل التواصل" };
@@ -115,9 +116,11 @@ export default async function AdminMessagesPage({ searchParams }: Props) {
                     <td>{STATUS_LABEL[m.status]}</td>
                     <td className="cell-ltr">{formatDateTimeAr(m.createdAt)}</td>
                     <td>
-                      <Link className="text-link" href={`/admin/messages/${m.id}`}>
-                        عرض
-                      </Link>
+                      <ActionIconLink
+                        href={`/admin/messages/${m.id}`}
+                        label={`عرض رسالة ${m.name}`}
+                        kind="view"
+                      />
                     </td>
                   </tr>
                 ))}

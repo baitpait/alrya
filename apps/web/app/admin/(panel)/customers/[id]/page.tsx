@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { AdminBackLink } from "@/components/admin/AdminBackLink";
+import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
 import { updateCustomer, deleteCustomer } from "../actions";
 
 type Props = { params: Promise<{ id: string }> };
@@ -31,11 +33,7 @@ export default async function AdminCustomerDetailPage({ params }: Props) {
 
   return (
     <div className="stack-gap">
-      <p>
-        <Link className="text-link" href="/admin/customers">
-          ← رجوع للزبائن
-        </Link>
-      </p>
+      <AdminBackLink href="/admin/customers" label="رجوع للزبائن" />
 
       <section className="panel">
         <h1>
@@ -84,14 +82,19 @@ export default async function AdminCustomerDetailPage({ params }: Props) {
               <option value="FEMALE">أنثى</option>
             </select>
           </label>
-          <button type="submit">حفظ التعديل</button>
-        </form>
-        <form action={deleteCustomer} style={{ marginTop: "0.75rem" }}>
-          <input type="hidden" name="id" value={customer.id} />
-          <button type="submit" className="btn-danger">
-            حذف الزبون
+          <button type="submit" className="btn-primary">
+            حفظ التعديل
           </button>
         </form>
+        <div className="detail-footer-actions" style={{ marginTop: "0.75rem" }}>
+          <ConfirmDelete
+            action={deleteCustomer}
+            id={customer.id}
+            fieldName="recordId"
+            label={`حذف الزبون ${customer.firstName}`}
+            message="تأكيد حذف الزبون؟ لا يمكن التراجع إن لم تكن له مناسبات."
+          />
+        </div>
       </section>
 
       <section className="panel">

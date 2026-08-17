@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { prisma } from "@/lib/prisma";
 import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
 import { createGalleryItem, deleteGalleryItem } from "./actions";
@@ -116,8 +117,12 @@ export default async function AdminGalleryPage({ searchParams }: Props) {
                     <td>{item.title}</td>
                     <td>{item.sortOrder}</td>
                     <td>{item.published ? "منشور" : "مخفي"}</td>
-                    <td className="row-actions">
-                      <Link href={`/admin/gallery/${item.id}`}>عرض / تعديل</Link>
+                    <td className="row-actions row-actions--icons">
+                      <ActionIconLink
+                        href={`/admin/gallery/${item.id}`}
+                        label={`عرض / تعديل ${item.title}`}
+                        kind="edit"
+                      />
                       <ConfirmDelete action={deleteGalleryItem} id={item.id} />
                     </td>
                   </tr>

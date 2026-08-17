@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BookingStatus } from "@prisma/client";
+import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { prisma } from "@/lib/prisma";
 import {
   convertBookingRequest,
@@ -84,11 +85,7 @@ export default async function AdminBookingDetailPage({ params }: Props) {
 
   return (
     <div className="stack-gap">
-      <p>
-        <Link className="text-link" href="/admin/bookings">
-          ← رجوع للطلبات
-        </Link>
-      </p>
+      <AdminBackLink href="/admin/bookings" label="رجوع للطلبات" />
 
       <section className="panel">
         <h1>طلب حجز #{booking.id}</h1>
@@ -167,9 +164,11 @@ export default async function AdminBookingDetailPage({ params }: Props) {
         <>
           <section className="panel">
             <h2>تحويل إلى مناسبة + تقويم</h2>
-            <p>يُنشأ زبون (أو يُربط بهاتف موجود) + مناسبة + EventService يظهر فوراً على التقويم.</p>
+            <p>
+              يُنشأ زبون (أو يُربط بهاتف موجود) ومناسبة وموعد يظهر فوراً على التقويم.
+            </p>
             <form action={convertBookingRequest} className="inline-form">
-              <input type="hidden" name="id" value={booking.id} />
+              <input type="hidden" name="bookingId" value={booking.id} />
               <label>
                 الخدمة
                 <select
@@ -260,14 +259,16 @@ export default async function AdminBookingDetailPage({ params }: Props) {
 
           <section className="panel">
             <h2>إجراءات أخرى</h2>
-            <div className="row-actions" style={{ marginBottom: "1rem" }}>
+            <div className="detail-footer-actions" style={{ marginTop: 0, marginBottom: "1rem" }}>
               <form action={markBookingContacted}>
-                <input type="hidden" name="id" value={booking.id} />
-                <button type="submit">تعليم: تم التواصل</button>
+                <input type="hidden" name="bookingId" value={booking.id} />
+                <button type="submit" className="btn-secondary">
+                  تعليم: تم التواصل
+                </button>
               </form>
             </div>
             <form action={rejectBookingRequest} className="inline-form">
-              <input type="hidden" name="id" value={booking.id} />
+              <input type="hidden" name="bookingId" value={booking.id} />
               <label>
                 سبب الرفض
                 <input name="reason" placeholder="اختياري" />

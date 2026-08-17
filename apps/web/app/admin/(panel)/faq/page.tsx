@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { prisma } from "@/lib/prisma";
 import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
 import { createFaqItem, deleteFaqItem } from "./actions";
@@ -104,8 +105,12 @@ export default async function AdminFaqPage({ searchParams }: Props) {
                     <td>{item.question}</td>
                     <td>{item.sortOrder}</td>
                     <td>{item.published ? "منشور" : "مخفي"}</td>
-                    <td className="row-actions">
-                      <Link href={`/admin/faq/${item.id}`}>عرض / تعديل</Link>
+                    <td className="row-actions row-actions--icons">
+                      <ActionIconLink
+                        href={`/admin/faq/${item.id}`}
+                        label={`عرض / تعديل سؤال #${item.id}`}
+                        kind="edit"
+                      />
                       <ConfirmDelete action={deleteFaqItem} id={item.id} />
                     </td>
                   </tr>

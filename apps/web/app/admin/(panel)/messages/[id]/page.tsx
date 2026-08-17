@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ContactMessageStatus } from "@prisma/client";
+import { AdminBackLink } from "@/components/admin/AdminBackLink";
+import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
 import { prisma } from "@/lib/prisma";
 import { archiveMessage, deleteMessage, markMessageRead } from "../actions";
 
@@ -51,11 +52,7 @@ export default async function AdminMessageDetailPage({ params }: Props) {
 
   return (
     <div className="stack-gap">
-      <p>
-        <Link className="text-link" href="/admin/messages">
-          ← رجوع للرسائل
-        </Link>
-      </p>
+      <AdminBackLink href="/admin/messages" label="رجوع للرسائل" />
 
       <section className="panel">
         <h1>رسالة #{message.id}</h1>
@@ -90,25 +87,30 @@ export default async function AdminMessageDetailPage({ params }: Props) {
         <h2>نص الرسالة</h2>
         <p style={{ whiteSpace: "pre-wrap", lineHeight: 1.8 }}>{message.body}</p>
 
-        <div className="row-actions" style={{ marginTop: "1.25rem" }}>
+        <div className="detail-footer-actions">
           {message.status !== ContactMessageStatus.READ ? (
             <form action={markMessageRead}>
-              <input type="hidden" name="id" value={message.id} />
-              <button type="submit">تعليم كمقروءة</button>
+              <input type="hidden" name="messageId" value={message.id} />
+              <button type="submit" className="btn-secondary">
+                تعليم كمقروءة
+              </button>
             </form>
           ) : null}
           {message.status !== ContactMessageStatus.ARCHIVED ? (
             <form action={archiveMessage}>
-              <input type="hidden" name="id" value={message.id} />
-              <button type="submit">أرشفة</button>
+              <input type="hidden" name="messageId" value={message.id} />
+              <button type="submit" className="btn-secondary">
+                أرشفة
+              </button>
             </form>
           ) : null}
-          <form action={deleteMessage}>
-            <input type="hidden" name="id" value={message.id} />
-            <button type="submit" className="btn-danger">
-              حذف
-            </button>
-          </form>
+          <ConfirmDelete
+            action={deleteMessage}
+            id={message.id}
+            fieldName="messageId"
+            label="حذف"
+            message="تأكيد حذف الرسالة؟ لا يمكن التراجع."
+          />
         </div>
       </section>
     </div>

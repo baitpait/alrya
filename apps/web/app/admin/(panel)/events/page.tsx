@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { EventStatus } from "@prisma/client";
+import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { prisma } from "@/lib/prisma";
 import { getVerifiedSession } from "@/lib/authz";
 import { createEvent } from "./actions";
@@ -46,7 +47,7 @@ export default async function AdminEventsPage({ searchParams }: Props) {
         <h1>المناسبات</h1>
         <p>
           {isManager
-            ? "مناسبة مربوطة بزبون، وتحتها خدمات بتاريخ (EventService)."
+            ? "مناسبة مربوطة بزبون، وتحتها مواعيد خدمات بتاريخ (مثل حنا وعرس)."
             : "عرض المناسبات للقراءة — التعديل للمدير فقط."}
         </p>
 
@@ -132,9 +133,11 @@ export default async function AdminEventsPage({ searchParams }: Props) {
                     <td>{e._count.services}</td>
                     <td className="cell-ltr">{Number(e.totalPrice).toFixed(2)}</td>
                     <td>
-                      <Link className="text-link" href={`/admin/events/${e.id}`}>
-                        تفاصيل
-                      </Link>
+                      <ActionIconLink
+                        href={`/admin/events/${e.id}`}
+                        label={`تفاصيل مناسبة #${e.id}`}
+                        kind="view"
+                      />
                     </td>
                   </tr>
                 ))}

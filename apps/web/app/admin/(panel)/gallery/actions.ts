@@ -108,7 +108,7 @@ export async function updateGalleryItem(formData: FormData) {
 
 export async function deleteGalleryItem(formData: FormData) {
   await requireManager();
-  const id = Number(formData.get("id"));
+  const id = Number(formData.get("recordId") ?? formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
   await prisma.galleryItem.delete({ where: { id } });
   revalidatePublic();

@@ -28,7 +28,7 @@ export async function createRole(formData: FormData) {
 
 export async function deleteRole(formData: FormData) {
   await requireManager();
-  const id = Number(formData.get("id"));
+  const id = Number(formData.get("recordId") ?? formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
   const users = await prisma.user.count({ where: { roleId: id } });
   if (users > 0) throw new Error("لا يمكن حذف دور مرتبط بموظفين.");
@@ -107,7 +107,7 @@ export async function updateEmployee(formData: FormData) {
 
 export async function deleteEmployee(formData: FormData) {
   const session = await requireManager();
-  const id = Number(formData.get("id"));
+  const id = Number(formData.get("recordId") ?? formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
 
   if (String(id) === session.sub) {
