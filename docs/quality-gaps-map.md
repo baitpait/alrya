@@ -67,15 +67,19 @@
 
 ## 4) موجة B = مرحلة 15 — صلاحيات وجلسة (حرج/عالي) · التالي
 
+> **قرار 2026-08-17:** دخول اللوحة **لمسؤول فقط** — الطاقم بلا login.  
+> ورقة العمل: [pm-login-admin-only.md](./pm-login-admin-only.md)
+
 | # | المشكلة | أين تنظرين | المطلوب باختصار |
 |---|---------|------------|-----------------|
-| B1 / 15.1 | أي موظف = أدمن كامل (لا RBAC) | `middleware.ts` · `session-token.ts` · كل `actions.ts` | دور في الجلسة + `requireAdmin()` / صلاحيات حسب الشاشة |
-| B2 / 15.2 | المستخدم المعطّل تبقى جلسته حتى 7 أيام | `lib/auth.ts` · `getSession` | عند كل طلب: تحقق `User.active` من DB (أو نسخة جلسة/tokenVersion) |
-| B3 / 15.3 | Server Actions بلا فحص جلسة داخلي | معظم `app/admin/(panel)/**/actions.ts` | أول سطر: `await requireSession()` — لا تعتمدين على middleware وحده |
-| B4 / 15.4 | `/api/admin/*` خارج matcher الـ middleware | `middleware.ts` | أضيفي `/api/admin/:path*` **مع** الإبقاء على فحص الجلسة داخل الـ route |
-| B5 / 15.5 | إنشاء موظفين/تغيير كلمات مرور بلا قيد دور | `employees/actions.ts` | مدير فقط يرفع صلاحيات ويعيد تعيين كلمات المرور |
+| B0 / 15.0 | طاقم (مصور/مساعد) يقدر يدخل الأدمن | `lib/auth.ts` · employees | ارفضي login إن لم يكن مسؤولاً؛ لا كلمة مرور دخول للطاقم |
+| B1 / 15.1 | أي موظف = أدمن كامل (لا RBAC) | `middleware.ts` · `session-token.ts` · كل `actions.ts` | دور في الجلسة + `requireAdmin()`؛ الطاقم أصلاً بلا دخول |
+| B2 / 15.2 | المستخدم المعطّل تبقى جلسته حتى 7 أيام | `lib/auth.ts` · `getSession` | عند كل طلب: تحقق `User.active` من DB |
+| B3 / 15.3 | Server Actions بلا فحص جلسة داخلي | معظم `app/admin/(panel)/**/actions.ts` | أول سطر: `await requireSession()` |
+| B4 / 15.4 | `/api/admin/*` خارج matcher الـ middleware | `middleware.ts` | أضيفي `/api/admin/:path*` **مع** فحص الجلسة داخل الـ route |
+| B5 / 15.5 | إنشاء موظفين/كلمات مرور بلا قيد دور | `employees/actions.ts` | مسؤول فقط له كلمة مرور دخول؛ طاقم للتعيين فقط |
 
-**اختبار يدوي:** جدول بوابة 15 في [production-work-plan.md](./production-work-plan.md).
+**اختبار يدوي:** جدول بوابة 15 + L1–L5 في [pm-login-admin-only.md](./pm-login-admin-only.md) · [production-work-plan.md](./production-work-plan.md).
 
 ---
 
