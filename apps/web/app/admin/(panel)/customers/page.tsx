@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { prisma } from "@/lib/prisma";
 import { createCustomer, deleteCustomer } from "./actions";
 
@@ -87,10 +88,12 @@ export default async function AdminCustomersPage() {
                     </td>
                     <td>{c.phone}</td>
                     <td>{c._count.events}</td>
-                    <td className="row-actions">
-                      <Link className="text-link" href={`/admin/customers/${c.id}`}>
-                        تفاصيل
-                      </Link>
+                    <td className="row-actions row-actions--icons">
+                      <ActionIconLink
+                        href={`/admin/customers/${c.id}`}
+                        label={`تفاصيل الزبون ${c.firstName} ${c.lastName}`}
+                        kind="view"
+                      />
                       <form action={deleteCustomer}>
                         <input type="hidden" name="id" value={c.id} />
                         <button type="submit" className="btn-danger">

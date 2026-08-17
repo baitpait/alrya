@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { prisma } from "@/lib/prisma";
 import { createEmployee, createRole, deleteEmployee, deleteRole } from "./actions";
 
@@ -144,10 +145,12 @@ export default async function AdminEmployeesPage({ searchParams }: Props) {
                     <td>{u.role.name}</td>
                     <td>{u._count.assignments}</td>
                     <td>{u.active ? "نشط" : "معطّل"}</td>
-                    <td className="row-actions">
-                      <Link className="text-link" href={`/admin/employees/${u.id}`}>
-                        عرض / تعديل
-                      </Link>
+                    <td className="row-actions row-actions--icons">
+                      <ActionIconLink
+                        href={`/admin/employees/${u.id}`}
+                        label={`عرض / تعديل ${u.name}`}
+                        kind="edit"
+                      />
                       <form action={deleteEmployee}>
                         <input type="hidden" name="id" value={u.id} />
                         <button type="submit" className="btn-danger">

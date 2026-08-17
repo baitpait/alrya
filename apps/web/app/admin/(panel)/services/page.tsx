@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { prisma } from "@/lib/prisma";
 import { createService, setServiceActive } from "./actions";
 
@@ -62,10 +63,12 @@ export default async function AdminServicesPage() {
                     <td>{s.kind === "SESSION" ? "جلسة" : "مناسبة"}</td>
                     <td>{s._count.offers}</td>
                     <td>{s.active ? "نشطة" : "معطّلة"}</td>
-                    <td className="row-actions">
-                      <Link className="text-link" href={`/admin/services/${s.id}`}>
-                        تعديل / عروض
-                      </Link>
+                    <td className="row-actions row-actions--icons">
+                      <ActionIconLink
+                        href={`/admin/services/${s.id}`}
+                        label={`تعديل / عروض ${s.name}`}
+                        kind="edit"
+                      />
                       <form action={setServiceActive}>
                         <input type="hidden" name="id" value={s.id} />
                         <input

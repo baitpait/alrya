@@ -374,8 +374,8 @@ export function CalendarApp({
                     <textarea name="notes" rows={2} />
                   </label>
                   {error ? <p className="login-error">{error}</p> : null}
-                  <div className="row-actions">
-                    <button type="submit" disabled={pending}>
+                  <div className="modal-footer-actions">
+                    <button type="submit" className="btn-primary" disabled={pending}>
                       {pending ? "جاري الحفظ…" : "حفظ الموعد"}
                     </button>
                     <button
@@ -428,7 +428,12 @@ export function CalendarApp({
 
                 <form action={onUpdateSubmit} className="inline-form">
                   <h3>تعديل الموعد</h3>
-                  <input type="hidden" name="id" value={selected.extendedProps.eventServiceId} />
+                  {/* eventServiceId وليس name=id — name=id يظلل form.id في المتصفح */}
+                  <input
+                    type="hidden"
+                    name="eventServiceId"
+                    value={selected.extendedProps.eventServiceId}
+                  />
                   <label>
                     تاريخ البداية
                     <input
@@ -499,12 +504,12 @@ export function CalendarApp({
                     <textarea name="notes" rows={2} />
                   </label>
                   {error ? <p className="login-error">{error}</p> : null}
-                  <div className="row-actions">
-                    <button type="submit" disabled={pending}>
+                  <div className="modal-footer-actions">
+                    <button type="submit" className="btn-primary" disabled={pending}>
                       {pending ? "جاري الحفظ…" : "حفظ التعديل"}
                     </button>
                     <Link
-                      className="text-link"
+                      className="btn-secondary"
                       href={`/admin/events/${selected.extendedProps.eventId}`}
                     >
                       فتح المناسبة

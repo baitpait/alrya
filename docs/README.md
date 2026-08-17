@@ -12,6 +12,7 @@
 0b. [quality-gaps-map.md](./quality-gaps-map.md) — تفاصيل فجوات · المراحل 14→18 (= موجات A→E)
 0c. [phase-13-decision.md](./phase-13-decision.md) — قرار: لا POS · لا دفع إلكتروني حالياً · SMS معلّق
 0d. [phase-14-completion.md](./phase-14-completion.md) · [wave-a-completion.md](./wave-a-completion.md) — أمن سريع ✓
+0e. [admin-row-actions.md](./admin-row-actions.md) — **أيقونات إجراءات الجداول + توحيد مودال التقويم**
 1. [machine-setup.md](./machine-setup.md) — **جهاز جديد/مُفرمَت:** Cursor + Git + Node + سحب الريبو
 1b. [phase-0-completion.md](./phase-0-completion.md) — **سجل إنجاز المرحلة 0** (Next.js + Prisma + MySQL)
 1c. [phase-1-completion.md](./phase-1-completion.md) — **سجل إنجاز المرحلة 1** (شِل الأدمن + الثيم)

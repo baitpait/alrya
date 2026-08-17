@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { ReportToolbar } from "@/components/admin/ReportToolbar";
 import { formatDateAr, reportPayments } from "@/lib/reports";
 
@@ -69,7 +70,11 @@ export default async function ReportPaymentsPage({ searchParams }: Props) {
                       <td>{r.method ?? "—"}</td>
                       <td>{r.note ?? "—"}</td>
                       <td className="row-actions report-print-hide">
-                        <Link href={`/admin/events/${r.eventId}`}>عرض المناسبة</Link>
+                        <ActionIconLink
+                          href={`/admin/events/${r.eventId}`}
+                          label={`فتح المناسبة #${r.eventId}`}
+                          kind="open"
+                        />
                       </td>
                     </tr>
                   ))}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BookingStatus } from "@prisma/client";
+import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = { title: "طلبات التسجيل" };
@@ -113,9 +114,11 @@ export default async function AdminBookingsPage({ searchParams }: Props) {
                     <td className="cell-ltr">{formatDateAr(b.preferredFrom)}</td>
                     <td>{STATUS_LABEL[b.status]}</td>
                     <td>
-                      <Link className="text-link" href={`/admin/bookings/${b.id}`}>
-                        عرض
-                      </Link>
+                      <ActionIconLink
+                        href={`/admin/bookings/${b.id}`}
+                        label={`عرض طلب ${b.groomName}`}
+                        kind="view"
+                      />
                     </td>
                   </tr>
                 ))}

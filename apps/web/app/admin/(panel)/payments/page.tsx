@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { prisma } from "@/lib/prisma";
 import { deletePayment } from "../events/actions";
 
@@ -96,13 +97,12 @@ export default async function AdminPaymentsPage({ searchParams }: Props) {
                     <td>#{p.eventId}</td>
                     <td className="cell-ltr">{Number(p.amount).toFixed(2)} ₪</td>
                     <td>{p.method || "—"}</td>
-                    <td className="row-actions">
-                      <Link
-                        className="text-link"
+                    <td className="row-actions row-actions--icons">
+                      <ActionIconLink
                         href={`/admin/events/${p.eventId}`}
-                      >
-                        عرض المناسبة
-                      </Link>
+                        label={`فتح المناسبة #${p.eventId}`}
+                        kind="open"
+                      />
                       <form action={deletePayment}>
                         <input type="hidden" name="id" value={p.id} />
                         <input type="hidden" name="eventId" value={p.eventId} />

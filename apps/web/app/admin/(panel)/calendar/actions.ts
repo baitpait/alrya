@@ -107,7 +107,7 @@ export async function createCalendarAppointment(formData: FormData) {
 }
 
 export async function updateCalendarAppointment(formData: FormData) {
-  const id = Number(formData.get("id"));
+  const id = Number(formData.get("eventServiceId") ?? formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف الموعد غير صالح.");
 
   const startsAt = parseDateAndTime(
