@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
 import { deleteFaqItem, updateFaqItem } from "../actions";
 
@@ -24,11 +24,7 @@ export default async function AdminFaqItemPage({ params }: Props) {
 
   return (
     <div className="stack-gap">
-      <p>
-        <Link className="text-link" href="/admin/faq">
-          ← رجوع للأسئلة
-        </Link>
-      </p>
+      <AdminBackLink href="/admin/faq" label="رجوع للأسئلة" />
 
       <section className="panel">
         <h1>{item.question}</h1>

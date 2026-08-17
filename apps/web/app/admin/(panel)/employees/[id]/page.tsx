@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { prisma } from "@/lib/prisma";
 import { deleteEmployee, updateEmployee } from "../actions";
 
@@ -54,11 +55,7 @@ export default async function AdminEmployeeDetailPage({ params }: Props) {
 
   return (
     <div className="stack-gap">
-      <p>
-        <Link className="text-link" href="/admin/employees">
-          ← رجوع للموظفين
-        </Link>
-      </p>
+      <AdminBackLink href="/admin/employees" label="رجوع للموظفين" />
 
       <section className="panel">
         <h1>{user.name}</h1>

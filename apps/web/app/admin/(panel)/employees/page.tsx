@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ActionIconLink } from "@/components/admin/AdminActionIcons";
+import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
 import { prisma } from "@/lib/prisma";
 import { createEmployee, createRole, deleteEmployee, deleteRole } from "./actions";
 
@@ -151,12 +152,13 @@ export default async function AdminEmployeesPage({ searchParams }: Props) {
                         label={`عرض / تعديل ${u.name}`}
                         kind="edit"
                       />
-                      <form action={deleteEmployee}>
-                        <input type="hidden" name="id" value={u.id} />
-                        <button type="submit" className="btn-danger">
-                          حذف / تعطيل
-                        </button>
-                      </form>
+                      <ConfirmDelete
+                        action={deleteEmployee}
+                        id={u.id}
+                        fieldName="recordId"
+                        label={`حذف / تعطيل ${u.name}`}
+                        message={`تعطيل أو حذف الموظف ${u.name}؟`}
+                      />
                     </td>
                   </tr>
                 ))}
@@ -198,14 +200,14 @@ export default async function AdminEmployeesPage({ searchParams }: Props) {
                     <td>{r.name}</td>
                     <td>{r.description || "—"}</td>
                     <td>{r._count.users}</td>
-                    <td>
+                    <td className="row-actions row-actions--icons">
                       {r._count.users === 0 ? (
-                        <form action={deleteRole}>
-                          <input type="hidden" name="id" value={r.id} />
-                          <button type="submit" className="btn-danger">
-                            حذف
-                          </button>
-                        </form>
+                        <ConfirmDelete
+                          action={deleteRole}
+                          id={r.id}
+                          fieldName="recordId"
+                          label={`حذف الدور ${r.name}`}
+                        />
                       ) : (
                         "—"
                       )}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { prisma } from "@/lib/prisma";
 import {
   createOffer,
@@ -34,11 +35,7 @@ export default async function AdminServiceDetailPage({ params }: Props) {
 
   return (
     <div className="stack-gap">
-      <p>
-        <Link className="text-link" href="/admin/services">
-          ← رجوع للخدمات
-        </Link>
-      </p>
+      <AdminBackLink href="/admin/services" label="رجوع للخدمات" />
 
       <section className="panel">
         <h1>تعديل الخدمة</h1>

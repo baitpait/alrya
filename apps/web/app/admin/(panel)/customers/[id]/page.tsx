@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { updateCustomer, deleteCustomer } from "../actions";
 
 type Props = { params: Promise<{ id: string }> };
@@ -31,11 +32,7 @@ export default async function AdminCustomerDetailPage({ params }: Props) {
 
   return (
     <div className="stack-gap">
-      <p>
-        <Link className="text-link" href="/admin/customers">
-          ← رجوع للزبائن
-        </Link>
-      </p>
+      <AdminBackLink href="/admin/customers" label="رجوع للزبائن" />
 
       <section className="panel">
         <h1>

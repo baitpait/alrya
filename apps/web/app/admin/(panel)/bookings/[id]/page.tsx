@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BookingStatus } from "@prisma/client";
+import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { prisma } from "@/lib/prisma";
 import {
   convertBookingRequest,
@@ -84,11 +85,7 @@ export default async function AdminBookingDetailPage({ params }: Props) {
 
   return (
     <div className="stack-gap">
-      <p>
-        <Link className="text-link" href="/admin/bookings">
-          ← رجوع للطلبات
-        </Link>
-      </p>
+      <AdminBackLink href="/admin/bookings" label="رجوع للطلبات" />
 
       <section className="panel">
         <h1>طلب حجز #{booking.id}</h1>

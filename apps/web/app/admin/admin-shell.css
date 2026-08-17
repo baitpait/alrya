@@ -635,6 +635,33 @@ html[data-theme="dark"] .theme-btn .icon-light {
   outline-offset: 2px;
 }
 
+.btn-icon--delete {
+  color: #b42318;
+  border-color: rgba(180, 35, 24, 0.35);
+}
+
+.btn-icon--delete:hover {
+  background: rgba(180, 35, 24, 0.12);
+  border-color: #b42318;
+}
+
+.confirm-delete-form {
+  display: inline-flex;
+  margin: 0;
+}
+
+.admin-back-wrap {
+  margin: 0 0 0.35rem;
+}
+
+.admin-back-btn {
+  text-decoration: none;
+  font-weight: 600;
+  min-height: 2.45rem;
+  display: inline-flex;
+  align-items: center;
+}
+
 .text-link {
   color: var(--admin-primary);
   text-decoration: underline;

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ContactMessageStatus } from "@prisma/client";
+import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
 import { prisma } from "@/lib/prisma";
 import { archiveMessage, deleteMessage, markMessageRead } from "../actions";
@@ -52,11 +52,7 @@ export default async function AdminMessageDetailPage({ params }: Props) {
 
   return (
     <div className="stack-gap">
-      <p>
-        <Link className="text-link" href="/admin/messages">
-          ← رجوع للرسائل
-        </Link>
-      </p>
+      <AdminBackLink href="/admin/messages" label="رجوع للرسائل" />
 
       <section className="panel">
         <h1>رسالة #{message.id}</h1>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ActionIconLink } from "@/components/admin/AdminActionIcons";
+import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
 import { prisma } from "@/lib/prisma";
 import { deletePayment } from "../events/actions";
 
@@ -103,13 +104,13 @@ export default async function AdminPaymentsPage({ searchParams }: Props) {
                         label={`فتح المناسبة #${p.eventId}`}
                         kind="open"
                       />
-                      <form action={deletePayment}>
-                        <input type="hidden" name="id" value={p.id} />
-                        <input type="hidden" name="eventId" value={p.eventId} />
-                        <button type="submit" className="btn-danger">
-                          حذف
-                        </button>
-                      </form>
+                      <ConfirmDelete
+                        action={deletePayment}
+                        id={p.id}
+                        fieldName="recordId"
+                        hiddenFields={{ eventId: p.eventId }}
+                        label={`حذف دفعة ${Number(p.amount).toFixed(2)}`}
+                      />
                     </td>
                   </tr>
                 ))}

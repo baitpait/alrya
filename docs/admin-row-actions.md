@@ -1,72 +1,77 @@
-# إجراءات صفوف الأدمن — أيقونات بدل نص «عرض»
+# إجراءات صفوف الأدمن — أيقونات · رجوع · حذف
 
 > قرار مدير المشروع: مصطفى البستنجي — **2026-08-17**  
-> المكوّن: `apps/web/components/admin/AdminActionIcons.tsx`  
-> الأنماط: `apps/web/app/admin/admin-shell.css` (`.btn-icon` · `.modal-footer-actions`)
+> المكوّنات:  
+> - `AdminActionIcons.tsx` — عرض / تعديل / فتح  
+> - `ConfirmDelete.tsx` — حذف بأيقونة سلة (مع تأكيد)  
+> - `AdminBackLink.tsx` — زر رجوع موحّد  
+> الأنماط: `admin-shell.css` (`.btn-icon` · `.admin-back-btn` · `.detail-footer-actions`)
 
 ---
 
-## المشكلة التي رُصدت
+## 1) روابط الرجوع — أزرار وليس text-link
 
-| المكان | العَرَض |
-|--------|---------|
-| مودال التقويم | «حفظ التعديل» زر أساسي · «فتح المناسبة» رابط تحتي · «إغلاق» زر ثانوي — أحجام وأنماط غير متناسقة |
-| جداول (رسائل، حجوزات، …) | كلمة «عرض» كنص رابط رفيع — ضعيفة بصرياً ومزدحمة عند تكرارها |
-| DOM `form#[object HTMLInputElement]` | حقل مخفي `name="id"` يظلل `form.id` في المتصفح |
-
----
-
-## القرار
-
-1. **الجداول:** إجراء «عرض/تفاصيل» = **أيقونة** مع `title` + `aria-label` عربي واضح.  
-2. **مودال التقويم:** شريط أزرار موحّد (`.modal-footer-actions`) — نفس الارتفاع؛ الروابط المهمة كـ `btn-secondary` وليس `text-link`.  
-3. **حقل الموعد:** `name="eventServiceId"` بدل `name="id"`.
-
----
-
-## أنواع الأيقونات
-
-| `kind` | المعنى | مثال |
-|--------|--------|------|
-| `view` | عرض / تفاصيل | رسائل · حجوزات · مناسبات |
-| `edit` | عرض + تعديل | موظفين · معرض · FAQ · خدمات |
-| `open` | فتح كيان مرتبط | مناسبة من دفعات/تقارير |
-
-الحذف يبقى **زر نصّي** (`btn-danger`) مع تأكيد — أوضح من أيقونة وحدها للإجراء المدمّر.
-
----
-
-## أزرار تفاصيل الصفحة (أرشفة / حذف)
-
-| المشكلة | الحل |
-|---------|------|
-| زر بلا صنف بجانب `btn-danger` | كل الأزرار: `btn-secondary` أو `btn-primary` أو `btn-danger` |
-| `btn-danger` كان له `margin-top` يكسر الصف | أُزيل داخل `.row-actions` / `.detail-footer-actions` |
-| شريط غير موحّد | استخدم `.detail-footer-actions` (نفس ارتفاع الأزرار) |
-| `name="id"` → `form#[object HTMLInputElement]` في أدوات الفحص | استخدم `messageId` / `recordId` / `bookingId` / `eventServiceId` |
-
-مرجع CSS: `.detail-footer-actions` في `admin-shell.css`  
-مرجع حذف مؤكَّد: `ConfirmDelete` مع `fieldName="messageId"` (لا `name="id"`).
-
----
-
-## للمبرمج
+**ممنوع** في صفحات التفاصيل:
 
 ```tsx
-import { ActionIconLink } from "@/components/admin/AdminActionIcons";
+<Link className="text-link" href="…">← رجوع للرسائل</Link>
+```
 
-<ActionIconLink
-  href={`/admin/messages/${id}`}
-  label={`عرض رسالة ${name}`}
-  kind="view"
+**مطلوب:**
+
+```tsx
+import { AdminBackLink } from "@/components/admin/AdminBackLink";
+
+<AdminBackLink href="/admin/messages" label="رجوع للرسائل" />
+```
+
+يطبق على كل صفحات `[id]`: رسائل · حجوزات · زبائن · مناسبات · موظفين · خدمات · معرض · FAQ.
+
+---
+
+## 2) عمود الإجراءات في الجداول — أيقونات
+
+| الإجراء | المكوّن | الشكل |
+|--------|---------|--------|
+| عرض / تفاصيل | `ActionIconLink` `kind="view"` | عين |
+| تعديل | `ActionIconLink` `kind="edit"` | قلم |
+| فتح مرتبط | `ActionIconLink` `kind="open"` | مجلد |
+| حذف | `ConfirmDelete` (افتراضي `variant="icon"`) | سلة حمراء |
+
+كل أيقونة لها `title` + `aria-label` بالعربية.
+
+```tsx
+<ConfirmDelete
+  action={deleteCustomer}
+  id={c.id}
+  fieldName="recordId"
+  label={`حذف الزبون ${c.firstName}`}
 />
 ```
 
-- ممنوع إعادة كلمة «عرض» وحدها في عمود الإجراءات للجداول الجديدة.  
-- اختبار يدوي: مرّر الماوس → يظهر التلميح العربي · لوحة المفاتيح/قارئ الشاشة يقرأ `aria-label`.
+`variant="button"` فقط عندما يكون نص الحذف طويلاً وواضحاً في صفحة تفاصيل (مثال نادر).
 
 ---
 
-## الشاشات المحدَّثة في هذا القرار
+## 3) لا تستخدم `name="id"` في النماذج
 
-رسائل · حجوزات · زبائن · مناسبات · موظفين · خدمات · دفعات · معرض · FAQ · تقارير (مناسبات/دفعات/خصومات/طاقم) · مودال التقويم.
+يسبّب في أدوات الفحص: `form#[object HTMLInputElement]`.
+
+استخدم: `recordId` · `messageId` · `bookingId` · `eventServiceId` — والـ action يقرأها مع توافق خلفي لـ `id` إن لزم.
+
+---
+
+## 4) أزرار تفاصيل الصفحة (أرشفة / حفظ)
+
+| المشكلة | الحل |
+|---------|------|
+| زر بلا صنف بجانب خطر | `btn-secondary` / `btn-primary` / `btn-danger` |
+| ارتفاعات مختلفة | `.detail-footer-actions` أو `.modal-footer-actions` |
+
+---
+
+## 5) اختبار يدوي سريع
+
+1. افتح رسالة → زر «رجوع للرسائل» يظهر كزر ثانوي وليس رابطاً تحتياً.  
+2. في جدول الزبائن/الدفعات: عين + سلة · الحذف يطلب تأكيداً.  
+3. لا كلمة «عرض» أو «حذف» كنص وحيد في عمود الإجراءات للجداول الجديدة.

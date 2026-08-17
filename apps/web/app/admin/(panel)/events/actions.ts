@@ -230,7 +230,7 @@ export async function addPayment(formData: FormData) {
 }
 
 export async function deletePayment(formData: FormData) {
-  const id = Number(formData.get("id"));
+  const id = Number(formData.get("recordId") ?? formData.get("id"));
   const eventId = Number(formData.get("eventId"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
 

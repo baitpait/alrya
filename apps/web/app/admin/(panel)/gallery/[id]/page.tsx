@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
 import { deleteGalleryItem, updateGalleryItem } from "../actions";
 
@@ -24,11 +24,7 @@ export default async function AdminGalleryItemPage({ params }: Props) {
 
   return (
     <div className="stack-gap">
-      <p>
-        <Link className="text-link" href="/admin/gallery">
-          ← رجوع للمعرض
-        </Link>
-      </p>
+      <AdminBackLink href="/admin/gallery" label="رجوع للمعرض" />
 
       <section className="panel">
         <h1>{item.title}</h1>

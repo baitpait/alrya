@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EventStatus } from "@prisma/client";
+import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { prisma } from "@/lib/prisma";
 import { formatMoney, getEventFinance } from "@/lib/event-finance";
 import {
@@ -101,11 +102,7 @@ export default async function AdminEventDetailPage({ params }: Props) {
 
   return (
     <div className="stack-gap">
-      <p>
-        <Link className="text-link" href="/admin/events">
-          ← رجوع للمناسبات
-        </Link>
-      </p>
+      <AdminBackLink href="/admin/events" label="رجوع للمناسبات" />
 
       <section className="panel">
         <h1>مناسبة #{event.id}</h1>
