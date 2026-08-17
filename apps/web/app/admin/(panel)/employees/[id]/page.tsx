@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
+import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
 import { prisma } from "@/lib/prisma";
 import { deleteEmployee, updateEmployee } from "../actions";
 
@@ -100,14 +101,19 @@ export default async function AdminEmployeeDetailPage({ params }: Props) {
             كلمة مرور جديدة (اختياري)
             <input className="input-ltr" name="password" type="password" minLength={8} />
           </label>
-          <button type="submit">حفظ</button>
-        </form>
-        <form action={deleteEmployee} style={{ marginTop: "0.75rem" }}>
-          <input type="hidden" name="id" value={user.id} />
-          <button type="submit" className="btn-danger">
-            حذف / تعطيل
+          <button type="submit" className="btn-primary">
+            حفظ
           </button>
         </form>
+        <div className="detail-footer-actions" style={{ marginTop: "0.75rem" }}>
+          <ConfirmDelete
+            action={deleteEmployee}
+            id={user.id}
+            fieldName="recordId"
+            label={`حذف / تعطيل ${user.name}`}
+            message={`تعطيل أو حذف الموظف ${user.name}؟`}
+          />
+        </div>
       </section>
 
       <section className="panel">

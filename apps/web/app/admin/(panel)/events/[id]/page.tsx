@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EventStatus } from "@prisma/client";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
+import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
 import { prisma } from "@/lib/prisma";
 import { formatMoney, getEventFinance } from "@/lib/event-finance";
 import {
@@ -174,15 +175,20 @@ export default async function AdminEventDetailPage({ params }: Props) {
             ملاحظات
             <textarea name="notes" rows={2} defaultValue={event.notes ?? ""} />
           </label>
-          <button type="submit">حفظ</button>
-        </form>
-
-        <form action={deleteEvent} style={{ marginTop: "0.75rem" }}>
-          <input type="hidden" name="id" value={event.id} />
-          <button type="submit" className="btn-danger">
-            حذف المناسبة
+          <button type="submit" className="btn-primary">
+            حفظ
           </button>
         </form>
+
+        <div className="detail-footer-actions" style={{ marginTop: "0.75rem" }}>
+          <ConfirmDelete
+            action={deleteEvent}
+            id={event.id}
+            fieldName="recordId"
+            label="حذف المناسبة"
+            message="تأكيد حذف المناسبة وكل مواعيدها ودفعاتها؟ لا يمكن التراجع."
+          />
+        </div>
       </section>
 
       <section className="panel">
@@ -259,14 +265,14 @@ export default async function AdminEventDetailPage({ params }: Props) {
                     <td className="cell-ltr">{Number(p.amount).toFixed(2)}</td>
                     <td>{p.method || "—"}</td>
                     <td>{p.note || "—"}</td>
-                    <td>
-                      <form action={deletePayment}>
-                        <input type="hidden" name="id" value={p.id} />
-                        <input type="hidden" name="eventId" value={event.id} />
-                        <button type="submit" className="btn-danger">
-                          حذف
-                        </button>
-                      </form>
+                    <td className="row-actions row-actions--icons">
+                      <ConfirmDelete
+                        action={deletePayment}
+                        id={p.id}
+                        fieldName="recordId"
+                        hiddenFields={{ eventId: event.id }}
+                        label={`حذف دفعة ${Number(p.amount).toFixed(2)}`}
+                      />
                     </td>
                   </tr>
                 ))}
@@ -319,14 +325,14 @@ export default async function AdminEventDetailPage({ params }: Props) {
                     <td className="cell-ltr">{formatDateTimeAr(d.createdAt)}</td>
                     <td className="cell-ltr">{Number(d.amount).toFixed(2)}</td>
                     <td>{d.reason || "—"}</td>
-                    <td>
-                      <form action={deleteDiscount}>
-                        <input type="hidden" name="id" value={d.id} />
-                        <input type="hidden" name="eventId" value={event.id} />
-                        <button type="submit" className="btn-danger">
-                          حذف
-                        </button>
-                      </form>
+                    <td className="row-actions row-actions--icons">
+                      <ConfirmDelete
+                        action={deleteDiscount}
+                        id={d.id}
+                        fieldName="recordId"
+                        hiddenFields={{ eventId: event.id }}
+                        label={`حذف خصم ${Number(d.amount).toFixed(2)}`}
+                      />
                     </td>
                   </tr>
                 ))}
@@ -487,14 +493,15 @@ export default async function AdminEventDetailPage({ params }: Props) {
                         ? "—"
                         : es.employees.map((e) => e.user.name).join("، ")}
                     </td>
-                    <td>
-                      <form action={deleteEventService}>
-                        <input type="hidden" name="id" value={es.id} />
-                        <input type="hidden" name="eventId" value={event.id} />
-                        <button type="submit" className="btn-danger">
-                          حذف
-                        </button>
-                      </form>
+                    <td className="row-actions row-actions--icons">
+                      <ConfirmDelete
+                        action={deleteEventService}
+                        id={es.id}
+                        fieldName="recordId"
+                        hiddenFields={{ eventId: event.id }}
+                        label={`حذف موعد ${es.service.name}`}
+                        message={`تأكيد حذف الموعد «${es.service.name}»؟`}
+                      />
                     </td>
                   </tr>
                 ))}
@@ -611,14 +618,15 @@ export default async function AdminEventDetailPage({ params }: Props) {
                             {asg.bonus != null ? Number(asg.bonus).toFixed(2) : "—"}
                           </td>
                           <td>{asg.supervisor?.name || "—"}</td>
-                          <td>
-                            <form action={unassignEmployee}>
-                              <input type="hidden" name="id" value={asg.id} />
-                              <input type="hidden" name="eventId" value={event.id} />
-                              <button type="submit" className="btn-danger">
-                                إزالة
-                              </button>
-                            </form>
+                          <td className="row-actions row-actions--icons">
+                            <ConfirmDelete
+                              action={unassignEmployee}
+                              id={asg.id}
+                              fieldName="recordId"
+                              hiddenFields={{ eventId: event.id }}
+                              label={`إزالة ${asg.user.name} من الطاقم`}
+                              message={`إزالة ${asg.user.name} من هذا الموعد؟`}
+                            />
                           </td>
                         </tr>
                       ))}

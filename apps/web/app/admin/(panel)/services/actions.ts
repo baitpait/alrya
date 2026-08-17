@@ -134,7 +134,7 @@ export async function updateOffer(formData: FormData) {
 }
 
 export async function deleteOffer(formData: FormData) {
-  const id = Number(formData.get("id"));
+  const id = Number(formData.get("recordId") ?? formData.get("id"));
   const serviceId = Number(formData.get("serviceId"));
   if (!Number.isFinite(id) || id <= 0) {
     throw new Error("معرّف العرض غير صالح.");
