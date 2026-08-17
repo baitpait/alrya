@@ -59,7 +59,9 @@ export default async function AdminBookingsPage({ searchParams }: Props) {
     <div className="stack-gap">
       <section className="panel">
         <h1>طلبات التسجيل</h1>
-        <p>Inbox الحجوزات من اللاندينغ — التحويل ينشئ زبون + مناسبة + موعد تقويم.</p>
+        <p>
+          طلبات الحجز من الموقع — التحويل ينشئ زبون ومناسبة وموعد على التقويم.
+        </p>
 
         <form method="get" className="inline-form" style={{ marginBottom: "1rem" }}>
           <label>

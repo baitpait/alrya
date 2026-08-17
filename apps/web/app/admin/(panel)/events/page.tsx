@@ -40,7 +40,7 @@ export default async function AdminEventsPage({ searchParams }: Props) {
     <div className="stack-gap">
       <section className="panel">
         <h1>المناسبات</h1>
-        <p>مناسبة مربوطة بزبون، وتحتها خدمات بتاريخ (EventService).</p>
+        <p>مناسبة مربوطة بزبون، وتحتها مواعيد خدمات بتاريخ (مثل حنا وعرس).</p>
 
         <div className="row-actions" style={{ marginTop: "0.75rem" }}>
           <Link className="text-link" href="/admin/events">

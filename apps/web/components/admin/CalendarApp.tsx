@@ -179,7 +179,7 @@ export function CalendarApp({
         <div className="calendar-toolbar">
           <div>
             <h1>التقويم</h1>
-            <p>كل المواعيد من EventService في قاعدة البيانات — بدون أحداث وهمية.</p>
+            <p>كل المواعيد من سجل الاستوديو — مواعيد حقيقية فقط، بدون تجريب وهمي.</p>
           </div>
           <button type="button" className="btn-primary" onClick={() => openCreate()}>
             إضافة موعد
@@ -233,7 +233,7 @@ export function CalendarApp({
             {mode === "create" ? (
               <>
                 <h2>إضافة موعد</h2>
-                <p>يُنشأ EventService حقيقي ويظهر فوراً على التقويم.</p>
+                <p>يُحفظ الموعد ويظهر فوراً على التقويم.</p>
                 <form action={onCreateSubmit} className="inline-form">
                   <label>
                     الزبون

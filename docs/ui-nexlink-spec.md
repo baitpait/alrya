@@ -216,5 +216,6 @@ assets/images/...
 - [ ] التقويم FullCalendar يعرض بيانات حقيقية
 - [ ] Modal إضافة/تعديل موعد: أزرار موحّدة (`.modal-footer-actions`) — لا خلط رابط تحتي مع زر بارتفاع مختلف
 - [ ] إجراءات الجداول: أيقونات `ActionIconLink` بدل كلمة «عرض» — انظر [admin-row-actions.md](./admin-row-actions.md)
+- [ ] لا مصطلحات تقنية في النصوص الظاهرة (`EventService` / `MySQL` / `Inbox`…) — [admin-ui-copy.md](./admin-ui-copy.md)
 - [ ] الشعار والنصوص: استوديو الراية
 - [ ] اللاندينغ العام **لا** يستخدم شكل سايدبار NexLink

@@ -70,7 +70,7 @@ export default async function AdminHomePage() {
       <section className="panel">
         <h1>لوحة التحكم</h1>
         <p>
-          أرقام حية من MySQL — كل بطاقة تفتح الصفحة المفلترة.{" "}
+          أرقام حية من النظام — كل بطاقة تفتح الصفحة المفلترة.{" "}
           <Link className="text-link" href="/admin/reports">
             التقارير
           </Link>

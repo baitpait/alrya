@@ -37,8 +37,8 @@ export default function AdminReportsPage() {
       <section className="panel">
         <h1>التقارير</h1>
         <p>
-          أرقام من MySQL كما في الشاشات. «تصدير Excel» ملف CSV يفتح في Excel، و«طباعة /
-          PDF» من نافذة الطباعة في المتصفح.
+          نفس أرقام الشاشات. «تصدير Excel» يفتح في Excel، و«طباعة / PDF» من نافذة
+          الطباعة في المتصفح.
         </p>
         <div className="dash-grid">
           {REPORTS.map((r) => (

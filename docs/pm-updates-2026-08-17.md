@@ -40,6 +40,14 @@
 | مودال التقويم | `.modal-footer-actions` — أزرار متناسقة الارتفاع |
 | توثيق | [admin-row-actions.md](./admin-row-actions.md) |
 
+## 3b) لغة الواجهة — بدون مصطلحات تقنية
+
+| ممنوع في الشاشة | بديل |
+|-----------------|------|
+| EventService / MySQL / Inbox | موعد · النظام · طلبات الحجز |
+
+التفاصيل: [admin-ui-copy.md](./admin-ui-copy.md)
+
 ---
 
 ## 4) قانون العمل

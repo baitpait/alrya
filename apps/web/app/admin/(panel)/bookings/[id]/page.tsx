@@ -167,7 +167,9 @@ export default async function AdminBookingDetailPage({ params }: Props) {
         <>
           <section className="panel">
             <h2>تحويل إلى مناسبة + تقويم</h2>
-            <p>يُنشأ زبون (أو يُربط بهاتف موجود) + مناسبة + EventService يظهر فوراً على التقويم.</p>
+            <p>
+              يُنشأ زبون (أو يُربط بهاتف موجود) ومناسبة وموعد يظهر فوراً على التقويم.
+            </p>
             <form action={convertBookingRequest} className="inline-form">
               <input type="hidden" name="id" value={booking.id} />
               <label>
