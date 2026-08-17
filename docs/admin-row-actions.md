@@ -36,6 +36,20 @@
 
 ---
 
+## أزرار تفاصيل الصفحة (أرشفة / حذف)
+
+| المشكلة | الحل |
+|---------|------|
+| زر بلا صنف بجانب `btn-danger` | كل الأزرار: `btn-secondary` أو `btn-primary` أو `btn-danger` |
+| `btn-danger` كان له `margin-top` يكسر الصف | أُزيل داخل `.row-actions` / `.detail-footer-actions` |
+| شريط غير موحّد | استخدم `.detail-footer-actions` (نفس ارتفاع الأزرار) |
+| `name="id"` → `form#[object HTMLInputElement]` في أدوات الفحص | استخدم `messageId` / `recordId` / `bookingId` / `eventServiceId` |
+
+مرجع CSS: `.detail-footer-actions` في `admin-shell.css`  
+مرجع حذف مؤكَّد: `ConfirmDelete` مع `fieldName="messageId"` (لا `name="id"`).
+
+---
+
 ## للمبرمج
 
 ```tsx

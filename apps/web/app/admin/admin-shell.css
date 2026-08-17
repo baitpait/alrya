@@ -396,7 +396,45 @@ html[data-theme="dark"] .theme-btn .icon-light {
 .btn-danger {
   background: rgba(180, 35, 24, 0.12);
   color: #b42318;
-  margin-top: 0.5rem;
+  font-weight: 600;
+  border: 1px solid rgba(180, 35, 24, 0.25);
+}
+
+/* داخل صف الإجراءات: لا هامش علوي يكسر المحاذاة مع أرشفة/حفظ */
+.row-actions .btn-danger,
+.detail-footer-actions .btn-danger,
+.modal-footer-actions .btn-danger {
+  margin-top: 0;
+}
+
+.detail-footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
+  margin-top: 1.25rem;
+}
+
+.detail-footer-actions > form {
+  display: inline-flex;
+  margin: 0;
+}
+
+.detail-footer-actions button,
+.row-actions > form > button.btn-secondary,
+.row-actions > form > button.btn-primary,
+.row-actions > form > button.btn-danger {
+  min-height: 2.65rem;
+  padding: 0.55rem 0.95rem;
+  border-radius: 0.55rem;
+  font: inherit;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: fit-content;
+  cursor: pointer;
 }
 
 .check-row {

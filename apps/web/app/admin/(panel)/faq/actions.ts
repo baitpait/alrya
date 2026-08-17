@@ -59,7 +59,7 @@ export async function updateFaqItem(formData: FormData) {
 }
 
 export async function deleteFaqItem(formData: FormData) {
-  const id = Number(formData.get("id"));
+  const id = Number(formData.get("recordId") ?? formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
   await prisma.faqItem.delete({ where: { id } });
   revalidatePublic();

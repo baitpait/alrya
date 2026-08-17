@@ -38,9 +38,9 @@ function revalidateBookingPaths(eventId?: number, customerId?: number) {
   if (customerId) revalidatePath(`/admin/customers/${customerId}`);
 }
 
-/** تحويل طلب حجز → زبون + مناسبة + EventService (يظهر على التقويم) */
+/** تحويل طلب حجز → زبون + مناسبة + موعد يظهر على التقويم */
 export async function convertBookingRequest(formData: FormData) {
-  const id = Number(formData.get("id"));
+  const id = Number(formData.get("bookingId") ?? formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
 
   const booking = await prisma.bookingRequest.findUnique({
@@ -156,7 +156,7 @@ export async function convertBookingRequest(formData: FormData) {
 }
 
 export async function rejectBookingRequest(formData: FormData) {
-  const id = Number(formData.get("id"));
+  const id = Number(formData.get("bookingId") ?? formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
 
   const booking = await prisma.bookingRequest.findUnique({ where: { id } });
@@ -183,7 +183,7 @@ export async function rejectBookingRequest(formData: FormData) {
 }
 
 export async function markBookingContacted(formData: FormData) {
-  const id = Number(formData.get("id"));
+  const id = Number(formData.get("bookingId") ?? formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
 
   const booking = await prisma.bookingRequest.findUnique({ where: { id } });

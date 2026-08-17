@@ -3,6 +3,8 @@
 type Props = {
   action: (formData: FormData) => void | Promise<void>;
   id: number;
+  /** تجنّب name="id" — يظلل form.id في أدوات المتصفح */
+  fieldName?: string;
   label?: string;
   message?: string;
 };
@@ -10,6 +12,7 @@ type Props = {
 export function ConfirmDelete({
   action,
   id,
+  fieldName = "recordId",
   label = "حذف",
   message = "تأكيد الحذف؟ لا يمكن التراجع.",
 }: Props) {
@@ -20,7 +23,7 @@ export function ConfirmDelete({
         if (!window.confirm(message)) e.preventDefault();
       }}
     >
-      <input type="hidden" name="id" value={id} />
+      <input type="hidden" name={fieldName} value={id} />
       <button type="submit" className="btn-danger">
         {label}
       </button>
