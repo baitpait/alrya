@@ -15,6 +15,7 @@
 0e. [admin-row-actions.md](./admin-row-actions.md) — **أيقونات إجراءات الجداول + توحيد مودال التقويم**
 0f. [admin-ui-copy.md](./admin-ui-copy.md) — **لغة الواجهة بدون EventService/MySQL/Inbox**
 0g. [pm-login-admin-only.md](./pm-login-admin-only.md) — **دخول اللوحة للمسؤول فقط · الطاقم بلا login (مرحلة 15)**
+0h. [admin-ui-buttons-sidebar.md](./admin-ui-buttons-sidebar.md) — **هوية أزرار موحّدة · سايدبار عرض ثابت + Cairo**
 1. [machine-setup.md](./machine-setup.md) — **جهاز جديد/مُفرمَت:** Cursor + Git + Node + سحب الريبو
 1b. [phase-0-completion.md](./phase-0-completion.md) — **سجل إنجاز المرحلة 0** (Next.js + Prisma + MySQL)
 1c. [phase-1-completion.md](./phase-1-completion.md) — **سجل إنجاز المرحلة 1** (شِل الأدمن + الثيم)

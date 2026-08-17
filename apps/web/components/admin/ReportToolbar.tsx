@@ -8,6 +8,7 @@ type Props = {
   query?: string;
 };
 
+/** شريط تقارير — كل العناصر بنفس هوية .btn-secondary */
 export function ReportToolbar({ kind, query }: Props) {
   const qs = query ? `?${query}` : "";
   return (
@@ -16,7 +17,7 @@ export function ReportToolbar({ kind, query }: Props) {
         تصدير Excel
       </a>
       <PrintButton />
-      <Link className="text-link" href="/admin/reports">
+      <Link className="btn-secondary" href="/admin/reports">
         كل التقارير
       </Link>
     </div>
