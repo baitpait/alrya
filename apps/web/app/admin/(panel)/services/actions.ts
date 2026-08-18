@@ -147,6 +147,13 @@ export async function deleteOffer(formData: FormData) {
     throw new Error("معرّف العرض غير صالح.");
   }
 
+  const usedOn = await prisma.eventService.count({ where: { offerId: id } });
+  if (usedOn > 0) {
+    throw new Error(
+      `لا يمكن حذف هذا العرض — مستخدم في ${usedOn} موعد. عطّلي الخدمة أو عدّلي المواعيد أولاً.`,
+    );
+  }
+
   await prisma.offer.delete({ where: { id } });
 
   revalidatePath("/admin/services");

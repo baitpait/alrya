@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ActionIconSubmit } from "@/components/admin/AdminActionIcons";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
+import {
+  OfferCreateModal,
+  OfferEditModal,
+} from "@/components/admin/OfferCreateModal";
 import { ServiceEditModal } from "@/components/admin/ServiceCreateModal";
 import { prisma } from "@/lib/prisma";
 import {
   createOffer,
   deleteOffer,
+  setServiceActive,
   updateOffer,
   updateService,
 } from "../actions";
@@ -31,7 +36,12 @@ export default async function AdminServiceDetailPage({ params }: Props) {
 
   const service = await prisma.service.findUnique({
     where: { id },
-    include: { offers: { orderBy: { id: "desc" } } },
+    include: {
+      offers: {
+        orderBy: { id: "desc" },
+        include: { _count: { select: { eventServices: true } } },
+      },
+    },
   });
   if (!service) notFound();
 
@@ -39,146 +49,122 @@ export default async function AdminServiceDetailPage({ params }: Props) {
     <div className="stack-gap">
       <AdminBackLink href="/admin/services" label="رجوع للخدمات" />
 
-      <section className="panel">
+      <section className="panel event-hero-panel">
         <div className="calendar-toolbar">
           <div>
-            <h1>{service.name}</h1>
-            <p style={{ margin: "0.25rem 0 0" }}>
-              {service.kind === "SESSION" ? "جلسة" : "مناسبة"} ·{" "}
-              {service.active ? "نشطة" : "معطّلة"}
+            <h1 className="event-page-title">
+              {service.name}
+              <span className="event-page-id">#{service.id}</span>
+            </h1>
+            <p className="event-hero-meta">
+              <span className="event-status-pill">
+                {service.kind === "SESSION" ? "جلسة" : "مناسبة"}
+              </span>
+              <span className="event-status-pill">
+                {service.active ? "نشطة" : "معطّلة"}
+              </span>
             </p>
           </div>
-          <ServiceEditModal
-            action={updateService}
-            service={{
-              id: service.id,
-              name: service.name,
-              kind: service.kind,
-              active: service.active,
-            }}
-          />
+          <div className="calendar-toolbar-actions">
+            <ServiceEditModal
+              action={updateService}
+              service={{
+                id: service.id,
+                name: service.name,
+                kind: service.kind,
+                active: service.active,
+              }}
+            />
+            <form action={setServiceActive}>
+              <input type="hidden" name="recordId" value={service.id} />
+              <input
+                type="hidden"
+                name="active"
+                value={service.active ? "false" : "true"}
+              />
+              <ActionIconSubmit
+                label={
+                  service.active
+                    ? `تعطيل ${service.name}`
+                    : `تفعيل ${service.name}`
+                }
+                kind={service.active ? "disable" : "enable"}
+              />
+            </form>
+            <OfferCreateModal action={createOffer} serviceId={service.id} />
+          </div>
         </div>
       </section>
 
       <section className="panel">
-        <h2>إضافة عرض / باقة</h2>
-        <form action={createOffer} className="inline-form">
-          <input type="hidden" name="serviceId" value={service.id} />
-          <label>
-            اسم العرض
-            <input name="name" required placeholder="مثال: باقة ذهبية" />
-          </label>
-          <label>
-            السعر / المبلغ (₪)
-            <input
-              className="input-ltr"
-              name="price"
-              type="number"
-              inputMode="decimal"
-              step="0.01"
-              min="0"
-              required
-              placeholder="0.00"
-            />
-          </label>
-          <label>
-            بدل (اختياري)
-            <input
-              className="input-ltr"
-              name="listPrice"
-              type="number"
-              inputMode="decimal"
-              step="0.01"
-              min="0"
-              placeholder="سعر مرجعي"
-            />
-          </label>
-          <label>
-            الجمهور / الطاقم (اختياري)
-            <input name="audience" placeholder="شخص واحد / شخصين" />
-          </label>
-          <label>
-            الوصف (اختياري)
-            <textarea name="description" rows={2} />
-          </label>
-          <button type="submit">حفظ العرض</button>
-        </form>
-      </section>
-
-      <section className="panel">
-        <h2>عروض هذه الخدمة ({service.offers.length})</h2>
+        <h2>العروض / الباقات ({service.offers.length})</h2>
         {service.offers.length === 0 ? (
-          <p>لا عروض بعد.</p>
+          <p className="empty-hint">
+            لا عروض بعد. أضيفي أول باقة من زر «إضافة عرض» أعلاه.
+          </p>
         ) : (
-          <div className="stack-gap">
-            {service.offers.map((offer) => (
-              <div key={offer.id} className="offer-card">
-                <form action={updateOffer} className="inline-form">
-                  <input type="hidden" name="recordId" value={offer.id} />
-                  <input type="hidden" name="serviceId" value={service.id} />
-                  <label>
-                    الاسم
-                    <input name="name" required defaultValue={offer.name} />
-                  </label>
-                  <label>
-                    السعر / المبلغ (₪)
-                    <input
-                      className="input-ltr"
-                      name="price"
-                      type="number"
-                      inputMode="decimal"
-                      step="0.01"
-                      min="0"
-                      required
-                      defaultValue={Number(offer.price)}
-                    />
-                  </label>
-                  <label>
-                    بدل (₪)
-                    <input
-                      className="input-ltr"
-                      name="listPrice"
-                      type="number"
-                      inputMode="decimal"
-                      step="0.01"
-                      min="0"
-                      defaultValue={
-                        offer.listPrice != null ? Number(offer.listPrice) : ""
-                      }
-                    />
-                  </label>
-                  <label>
-                    الجمهور / الطاقم
-                    <input
-                      name="audience"
-                      defaultValue={offer.audience ?? ""}
-                    />
-                  </label>
-                  <label>
-                    الوصف
-                    <textarea
-                      name="description"
-                      rows={2}
-                      defaultValue={offer.description ?? ""}
-                    />
-                  </label>
-                  <div className="row-actions">
-                    <button type="submit" className="btn-primary">
-                      تحديث العرض
-                    </button>
-                  </div>
-                </form>
-                <div className="row-actions row-actions--icons" style={{ marginTop: "0.5rem" }}>
-                  <ConfirmDelete
-                    action={deleteOffer}
-                    id={offer.id}
-                    fieldName="recordId"
-                    hiddenFields={{ serviceId: service.id }}
-                    label={`حذف العرض ${offer.name}`}
-                  />
-                </div>
-              </div>
-            ))}
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>العرض</th>
+                  <th>السعر</th>
+                  <th>بدل</th>
+                  <th>الجمهور</th>
+                  <th>مواعيد</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+              <tbody>
+                {service.offers.map((offer) => (
+                  <tr key={offer.id}>
+                    <td>{offer.id}</td>
+                    <td>
+                      <strong>{offer.name}</strong>
+                      {offer.description ? (
+                        <div className="cell-sub">{offer.description}</div>
+                      ) : null}
+                    </td>
+                    <td className="cell-ltr">{Number(offer.price).toFixed(2)} ₪</td>
+                    <td className="cell-ltr">
+                      {offer.listPrice != null
+                        ? `${Number(offer.listPrice).toFixed(2)} ₪`
+                        : "—"}
+                    </td>
+                    <td>{offer.audience || "—"}</td>
+                    <td>{offer._count.eventServices}</td>
+                    <td className="row-actions row-actions--icons">
+                      <OfferEditModal
+                        action={updateOffer}
+                        serviceId={service.id}
+                        offer={{
+                          id: offer.id,
+                          name: offer.name,
+                          price: Number(offer.price),
+                          listPrice:
+                            offer.listPrice != null
+                              ? Number(offer.listPrice)
+                              : null,
+                          audience: offer.audience,
+                          description: offer.description,
+                        }}
+                      />
+                      {offer._count.eventServices > 0 ? null : (
+                        <ConfirmDelete
+                          action={deleteOffer}
+                          id={offer.id}
+                          fieldName="recordId"
+                          hiddenFields={{ serviceId: service.id }}
+                          label={`حذف العرض ${offer.name}`}
+                          message={`حذف العرض «${offer.name}»؟`}
+                        />
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </section>
