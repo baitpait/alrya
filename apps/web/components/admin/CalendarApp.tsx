@@ -14,6 +14,8 @@ import {
   updateCalendarAppointment,
 } from "@/app/admin/(panel)/calendar/actions";
 import type { CalendarEventDto } from "@/lib/calendar-events";
+import { ActionIconLink } from "@/components/admin/AdminActionIcons";
+import { ModalFormFooter } from "@/components/admin/ModalFormFooter";
 
 type FullCalendarComponent = typeof FullCalendarType;
 
@@ -383,18 +385,11 @@ export function CalendarApp({
                     <textarea name="notes" rows={2} />
                   </label>
                   {error ? <p className="login-error">{error}</p> : null}
-                  <div className="modal-footer-actions">
-                    <button type="submit" className="btn-primary" disabled={pending}>
-                      {pending ? "جاري الحفظ…" : "حفظ الموعد"}
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-secondary"
-                      onClick={() => setMode("closed")}
-                    >
-                      إغلاق
-                    </button>
-                  </div>
+                  <ModalFormFooter
+                    pending={pending}
+                    submitLabel="حفظ الموعد"
+                    onCancel={() => setMode("closed")}
+                  />
                 </form>
               </>
             ) : null}
@@ -514,24 +509,18 @@ export function CalendarApp({
                     <textarea name="notes" rows={2} />
                   </label>
                   {error ? <p className="login-error">{error}</p> : null}
-                  <div className="modal-footer-actions">
-                    <button type="submit" className="btn-primary" disabled={pending}>
-                      {pending ? "جاري الحفظ…" : "حفظ التعديل"}
-                    </button>
-                    <Link
-                      className="btn-secondary"
-                      href={`/admin/events/${selected.extendedProps.eventId}`}
-                    >
-                      فتح المناسبة
-                    </Link>
-                    <button
-                      type="button"
-                      className="btn-secondary"
-                      onClick={() => setMode("closed")}
-                    >
-                      إغلاق
-                    </button>
-                  </div>
+                  <ModalFormFooter
+                    pending={pending}
+                    submitLabel="حفظ التعديل"
+                    onCancel={() => setMode("closed")}
+                    beforeSave={
+                      <ActionIconLink
+                        href={`/admin/events/${selected.extendedProps.eventId}`}
+                        label="فتح المناسبة"
+                        kind="event"
+                      />
+                    }
+                  />
                 </form>
                 ) : (
                   <div className="row-actions">

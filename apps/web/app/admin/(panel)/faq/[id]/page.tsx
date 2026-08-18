@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
+import { FaqEditModal } from "@/components/admin/FaqCreateModal";
 import { deleteFaqItem, updateFaqItem } from "../actions";
 
 type Props = { params: Promise<{ id: string }> };
@@ -24,36 +25,30 @@ export default async function AdminFaqItemPage({ params }: Props) {
 
   return (
     <div className="stack-gap">
-      <AdminBackLink href="/admin/faq" label="رجوع للأسئلة" />
+      <AdminBackLink href="/admin/settings?tab=faq" label="رجوع للأسئلة" />
 
       <section className="panel">
-        <h1>{item.question}</h1>
-        <form action={updateFaqItem} className="inline-form">
-          <input type="hidden" name="id" value={item.id} />
-          <label>
-            السؤال
-            <input name="question" required defaultValue={item.question} />
-          </label>
-          <label>
-            الجواب
-            <textarea name="answer" required rows={5} defaultValue={item.answer} />
-          </label>
-          <label>
-            الترتيب
-            <input className="input-ltr" name="sortOrder" type="number" defaultValue={item.sortOrder} />
-          </label>
-          <label className="check-row">
-            <input
-              name="published"
-              type="checkbox"
-              value="1"
-              defaultChecked={item.published}
+        <div className="calendar-toolbar">
+          <h1>{item.question}</h1>
+          <div className="calendar-toolbar-actions">
+            <FaqEditModal
+              action={updateFaqItem}
+              item={{
+                id: item.id,
+                question: item.question,
+                answer: item.answer,
+                sortOrder: item.sortOrder,
+                published: item.published,
+              }}
             />
-            منشور
-          </label>
-          <button type="submit">حفظ</button>
-        </form>
-        <ConfirmDelete action={deleteFaqItem} id={item.id} />
+            <ConfirmDelete action={deleteFaqItem} id={item.id} />
+          </div>
+        </div>
+        <p style={{ whiteSpace: "pre-wrap" }}>{item.answer}</p>
+        <ul className="detail-list">
+          <li>الترتيب: {item.sortOrder}</li>
+          <li>الحالة: {item.published ? "منشور" : "مخفي"}</li>
+        </ul>
       </section>
     </div>
   );

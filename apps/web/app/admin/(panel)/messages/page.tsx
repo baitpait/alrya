@@ -5,7 +5,7 @@ import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { FilterChips, filterHref } from "@/components/admin/FilterChips";
 import { prisma } from "@/lib/prisma";
 
-export const metadata: Metadata = { title: "رسائل التواصل" };
+export const metadata: Metadata = { title: "صندوق الرسائل" };
 export const dynamic = "force-dynamic";
 
 const STATUS_LABEL: Record<ContactMessageStatus, string> = {
@@ -61,10 +61,17 @@ export default async function AdminMessagesPage({ searchParams }: Props) {
   return (
     <div className="stack-gap">
       <section className="panel">
-        <h1>
-          رسائل التواصل
-          {newCount > 0 ? ` (${newCount} جديدة)` : ""}
-        </h1>
+        <div className="calendar-toolbar">
+          <h1>
+            صندوق الرسائل
+            {newCount > 0 ? ` (${newCount} جديدة)` : ""}
+          </h1>
+          <div className="calendar-toolbar-actions">
+            <Link className="btn-secondary" href="/contact" target="_blank">
+              معاينة النموذج
+            </Link>
+          </div>
+        </div>
 
         <FilterChips
           items={[
@@ -98,7 +105,11 @@ export default async function AdminMessagesPage({ searchParams }: Props) {
         </form>
 
         {messages.length === 0 ? (
-          <p>{q || statusFilter ? "لا نتائج لهذا الفلتر." : "لا رسائل بعد."}</p>
+          <p className="empty-hint">
+            {q || statusFilter
+              ? "لا نتائج لهذا الفلتر."
+              : "لا رسائل بعد. تصل من صفحة تواصل معنا على الموقع."}
+          </p>
         ) : (
           <div className="table-wrap">
             <table className="data-table">

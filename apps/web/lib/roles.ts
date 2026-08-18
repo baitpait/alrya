@@ -15,6 +15,7 @@ export function roleCanLogin(roleName: string) {
 /** مسارات الإدارة الحساسة — للمدير فقط (الطاقم لا يدخل أصلاً) */
 export const MANAGER_ONLY_PREFIXES = [
   "/admin/employees",
+  "/admin/roles",
   "/admin/settings",
   "/admin/reports",
   "/admin/gallery",
@@ -26,7 +27,6 @@ export const MANAGER_ONLY_PREFIXES = [
   "/admin/payments",
   "/admin/calendar",
   "/admin/events",
-  "/admin/my-assignments",
 ] as const;
 
 export function isManagerOnlyPath(pathname: string) {

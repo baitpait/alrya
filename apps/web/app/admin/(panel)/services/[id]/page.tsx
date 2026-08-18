@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
+import { ServiceEditModal } from "@/components/admin/ServiceCreateModal";
 import { prisma } from "@/lib/prisma";
 import {
   createOffer,
@@ -39,30 +40,24 @@ export default async function AdminServiceDetailPage({ params }: Props) {
       <AdminBackLink href="/admin/services" label="رجوع للخدمات" />
 
       <section className="panel">
-        <h1>تعديل الخدمة</h1>
-        <form action={updateService} className="inline-form">
-          <input type="hidden" name="id" value={service.id} />
-          <label>
-            الاسم
-            <input name="name" required defaultValue={service.name} />
-          </label>
-          <label>
-            النوع
-            <select name="kind" defaultValue={service.kind}>
-              <option value="EVENT">مناسبة</option>
-              <option value="SESSION">جلسة</option>
-            </select>
-          </label>
-          <label className="check-row">
-            <input
-              type="checkbox"
-              name="active"
-              defaultChecked={service.active}
-            />
-            نشطة
-          </label>
-          <button type="submit">حفظ التعديل</button>
-        </form>
+        <div className="calendar-toolbar">
+          <div>
+            <h1>{service.name}</h1>
+            <p style={{ margin: "0.25rem 0 0" }}>
+              {service.kind === "SESSION" ? "جلسة" : "مناسبة"} ·{" "}
+              {service.active ? "نشطة" : "معطّلة"}
+            </p>
+          </div>
+          <ServiceEditModal
+            action={updateService}
+            service={{
+              id: service.id,
+              name: service.name,
+              kind: service.kind,
+              active: service.active,
+            }}
+          />
+        </div>
       </section>
 
       <section className="panel">
@@ -119,7 +114,7 @@ export default async function AdminServiceDetailPage({ params }: Props) {
             {service.offers.map((offer) => (
               <div key={offer.id} className="offer-card">
                 <form action={updateOffer} className="inline-form">
-                  <input type="hidden" name="id" value={offer.id} />
+                  <input type="hidden" name="recordId" value={offer.id} />
                   <input type="hidden" name="serviceId" value={service.id} />
                   <label>
                     الاسم

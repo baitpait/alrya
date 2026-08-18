@@ -2,8 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
+import {
+  CustomerCreateModal,
+  CustomerEditModal,
+} from "@/components/admin/CustomerCreateModal";
 import { prisma } from "@/lib/prisma";
-import { createCustomer, deleteCustomer } from "./actions";
+import { createCustomer, deleteCustomer, updateCustomer } from "./actions";
 
 export const metadata: Metadata = { title: "الزبائن" };
 export const dynamic = "force-dynamic";
@@ -17,54 +21,16 @@ export default async function AdminCustomersPage() {
   return (
     <div className="stack-gap">
       <section className="panel">
-        <h1>الزبائن</h1>
-
-        <form action={createCustomer} className="inline-form">
-          <h2>إضافة زبون</h2>
-          <label>
-            الاسم الأول
-            <input name="firstName" required />
-          </label>
-          <label>
-            اسم العائلة
-            <input name="lastName" required />
-          </label>
-          <label>
-            الهاتف
-            <input name="phone" required />
-          </label>
-          <label>
-            هاتف إضافي
-            <input name="altPhone" />
-          </label>
-          <label>
-            البريد
-            <input name="email" type="email" />
-          </label>
-          <label>
-            العنوان
-            <input name="address" />
-          </label>
-          <label>
-            رقم الهوية
-            <input className="input-ltr" name="nationalId" placeholder="اختياري" />
-          </label>
-          <label>
-            الجنس
-            <select name="gender" defaultValue="">
-              <option value="">—</option>
-              <option value="MALE">ذكر</option>
-              <option value="FEMALE">أنثى</option>
-            </select>
-          </label>
-          <button type="submit">حفظ الزبون</button>
-        </form>
+        <div className="calendar-toolbar">
+          <h1>الزبائن</h1>
+          <CustomerCreateModal action={createCustomer} />
+        </div>
       </section>
 
       <section className="panel">
         <h2>القائمة ({customers.length})</h2>
         {customers.length === 0 ? (
-          <p>لا زبائن بعد.</p>
+          <p className="empty-hint">لا زبائن بعد. أضيفي أول زبون من الزر أعلاه.</p>
         ) : (
           <div className="table-wrap">
             <table className="data-table">
@@ -89,10 +55,24 @@ export default async function AdminCustomersPage() {
                     <td>{c.phone}</td>
                     <td>{c._count.events}</td>
                     <td className="row-actions row-actions--icons">
+                      <CustomerEditModal
+                        action={updateCustomer}
+                        customer={{
+                          id: c.id,
+                          firstName: c.firstName,
+                          lastName: c.lastName,
+                          phone: c.phone,
+                          altPhone: c.altPhone,
+                          email: c.email,
+                          address: c.address,
+                          nationalId: c.nationalId,
+                          gender: c.gender,
+                        }}
+                      />
                       <ActionIconLink
                         href={`/admin/customers/${c.id}`}
-                        label={`تفاصيل الزبون ${c.firstName} ${c.lastName}`}
-                        kind="view"
+                        label={`مناسبات الزبون ${c.firstName}`}
+                        kind="event"
                       />
                       <ConfirmDelete
                         action={deleteCustomer}

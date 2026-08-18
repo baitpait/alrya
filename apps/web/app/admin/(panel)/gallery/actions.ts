@@ -40,6 +40,7 @@ async function saveGalleryUpload(file: File | null) {
 
 function revalidatePublic() {
   revalidatePath("/admin/gallery");
+  revalidatePath("/admin/settings");
   revalidatePath("/portfolio");
   revalidatePath("/");
 }
@@ -74,7 +75,7 @@ export async function createGalleryItem(formData: FormData) {
 
 export async function updateGalleryItem(formData: FormData) {
   await requireManager();
-  const id = Number(formData.get("id"));
+  const id = Number(formData.get("recordId") ?? formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
 
   const title = requireText(formData.get("title"), "العنوان");
@@ -103,7 +104,7 @@ export async function updateGalleryItem(formData: FormData) {
   });
   revalidatePublic();
   revalidatePath(`/admin/gallery/${id}`);
-  redirect("/admin/gallery");
+  redirect("/admin/settings?tab=gallery");
 }
 
 export async function deleteGalleryItem(formData: FormData) {
@@ -112,5 +113,5 @@ export async function deleteGalleryItem(formData: FormData) {
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
   await prisma.galleryItem.delete({ where: { id } });
   revalidatePublic();
-  redirect("/admin/gallery");
+  redirect("/admin/settings?tab=gallery");
 }

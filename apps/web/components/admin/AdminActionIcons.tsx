@@ -73,6 +73,26 @@ export function TrashIcon() {
   );
 }
 
+/** تعطيل — دائرة مع خط */
+function DisableIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M5.5 5.5l13 13" />
+    </svg>
+  );
+}
+
+/** تفعيل — دائرة مع علامة صح */
+function EnableIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M8.5 12.5l2.5 2.5 4.5-5" />
+    </svg>
+  );
+}
+
 const ICONS = {
   view: EyeIcon,
   edit: PencilIcon,
@@ -81,6 +101,8 @@ const ICONS = {
   event: EventIcon,
   reports: ChartIcon,
   delete: TrashIcon,
+  disable: DisableIcon,
+  enable: EnableIcon,
 } as const;
 
 export type ActionIconKind = keyof typeof ICONS;
@@ -110,6 +132,62 @@ export function ActionIconLink({
     >
       <Icon />
     </Link>
+  );
+}
+
+type ActionIconButtonProps = {
+  label: string;
+  kind?: ActionIconKind;
+  className?: string;
+  disabled?: boolean;
+  onClick?: () => void;
+};
+
+/** زر أيقونة (لمودال التعديل…) — نفس مظهر الرابط */
+export function ActionIconButton({
+  label,
+  kind = "edit",
+  className = "",
+  disabled = false,
+  onClick,
+}: ActionIconButtonProps) {
+  const Icon = ICONS[kind];
+  return (
+    <button
+      type="button"
+      className={`btn-icon btn-icon--${kind} ${className}`.trim()}
+      title={label}
+      aria-label={label}
+      disabled={disabled}
+      onClick={onClick}
+    >
+      <Icon />
+    </button>
+  );
+}
+
+type ActionIconSubmitProps = {
+  label: string;
+  kind?: ActionIconKind;
+  className?: string;
+};
+
+/** زر submit أيقوني داخل form — تعطيل/تفعيل… */
+export function ActionIconSubmit({
+  label,
+  kind = "disable",
+  className = "",
+}: ActionIconSubmitProps) {
+  const Icon = ICONS[kind];
+  return (
+    <button
+      type="submit"
+      className={`btn-icon btn-icon--${kind} ${className}`.trim()}
+      title={label}
+      aria-label={label}
+    >
+      <Icon />
+    </button>
   );
 }
 

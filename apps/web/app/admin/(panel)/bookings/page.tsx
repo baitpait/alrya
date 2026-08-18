@@ -5,7 +5,7 @@ import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { FilterChips, filterHref } from "@/components/admin/FilterChips";
 import { prisma } from "@/lib/prisma";
 
-export const metadata: Metadata = { title: "طلبات التسجيل" };
+export const metadata: Metadata = { title: "طلبات أونلاين" };
 export const dynamic = "force-dynamic";
 
 const STATUS_LABEL: Record<BookingStatus, string> = {
@@ -59,7 +59,7 @@ export default async function AdminBookingsPage({ searchParams }: Props) {
   return (
     <div className="stack-gap">
       <section className="panel">
-        <h1>طلبات التسجيل</h1>
+        <h1>طلبات أونلاين</h1>
 
         <FilterChips
           items={[
@@ -93,7 +93,11 @@ export default async function AdminBookingsPage({ searchParams }: Props) {
         </form>
 
         {bookings.length === 0 ? (
-          <p>{q || statusFilter ? "لا نتائج لهذا الفلتر." : "لا طلبات بعد."}</p>
+          <p className="empty-hint">
+            {q || statusFilter
+              ? "لا نتائج لهذا الفلتر."
+              : "لا طلبات أونلاين بعد. تصل من نموذج الحجز على الموقع."}
+          </p>
         ) : (
           <div className="table-wrap">
             <table className="data-table">

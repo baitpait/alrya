@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { PrintButton } from "./PrintButton";
 
 type Props = {
@@ -8,7 +7,7 @@ type Props = {
   query?: string;
 };
 
-/** شريط تقارير — كل العناصر بنفس هوية .btn-secondary */
+/** شريط تقارير — التنقّل بين الأنواع من منيو الشريط الجانبي */
 export function ReportToolbar({ kind, query }: Props) {
   const qs = query ? `?${query}` : "";
   return (
@@ -17,9 +16,6 @@ export function ReportToolbar({ kind, query }: Props) {
         تصدير Excel
       </a>
       <PrintButton />
-      <Link className="btn-secondary" href="/admin/reports">
-        كل التقارير
-      </Link>
     </div>
   );
 }

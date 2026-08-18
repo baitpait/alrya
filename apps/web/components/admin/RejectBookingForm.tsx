@@ -1,36 +1,16 @@
 "use client";
 
 import { useEffect, useId, useState, useTransition } from "react";
-import { TrashIcon } from "./AdminActionIcons";
 
 type Props = {
   action: (formData: FormData) => void | Promise<void>;
-  id: number;
-  /** تجنّب name="id" — يظلل form.id في أدوات المتصفح */
-  fieldName?: string;
-  /** حقول مخفية إضافية (مثال: eventId للدفعات) */
-  hiddenFields?: Record<string, string | number>;
-  /** للوصول — يظهر في title و aria-label */
-  label?: string;
-  message?: string;
-  /** icon = جداول؛ button = صفحات تفاصيل بعبارات طويلة إن لزم */
-  variant?: "icon" | "button";
+  bookingId: number;
 };
 
-/**
- * تأكيد حذف موحّد — بوب أب نعم/لا (ليس window.confirm).
- * كل السلات في الأدمن تستخدم هذا المكوّن.
- */
-export function ConfirmDelete({
-  action,
-  id,
-  fieldName = "recordId",
-  hiddenFields,
-  label = "حذف",
-  message = "تأكيد الحذف؟ لا يمكن التراجع.",
-  variant = "icon",
-}: Props) {
+/** رفض طلب حجز — بوب أب نعم/لا قبل التنفيذ */
+export function RejectBookingForm({ action, bookingId }: Props) {
   const [open, setOpen] = useState(false);
+  const [reason, setReason] = useState("");
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const titleId = useId();
@@ -49,15 +29,11 @@ export function ConfirmDelete({
     setOpen(true);
   }
 
-  function confirmDelete() {
+  function confirmReject() {
     setError(null);
     const fd = new FormData();
-    fd.set(fieldName, String(id));
-    if (hiddenFields) {
-      for (const [name, value] of Object.entries(hiddenFields)) {
-        fd.set(name, String(value));
-      }
-    }
+    fd.set("bookingId", String(bookingId));
+    if (reason.trim()) fd.set("reason", reason.trim());
     startTransition(async () => {
       try {
         await action(fd);
@@ -66,7 +42,7 @@ export function ConfirmDelete({
         const msg =
           err instanceof Error && err.message.trim()
             ? err.message.trim()
-            : "تعذّر الحذف.";
+            : "تعذّر رفض الطلب.";
         setError(msg);
       }
     });
@@ -74,21 +50,20 @@ export function ConfirmDelete({
 
   return (
     <>
-      {variant === "icon" ? (
-        <button
-          type="button"
-          className="btn-icon btn-icon--delete"
-          title={label}
-          aria-label={label}
-          onClick={openDialog}
-        >
-          <TrashIcon />
-        </button>
-      ) : (
+      <div className="inline-form">
+        <label>
+          سبب الرفض
+          <input
+            name="reason"
+            placeholder="اختياري"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+          />
+        </label>
         <button type="button" className="btn-danger" onClick={openDialog}>
-          {label}
+          رفض الطلب
         </button>
-      )}
+      </div>
 
       {open ? (
         <div
@@ -103,8 +78,16 @@ export function ConfirmDelete({
             aria-labelledby={titleId}
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 id={titleId}>تأكيد الحذف</h2>
-            <p className="confirm-dialog-message">{message}</p>
+            <h2 id={titleId}>تأكيد الرفض</h2>
+            <p className="confirm-dialog-message">
+              رفض هذا الطلب؟ لن يظهر على التقويم ولن يُحوَّل لمناسبة.
+              {reason.trim() ? (
+                <>
+                  <br />
+                  السبب: {reason.trim()}
+                </>
+              ) : null}
+            </p>
             {error ? (
               <p className="modal-form-error" role="alert">
                 {error}
@@ -123,9 +106,9 @@ export function ConfirmDelete({
                 type="button"
                 className="btn-danger"
                 disabled={pending}
-                onClick={confirmDelete}
+                onClick={confirmReject}
               >
-                {pending ? "جاري الحذف…" : "نعم"}
+                {pending ? "جاري الرفض…" : "نعم"}
               </button>
             </div>
           </div>

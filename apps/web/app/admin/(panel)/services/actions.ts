@@ -28,7 +28,7 @@ export async function createService(formData: FormData) {
 
 export async function updateService(formData: FormData) {
   await requireManager();
-  const id = Number(formData.get("id"));
+  const id = Number(formData.get("recordId") ?? formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) {
     throw new Error("معرّف الخدمة غير صالح.");
   }
@@ -49,7 +49,7 @@ export async function updateService(formData: FormData) {
 
 export async function setServiceActive(formData: FormData) {
   await requireManager();
-  const id = Number(formData.get("id"));
+  const id = Number(formData.get("recordId") ?? formData.get("id"));
   const active = formData.get("active") === "true";
   if (!Number.isFinite(id) || id <= 0) {
     throw new Error("معرّف الخدمة غير صالح.");
@@ -106,7 +106,7 @@ export async function createOffer(formData: FormData) {
 
 export async function updateOffer(formData: FormData) {
   await requireManager();
-  const id = Number(formData.get("id"));
+  const id = Number(formData.get("recordId") ?? formData.get("id"));
   const serviceId = Number(formData.get("serviceId"));
   if (!Number.isFinite(id) || id <= 0 || !Number.isFinite(serviceId) || serviceId <= 0) {
     throw new Error("معرّف غير صالح.");

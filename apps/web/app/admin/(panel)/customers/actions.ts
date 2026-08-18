@@ -47,7 +47,7 @@ export async function createCustomer(formData: FormData) {
 
 export async function updateCustomer(formData: FormData) {
   await requireManager();
-  const id = Number(formData.get("id"));
+  const id = Number(formData.get("recordId") ?? formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف الزبون غير صالح.");
 
   const firstName = requireText(formData.get("firstName"), "الاسم الأول");

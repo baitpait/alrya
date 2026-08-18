@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BookingStatus } from "@prisma/client";
+import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
+import { BookingConvertModal } from "@/components/admin/BookingConvertModal";
+import { RejectBookingForm } from "@/components/admin/RejectBookingForm";
 import { prisma } from "@/lib/prisma";
 import {
   convertBookingRequest,
@@ -87,198 +89,125 @@ export default async function AdminBookingDetailPage({ params }: Props) {
     <div className="stack-gap">
       <AdminBackLink href="/admin/bookings" label="رجوع للطلبات" />
 
-      <section className="panel">
-        <h1>طلب حجز #{booking.id}</h1>
-        <p>
-          الحالة: <strong>{STATUS_LABEL[booking.status]}</strong> · وُصل{" "}
-          <span className="cell-ltr">{formatDateTimeAr(booking.createdAt)}</span>
-        </p>
-
-        <ul className="detail-list">
-          <li>
-            <strong>العريس / صاحب المناسبة:</strong> {booking.groomName}
-          </li>
-          <li>
-            <strong>العروس:</strong> {booking.brideName || "—"}
-          </li>
-          <li>
-            <strong>الهاتف:</strong>{" "}
-            <span className="cell-ltr">{booking.phone}</span>
-          </li>
-          <li>
-            <strong>هاتف إضافي:</strong>{" "}
-            <span className="cell-ltr">{booking.altPhone || "—"}</span>
-          </li>
-          <li>
-            <strong>الخدمة المطلوبة:</strong> {booking.service?.name || "—"}
-          </li>
-          <li>
-            <strong>من:</strong>{" "}
-            <span className="cell-ltr">{formatDateTimeAr(booking.preferredFrom)}</span>
-          </li>
-          <li>
-            <strong>إلى:</strong>{" "}
-            <span className="cell-ltr">{formatDateTimeAr(booking.preferredTo)}</span>
-          </li>
-          <li>
-            <strong>المكان:</strong>{" "}
-            {[booking.city, booking.venue, booking.hall].filter(Boolean).join(" · ") ||
-              "—"}
-          </li>
-          <li>
-            <strong>ملاحظات:</strong> {booking.notes || "—"}
-          </li>
-        </ul>
-
-        {booking.status === BookingStatus.CONVERTED ? (
-          <p>
-            محوّل إلى{" "}
-            {booking.convertedCustomerId ? (
-              <Link
-                className="text-link"
-                href={`/admin/customers/${booking.convertedCustomerId}`}
-              >
-                الزبون
-              </Link>
-            ) : null}
-            {booking.convertedEventId ? (
+      <section className="panel event-hero-panel">
+        <div className="calendar-toolbar">
+          <div>
+            <h1 className="event-page-title">
+              {booking.groomName}
+              <span className="event-page-id">طلب #{booking.id}</span>
+            </h1>
+            <p className="event-hero-meta">
+              <span className="event-status-pill">{STATUS_LABEL[booking.status]}</span>
+              <span className="cell-ltr">{booking.phone}</span>
+              <span>
+                وُصل{" "}
+                <span className="cell-ltr">{formatDateTimeAr(booking.createdAt)}</span>
+              </span>
+            </p>
+          </div>
+          <div className="calendar-toolbar-actions">
+            {booking.status === BookingStatus.CONVERTED ? (
               <>
-                {" · "}
-                <Link
-                  className="text-link"
-                  href={`/admin/events/${booking.convertedEventId}`}
-                >
-                  المناسبة #{booking.convertedEventId}
-                </Link>
-                {" · "}
-                <Link className="text-link" href="/admin/calendar">
-                  التقويم
-                </Link>
+                {booking.convertedCustomerId ? (
+                  <ActionIconLink
+                    href={`/admin/customers/${booking.convertedCustomerId}`}
+                    label="فتح الزبون"
+                    kind="view"
+                  />
+                ) : null}
+                {booking.convertedEventId ? (
+                  <ActionIconLink
+                    href={`/admin/events/${booking.convertedEventId}`}
+                    label={`فتح المناسبة #${booking.convertedEventId}`}
+                    kind="event"
+                  />
+                ) : null}
+                <ActionIconLink
+                  href="/admin/calendar"
+                  label="فتح التقويم"
+                  kind="calendar"
+                />
               </>
             ) : null}
-          </p>
-        ) : null}
+            {canAct ? (
+              <BookingConvertModal
+                action={convertBookingRequest}
+                bookingId={booking.id}
+                services={services.map((s) => ({ id: s.id, name: s.name }))}
+                defaultServiceId={booking.serviceId ?? selectedService?.id ?? ""}
+                defaultStartsDate={toDateInput(defaultStart)}
+                defaultEndsDate={toDateInput(defaultEnd)}
+                defaultPrice={defaultPrice}
+                defaultCity={booking.city ?? ""}
+                defaultVenue={booking.venue ?? ""}
+                defaultHall={booking.hall ?? ""}
+              />
+            ) : null}
+          </div>
+        </div>
+      </section>
+
+      <section className="panel">
+        <h2>تفاصيل الطلب</h2>
+        <dl className="event-dl">
+          <div>
+            <dt>العريس / صاحب المناسبة</dt>
+            <dd>{booking.groomName}</dd>
+          </div>
+          <div>
+            <dt>العروس</dt>
+            <dd>{booking.brideName || "—"}</dd>
+          </div>
+          <div>
+            <dt>الهاتف</dt>
+            <dd className="cell-ltr">{booking.phone}</dd>
+          </div>
+          <div>
+            <dt>هاتف إضافي</dt>
+            <dd className="cell-ltr">{booking.altPhone || "—"}</dd>
+          </div>
+          <div>
+            <dt>الخدمة المطلوبة</dt>
+            <dd>{booking.service?.name || "—"}</dd>
+          </div>
+          <div>
+            <dt>من</dt>
+            <dd className="cell-ltr">{formatDateTimeAr(booking.preferredFrom)}</dd>
+          </div>
+          <div>
+            <dt>إلى</dt>
+            <dd className="cell-ltr">{formatDateTimeAr(booking.preferredTo)}</dd>
+          </div>
+          <div>
+            <dt>المكان</dt>
+            <dd>
+              {[booking.city, booking.venue, booking.hall].filter(Boolean).join(" · ") ||
+                "—"}
+            </dd>
+          </div>
+          <div>
+            <dt>ملاحظات</dt>
+            <dd>{booking.notes || "—"}</dd>
+          </div>
+        </dl>
       </section>
 
       {canAct ? (
-        <>
-          <section className="panel">
-            <h2>تحويل إلى مناسبة + تقويم</h2>
-            <p>
-              يُنشأ زبون (أو يُربط بهاتف موجود) ومناسبة وموعد يظهر فوراً على التقويم.
-            </p>
-            <form action={convertBookingRequest} className="inline-form">
+        <section className="panel">
+          <h2>إجراءات</h2>
+          <div className="detail-footer-actions" style={{ marginTop: 0, marginBottom: "1rem" }}>
+            <form action={markBookingContacted}>
               <input type="hidden" name="bookingId" value={booking.id} />
-              <label>
-                الخدمة
-                <select
-                  name="serviceId"
-                  required
-                  defaultValue={booking.serviceId ?? selectedService?.id ?? ""}
-                >
-                  <option value="" disabled>
-                    اختاري خدمة
-                  </option>
-                  {services.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                تاريخ البداية
-                <input
-                  className="input-ltr"
-                  type="date"
-                  name="startsDate"
-                  required
-                  defaultValue={toDateInput(defaultStart)}
-                />
-              </label>
-              <label>
-                وقت البداية
-                <input
-                  className="input-ltr"
-                  type="time"
-                  name="startsTime"
-                  required
-                  defaultValue="18:00"
-                />
-              </label>
-              <label>
-                تاريخ النهاية
-                <input
-                  className="input-ltr"
-                  type="date"
-                  name="endsDate"
-                  required
-                  defaultValue={toDateInput(defaultEnd)}
-                />
-              </label>
-              <label>
-                وقت النهاية
-                <input
-                  className="input-ltr"
-                  type="time"
-                  name="endsTime"
-                  required
-                  defaultValue="20:00"
-                />
-              </label>
-              <label>
-                السعر (₪)
-                <input
-                  className="input-ltr"
-                  name="price"
-                  type="number"
-                  inputMode="decimal"
-                  step="0.01"
-                  min="0"
-                  required
-                  defaultValue={defaultPrice}
-                />
-              </label>
-              <label>
-                المدينة
-                <input name="city" defaultValue={booking.city ?? ""} />
-              </label>
-              <label>
-                المكان
-                <input name="venue" defaultValue={booking.venue ?? ""} />
-              </label>
-              <label>
-                القاعة
-                <input name="hall" defaultValue={booking.hall ?? ""} />
-              </label>
-              <button type="submit" className="btn-primary">
-                تحويل وإظهار على التقويم
+              <button type="submit" className="btn-secondary">
+                تعليم: تم التواصل
               </button>
             </form>
-          </section>
-
-          <section className="panel">
-            <h2>إجراءات أخرى</h2>
-            <div className="detail-footer-actions" style={{ marginTop: 0, marginBottom: "1rem" }}>
-              <form action={markBookingContacted}>
-                <input type="hidden" name="bookingId" value={booking.id} />
-                <button type="submit" className="btn-secondary">
-                  تعليم: تم التواصل
-                </button>
-              </form>
-            </div>
-            <form action={rejectBookingRequest} className="inline-form">
-              <input type="hidden" name="bookingId" value={booking.id} />
-              <label>
-                سبب الرفض
-                <input name="reason" placeholder="اختياري" />
-              </label>
-              <button type="submit" className="btn-danger">
-                رفض الطلب
-              </button>
-            </form>
-          </section>
-        </>
+          </div>
+          <RejectBookingForm
+            action={rejectBookingRequest}
+            bookingId={booking.id}
+          />
+        </section>
       ) : null}
     </div>
   );

@@ -23,6 +23,7 @@ function parseSort(raw: FormDataEntryValue | null) {
 
 function revalidatePublic() {
   revalidatePath("/admin/faq");
+  revalidatePath("/admin/settings");
   revalidatePath("/faq");
 }
 
@@ -43,7 +44,7 @@ export async function createFaqItem(formData: FormData) {
 
 export async function updateFaqItem(formData: FormData) {
   await requireManager();
-  const id = Number(formData.get("id"));
+  const id = Number(formData.get("recordId") ?? formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
   const question = requireText(formData.get("question"), "السؤال");
   const answer = requireText(formData.get("answer"), "الجواب");
@@ -58,7 +59,7 @@ export async function updateFaqItem(formData: FormData) {
   });
   revalidatePublic();
   revalidatePath(`/admin/faq/${id}`);
-  redirect("/admin/faq");
+  redirect("/admin/settings?tab=faq");
 }
 
 export async function deleteFaqItem(formData: FormData) {
@@ -67,5 +68,5 @@ export async function deleteFaqItem(formData: FormData) {
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف غير صالح.");
   await prisma.faqItem.delete({ where: { id } });
   revalidatePublic();
-  redirect("/admin/faq");
+  redirect("/admin/settings?tab=faq");
 }

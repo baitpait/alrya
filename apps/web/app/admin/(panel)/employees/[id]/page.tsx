@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
-import { EmployeeForm } from "@/components/admin/EmployeeForm";
+import { EmployeeFormModal } from "@/components/admin/EmployeeCreateModal";
 import { prisma } from "@/lib/prisma";
 import { deleteEmployee, updateEmployee } from "../actions";
 
@@ -60,28 +60,36 @@ export default async function AdminEmployeeDetailPage({ params }: Props) {
       <AdminBackLink href="/admin/employees" label="رجوع للموظفين" />
 
       <section className="panel">
-        <h1>{user.name}</h1>
-        <EmployeeForm
-          mode="edit"
-          action={updateEmployee}
-          roles={roles.map((r) => ({ id: r.id, name: r.name }))}
-          employee={{
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            phone: user.phone,
-            roleId: user.roleId,
-            active: user.active,
-          }}
-        />
-        <div className="detail-footer-actions" style={{ marginTop: "0.75rem" }}>
-          <ConfirmDelete
-            action={deleteEmployee}
-            id={user.id}
-            fieldName="recordId"
-            label={`حذف / تعطيل ${user.name}`}
-            message={`تعطيل أو حذف الموظف ${user.name}؟`}
-          />
+        <div className="calendar-toolbar">
+          <div>
+            <h1>{user.name}</h1>
+            <p style={{ margin: "0.25rem 0 0" }}>
+              {user.role.name} · {user.active ? "نشط" : "معطّل"} ·{" "}
+              <span className="cell-ltr">{user.email}</span>
+            </p>
+          </div>
+          <div className="calendar-toolbar-actions">
+            <EmployeeFormModal
+              mode="edit"
+              action={updateEmployee}
+              roles={roles.map((r) => ({ id: r.id, name: r.name }))}
+              employee={{
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                roleId: user.roleId,
+                active: user.active,
+              }}
+            />
+            <ConfirmDelete
+              action={deleteEmployee}
+              id={user.id}
+              fieldName="recordId"
+              label={`حذف / تعطيل ${user.name}`}
+              message={`تعطيل أو حذف الموظف ${user.name}؟`}
+            />
+          </div>
         </div>
       </section>
 

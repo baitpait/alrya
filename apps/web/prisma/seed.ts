@@ -226,13 +226,51 @@ async function seedAlrayaCatalog() {
 async function seedStaffRoles() {
   const roles = [
     { name: "مدير الأستوديو", description: "صلاحيات كاملة" },
-    { name: "مصور", description: "طاقم تصوير المناسبات" },
-    { name: "مساعد", description: "مساعد تغطية" },
+    { name: "مساعد", description: "مساعد تغطية المناسبات" },
   ];
   for (const r of roles) {
     const existing = await prisma.role.findFirst({ where: { name: r.name } });
     if (!existing) await prisma.role.create({ data: r });
   }
+  // دور «مصور» أُلغي — إن بقي من seed قديم يُنقل موظفوه لمساعد ثم يُحذف
+  const photographer = await prisma.role.findFirst({ where: { name: "مصور" } });
+  if (photographer) {
+    const assistant = await prisma.role.findFirst({ where: { name: "مساعد" } });
+    if (assistant) {
+      await prisma.user.updateMany({
+        where: { roleId: photographer.id },
+        data: { roleId: assistant.id },
+      });
+    }
+    await prisma.role.delete({ where: { id: photographer.id } });
+  }
+}
+
+async function seedStaffDemo() {
+  const role = await prisma.role.findFirst({ where: { name: "مساعد" } });
+  if (!role) return;
+  const email = "staff@alray.studio";
+  await prisma.user.upsert({
+    where: { email },
+    update: {
+      name: "مساعد التغطية",
+      passwordHash: null,
+      roleId: role.id,
+      active: true,
+    },
+    create: {
+      name: "مساعد التغطية",
+      email,
+      passwordHash: null,
+      roleId: role.id,
+      active: true,
+    },
+  });
+
+  await prisma.user.updateMany({
+    where: { role: { name: { not: "مدير الأستوديو" } } },
+    data: { passwordHash: null },
+  });
 }
 
 async function seedGalleryAndFaq() {
@@ -307,33 +345,6 @@ async function seedGalleryAndFaq() {
   }
 }
 
-async function seedPhotographerDemo() {
-  const role = await prisma.role.findFirst({ where: { name: "مصور" } });
-  if (!role) return;
-  const email = "photographer@alray.studio";
-  await prisma.user.upsert({
-    where: { email },
-    update: {
-      name: "محمد المصور",
-      passwordHash: null,
-      roleId: role.id,
-      active: true,
-    },
-    create: {
-      name: "محمد المصور",
-      email,
-      passwordHash: null,
-      roleId: role.id,
-      active: true,
-    },
-  });
-
-  await prisma.user.updateMany({
-    where: { role: { name: { not: "مدير الأستوديو" } } },
-    data: { passwordHash: null },
-  });
-}
-
 async function seedSiteSettings() {
   const defaults: [string, string][] = [
     ["whatsapp_number", "970599000000"],
@@ -399,12 +410,12 @@ async function main() {
   await seedAlrayaCatalog();
   await seedSiteSettings();
   await seedGalleryAndFaq();
-  await seedPhotographerDemo();
+  await seedStaffDemo();
 
   console.log("Seed OK (محلي فقط — غيّري كلمة الأدمن على أي بيئة مشتركة)");
   console.log(`email=${SEED_EMAIL}`);
   console.log(`password=${SEED_PASSWORD}`);
-  console.log("طاقم تجريبي: photographer@alray.studio — بلا دخول للوحة");
+  console.log("طاقم تجريبي: staff@alray.studio — بلا دخول للوحة (دور مساعد)");
 }
 
 main()

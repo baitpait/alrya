@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
+import { PaymentCreateModal } from "@/components/admin/PaymentCreateModal";
 import { prisma } from "@/lib/prisma";
-import { deletePayment } from "../events/actions";
+import { addPayment, deletePayment } from "../events/actions";
 
 export const metadata: Metadata = { title: "الدفعات" };
 export const dynamic = "force-dynamic";
@@ -23,34 +24,71 @@ function formatDateTimeAr(d: Date) {
   });
 }
 
+function toDateInputValue(d: Date) {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+function eventLabel(opts: {
+  id: number;
+  customer: { firstName: string; lastName: string; phone: string };
+  agreementNo: string | null;
+}) {
+  const name = `${opts.customer.firstName} ${opts.customer.lastName}`.trim();
+  const agreement = opts.agreementNo ? ` · اتفاقية ${opts.agreementNo}` : "";
+  return `#${opts.id} · ${name} · ${opts.customer.phone}${agreement}`;
+}
+
 export default async function AdminPaymentsPage({ searchParams }: Props) {
   const { q: qRaw } = await searchParams;
   const q = (qRaw ?? "").trim();
 
-  const payments = await prisma.payment.findMany({
-    orderBy: { paidAt: "desc" },
-    include: {
-      event: {
-        include: { customer: true },
+  const [payments, events] = await Promise.all([
+    prisma.payment.findMany({
+      orderBy: { paidAt: "desc" },
+      include: {
+        event: {
+          include: { customer: true },
+        },
       },
-    },
-    where: q
-      ? {
-          OR: [
-            { method: { contains: q } },
-            { note: { contains: q } },
-            { event: { customer: { firstName: { contains: q } } } },
-            { event: { customer: { lastName: { contains: q } } } },
-            { event: { customer: { phone: { contains: q } } } },
-          ],
-        }
-      : undefined,
-  });
+      where: q
+        ? {
+            OR: [
+              { method: { contains: q } },
+              { note: { contains: q } },
+              { event: { customer: { firstName: { contains: q } } } },
+              { event: { customer: { lastName: { contains: q } } } },
+              { event: { customer: { phone: { contains: q } } } },
+            ],
+          }
+        : undefined,
+    }),
+    prisma.event.findMany({
+      orderBy: { id: "desc" },
+      include: { customer: true },
+      take: 200,
+    }),
+  ]);
+
+  const today = toDateInputValue(new Date());
+  const eventOptions = events.map((e) => ({
+    id: e.id,
+    label: eventLabel(e),
+  }));
 
   return (
     <div className="stack-gap">
       <section className="panel">
-        <h1>الدفعات</h1>
+        <div className="calendar-toolbar">
+          <h1>الدفعات</h1>
+          <div className="calendar-toolbar-actions">
+            <PaymentCreateModal
+              action={addPayment}
+              events={eventOptions}
+              today={today}
+            />
+          </div>
+        </div>
 
         <form method="get" className="inline-form" style={{ marginBottom: "1rem" }}>
           <label>
@@ -68,7 +106,11 @@ export default async function AdminPaymentsPage({ searchParams }: Props) {
         </form>
 
         {payments.length === 0 ? (
-          <p>{q ? "لا نتائج لهذا الفلتر." : "لا دفعات مسجّلة بعد."}</p>
+          <p className="empty-hint">
+            {q
+              ? "لا نتائج لهذا الفلتر."
+              : "لا دفعات مسجّلة بعد. أضيفي أول دفعة من الزر أعلاه واربطيها بمناسبة."}
+          </p>
         ) : (
           <div className="table-wrap">
             <table className="data-table">

@@ -65,7 +65,7 @@ export async function createEvent(formData: FormData) {
 
 export async function updateEventStatus(formData: FormData) {
   await requireManager();
-  const id = Number(formData.get("id"));
+  const id = Number(formData.get("recordId") ?? formData.get("id"));
   if (!Number.isFinite(id) || id <= 0) throw new Error("معرّف المناسبة غير صالح.");
   const status = parseStatus(String(formData.get("status") ?? "PREPARING"));
   const notes = String(formData.get("notes") ?? "").trim() || null;
@@ -321,8 +321,12 @@ export async function assignEmployeeToService(formData: FormData) {
     throw new Error("المكافأة غير صالحة.");
   }
   const supervisorId = supervisorRaw ? Number(supervisorRaw) : null;
+  // المشرف يمكن أن يكون ضمن الفريق (تعيين آخر على نفس الموعد).
+  // الممنوع فقط: نفس الشخص موظفاً ومشرفاً في نفس صف التعيين.
   if (supervisorId && supervisorId === userId) {
-    throw new Error("المشرف لا يكون نفس الموظف.");
+    throw new Error(
+      "لا يمكن أن يكون المشرف نفس الموظف في هذا التعيين. اختاري مشرفاً آخر أو اتركي حقل المشرف فارغاً.",
+    );
   }
 
   await prisma.eventServiceEmployee.create({

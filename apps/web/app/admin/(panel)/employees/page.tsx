@@ -3,9 +3,9 @@ import Link from "next/link";
 import { FilterChips, filterHref } from "@/components/admin/FilterChips";
 import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
-import { EmployeeForm } from "@/components/admin/EmployeeForm";
+import { EmployeeCreateModal, EmployeeFormModal } from "@/components/admin/EmployeeCreateModal";
 import { prisma } from "@/lib/prisma";
-import { createEmployee, createRole, deleteEmployee, deleteRole } from "./actions";
+import { createEmployee, deleteEmployee, updateEmployee } from "./actions";
 
 export const metadata: Metadata = { title: "الموظفين" };
 export const dynamic = "force-dynamic";
@@ -51,11 +51,13 @@ export default async function AdminEmployeesPage({ searchParams }: Props) {
   return (
     <div className="stack-gap">
       <section className="panel">
-        <h1>الموظفين</h1>
-        <p>
-          الطاقم للتعيين على المواعيد فقط. دخول اللوحة وحفظ التعديلات لحساب المسؤول
-          («مدير الأستوديو») وحده — المصور والمساعد بلا كلمة مرور للدخول.
-        </p>
+        <div className="calendar-toolbar">
+          <h1>الموظفين</h1>
+          <EmployeeCreateModal
+            action={createEmployee}
+            roles={roles.map((r) => ({ id: r.id, name: r.name }))}
+          />
+        </div>
 
         <FilterChips
           label="الحالة"
@@ -116,12 +118,6 @@ export default async function AdminEmployeesPage({ searchParams }: Props) {
             </Link>
           ) : null}
         </form>
-
-        <EmployeeForm
-          mode="create"
-          action={createEmployee}
-          roles={roles.map((r) => ({ id: r.id, name: r.name }))}
-        />
       </section>
 
       <section className="panel">
@@ -152,10 +148,23 @@ export default async function AdminEmployeesPage({ searchParams }: Props) {
                     <td>{u._count.assignments}</td>
                     <td>{u.active ? "نشط" : "معطّل"}</td>
                     <td className="row-actions row-actions--icons">
+                      <EmployeeFormModal
+                        mode="edit"
+                        action={updateEmployee}
+                        roles={roles.map((r) => ({ id: r.id, name: r.name }))}
+                        employee={{
+                          id: u.id,
+                          name: u.name,
+                          email: u.email,
+                          phone: u.phone,
+                          roleId: u.roleId,
+                          active: u.active,
+                        }}
+                      />
                       <ActionIconLink
                         href={`/admin/employees/${u.id}`}
-                        label={`عرض / تعديل ${u.name}`}
-                        kind="edit"
+                        label={`تعيينات ${u.name}`}
+                        kind="view"
                       />
                       <ConfirmDelete
                         action={deleteEmployee}
@@ -164,58 +173,6 @@ export default async function AdminEmployeesPage({ searchParams }: Props) {
                         label={`حذف / تعطيل ${u.name}`}
                         message={`تعطيل أو حذف الموظف ${u.name}؟`}
                       />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
-
-      <section className="panel">
-        <h2>الأدوار</h2>
-        <form action={createRole} className="inline-form">
-          <label>
-            اسم الدور
-            <input name="name" required placeholder="مثال: مصور" />
-          </label>
-          <label>
-            وصف
-            <input name="description" />
-          </label>
-          <button type="submit">إضافة دور</button>
-        </form>
-        {roles.length === 0 ? (
-          <p>لا أدوار.</p>
-        ) : (
-          <div className="table-wrap">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>الدور</th>
-                  <th>الوصف</th>
-                  <th>موظفون</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {roles.map((r) => (
-                  <tr key={r.id}>
-                    <td>{r.name}</td>
-                    <td>{r.description || "—"}</td>
-                    <td>{r._count.users}</td>
-                    <td className="row-actions row-actions--icons">
-                      {r._count.users === 0 ? (
-                        <ConfirmDelete
-                          action={deleteRole}
-                          id={r.id}
-                          fieldName="recordId"
-                          label={`حذف الدور ${r.name}`}
-                        />
-                      ) : (
-                        "—"
-                      )}
                     </td>
                   </tr>
                 ))}

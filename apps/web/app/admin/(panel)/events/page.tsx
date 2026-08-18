@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { EventStatus } from "@prisma/client";
 import { ActionIconLink } from "@/components/admin/AdminActionIcons";
+import { EventCreateModal } from "@/components/admin/EventCreateModal";
 import { FilterChips } from "@/components/admin/FilterChips";
 import { prisma } from "@/lib/prisma";
 import { createEvent } from "./actions";
@@ -36,10 +37,27 @@ export default async function AdminEventsPage({ searchParams }: Props) {
     }),
   ]);
 
+  const statuses = (Object.keys(STATUS_LABEL) as EventStatus[]).map((s) => ({
+    value: s,
+    label: STATUS_LABEL[s],
+  }));
+
   return (
     <div className="stack-gap">
       <section className="panel">
-        <h1>المناسبات</h1>
+        <div className="calendar-toolbar">
+          <h1>المناسبات</h1>
+          <EventCreateModal
+            action={createEvent}
+            customers={customers.map((c) => ({
+              id: c.id,
+              firstName: c.firstName,
+              lastName: c.lastName,
+              phone: c.phone,
+            }))}
+            statuses={statuses}
+          />
+        </div>
 
         <FilterChips
           items={[
@@ -51,43 +69,6 @@ export default async function AdminEventsPage({ searchParams }: Props) {
             })),
           ]}
         />
-
-        <form action={createEvent} className="inline-form">
-          <h2>إنشاء مناسبة</h2>
-          <label>
-            الزبون
-            <select name="customerId" required defaultValue="">
-              <option value="" disabled>
-                اختاري زبوناً
-              </option>
-              {customers.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.firstName} {c.lastName} — {c.phone}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            الحالة
-            <select name="status" defaultValue="PREPARING">
-              {(Object.keys(STATUS_LABEL) as EventStatus[]).map((s) => (
-                <option key={s} value={s}>
-                  {STATUS_LABEL[s]}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            ملاحظات
-            <textarea name="notes" rows={2} />
-          </label>
-          <button type="submit" disabled={customers.length === 0}>
-            حفظ المناسبة
-          </button>
-          {customers.length === 0 ? (
-            <p>أضيفي زبوناً أولاً من صفحة الزبائن.</p>
-          ) : null}
-        </form>
       </section>
 
       <section className="panel">
