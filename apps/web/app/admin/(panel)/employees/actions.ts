@@ -4,6 +4,7 @@ import { requireManager } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/password";
+import { isManagerRole } from "@/lib/roles";
 
 function requireText(value: FormDataEntryValue | null, label: string) {
   const text = String(value ?? "").trim();
@@ -19,6 +20,9 @@ function parseActive(raw: FormDataEntryValue | null) {
 export async function createRole(formData: FormData) {
   await requireManager();
   const name = requireText(formData.get("name"), "اسم الدور");
+  if (isManagerRole(name)) {
+    throw new Error("دور المسؤول موجود مسبقاً ولا يُنشأ من هنا.");
+  }
   const description = String(formData.get("description") ?? "").trim() || null;
   const exists = await prisma.role.findFirst({ where: { name } });
   if (exists) throw new Error("هذا الدور موجود مسبقاً.");
@@ -36,15 +40,26 @@ export async function deleteRole(formData: FormData) {
   revalidatePath("/admin/employees");
 }
 
+async function roleAllowsLogin(roleId: number) {
+  const role = await prisma.role.findUnique({ where: { id: roleId } });
+  if (!role) throw new Error("الدور غير موجود.");
+  return isManagerRole(role.name);
+}
+
 export async function createEmployee(formData: FormData) {
   await requireManager();
   const name = requireText(formData.get("name"), "الاسم");
   const email = requireText(formData.get("email"), "البريد").toLowerCase();
   const phone = String(formData.get("phone") ?? "").trim() || null;
   const roleId = Number(formData.get("roleId"));
-  const password = requireText(formData.get("password"), "كلمة المرور");
-  if (password.length < 8) throw new Error("كلمة المرور 8 أحرف على الأقل.");
   if (!Number.isFinite(roleId) || roleId <= 0) throw new Error("اختاري دوراً.");
+
+  const canLogin = await roleAllowsLogin(roleId);
+  const password = String(formData.get("password") ?? "").trim();
+  if (canLogin) {
+    if (!password) throw new Error("كلمة المرور مطلوبة لحساب المسؤول.");
+    if (password.length < 8) throw new Error("كلمة المرور 8 أحرف على الأقل.");
+  }
 
   const dup = await prisma.user.findUnique({ where: { email } });
   if (dup) throw new Error("البريد مستخدم مسبقاً.");
@@ -55,7 +70,7 @@ export async function createEmployee(formData: FormData) {
       email,
       phone,
       roleId,
-      passwordHash: await hashPassword(password),
+      passwordHash: canLogin ? await hashPassword(password) : null,
       active: true,
     },
   });
@@ -81,10 +96,18 @@ export async function updateEmployee(formData: FormData) {
     throw new Error("لا يمكن تعطيل حسابك الحالي.");
   }
 
+  const canLogin = await roleAllowsLogin(roleId);
+  if (String(id) === session.sub && !canLogin) {
+    throw new Error("لا يمكن إزالة صلاحية الدخول عن حسابك الحالي.");
+  }
+
   const dup = await prisma.user.findFirst({
     where: { email, NOT: { id } },
   });
   if (dup) throw new Error("البريد مستخدم مسبقاً.");
+
+  const existing = await prisma.user.findUnique({ where: { id } });
+  if (!existing) throw new Error("الموظف غير موجود.");
 
   const data: {
     name: string;
@@ -92,12 +115,16 @@ export async function updateEmployee(formData: FormData) {
     phone: string | null;
     roleId: number;
     active: boolean;
-    passwordHash?: string;
+    passwordHash?: string | null;
   } = { name, email, phone, roleId, active };
 
-  if (password) {
+  if (!canLogin) {
+    data.passwordHash = null;
+  } else if (password) {
     if (password.length < 8) throw new Error("كلمة المرور 8 أحرف على الأقل.");
     data.passwordHash = await hashPassword(password);
+  } else if (!existing.passwordHash) {
+    throw new Error("كلمة المرور مطلوبة لحساب المسؤول.");
   }
 
   await prisma.user.update({ where: { id }, data });

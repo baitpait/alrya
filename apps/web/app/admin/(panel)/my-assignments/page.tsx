@@ -41,9 +41,6 @@ export default async function MyAssignmentsPage() {
     <div className="stack-gap">
       <section className="panel">
         <h1>مناسباتي</h1>
-        <p>
-          مواعيد التغطية المعيَّنة لحسابكِ ({session.name}) — كل صف = خدمة بتاريخ.
-        </p>
         {assignments.length === 0 ? (
           <p>لا تعيينات على حسابك بعد.</p>
         ) : (

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { FilterChips, filterHref } from "@/components/admin/FilterChips";
 import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { ReportToolbar } from "@/components/admin/ReportToolbar";
 import { EVENT_STATUS_AR, formatDateAr, parseEventStatus, reportEvents } from "@/lib/reports";
@@ -25,29 +26,35 @@ export default async function ReportEventsPage({ searchParams }: Props) {
     <div className="stack-gap">
       <section className="panel">
         <h1>تقرير المناسبات</h1>
-        <p>كل مناسبة في النظام مع الزبون والحالة والإجمالي.</p>
         <ReportToolbar kind="events" query={qs.toString()} />
 
+        <FilterChips
+          items={[
+            {
+              href: filterHref("/admin/reports/events", { q }),
+              label: "الكل",
+              active: !status,
+            },
+            ...(Object.keys(EVENT_STATUS_AR) as Array<keyof typeof EVENT_STATUS_AR>).map((k) => ({
+              href: filterHref("/admin/reports/events", { q, status: k }),
+              label: EVENT_STATUS_AR[k],
+              active: status === k,
+            })),
+          ]}
+        />
+
         <form method="get" className="inline-form report-print-hide" style={{ marginBottom: "1rem" }}>
+          {status ? <input type="hidden" name="status" value={status} /> : null}
           <label>
             بحث (اسم / هاتف / اتفاقية)
             <input name="q" defaultValue={q} placeholder="مثال: أحمد" />
           </label>
-          <label>
-            الحالة
-            <select name="status" defaultValue={status ?? ""}>
-              <option value="">الكل</option>
-              {(Object.keys(EVENT_STATUS_AR) as Array<keyof typeof EVENT_STATUS_AR>).map((k) => (
-                <option key={k} value={k}>
-                  {EVENT_STATUS_AR[k]}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button type="submit">تصفية</button>
-          {q || status ? (
-            <Link className="text-link" href="/admin/reports/events">
-              مسح الفلتر
+          <button type="submit" className="btn-primary">
+            بحث
+          </button>
+          {q ? (
+            <Link className="btn-secondary" href={filterHref("/admin/reports/events", { status })}>
+              مسح البحث
             </Link>
           ) : null}
         </form>

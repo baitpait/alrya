@@ -16,7 +16,7 @@
 0f. [admin-ui-copy.md](./admin-ui-copy.md) — **لغة الواجهة بدون EventService/MySQL/Inbox**
 0g. [pm-login-admin-only.md](./pm-login-admin-only.md) — **دخول اللوحة للمسؤول فقط · الطاقم بلا login (مرحلة 15)**
 0h. [admin-ui-buttons-sidebar.md](./admin-ui-buttons-sidebar.md) — **هوية أزرار موحّدة · سايدبار عرض ثابت + Cairo**
-0i. [wave-b-progress.md](./wave-b-progress.md) — تقدّم صلاحيات الجلسة (قبل قرار الدخول للمسؤول فقط)
+0i. [phase-15-progress.md](./phase-15-progress.md) — المرحلة 15: دخول المسؤول فقط (بانتظار الاختبار)
 1. [machine-setup.md](./machine-setup.md) — **جهاز جديد/مُفرمَت:** Cursor + Git + Node + سحب الريبو
 1b. [phase-0-completion.md](./phase-0-completion.md) — **سجل إنجاز المرحلة 0** (Next.js + Prisma + MySQL)
 1c. [phase-1-completion.md](./phase-1-completion.md) — **سجل إنجاز المرحلة 1** (شِل الأدمن + الثيم)
@@ -25,7 +25,7 @@
 1f. [phase-3-completion.md](./phase-3-completion.md) — **سجل إنجاز المرحلة 3** (الخدمات والباقات)
 1g. [phase-4-completion.md](./phase-4-completion.md) — **سجل إنجاز المرحلة 4** (زبائن/مناسبات)
 1h. [phase-5-completion.md](./phase-5-completion.md) … [phase-9-completion.md](./phase-9-completion.md) — مراحل 5→9 (تقويم حتى إطلاق MVP)
-1i. ملخص البوابات في [production-work-plan.md](./production-work-plan.md) — **0→14 مغلق (13 قرار · 14 أمن)** · **التالي: 15 صلاحيات**
+1i. ملخص البوابات في [production-work-plan.md](./production-work-plan.md) — **0→14 مغلق** · **15 بُنيت — بانتظار الاختبار اليدوي**
 1j. [phase-10-completion.md](./phase-10-completion.md) — موظفين / أدوار / مناسباتي
 1k. [phase-11-completion.md](./phase-11-completion.md) — تقارير Excel/PDF
 1l. [phase-12-completion.md](./phase-12-completion.md) — معرض / FAQ / من نحن

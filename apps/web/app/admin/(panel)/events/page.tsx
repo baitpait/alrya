@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { EventStatus } from "@prisma/client";
 import { ActionIconLink } from "@/components/admin/AdminActionIcons";
+import { FilterChips } from "@/components/admin/FilterChips";
 import { prisma } from "@/lib/prisma";
-import { getVerifiedSession } from "@/lib/authz";
 import { createEvent } from "./actions";
 
 export const metadata: Metadata = { title: "المناسبات" };
@@ -19,8 +18,6 @@ const STATUS_LABEL: Record<EventStatus, string> = {
 type Props = { searchParams: Promise<{ status?: string }> };
 
 export default async function AdminEventsPage({ searchParams }: Props) {
-  const session = await getVerifiedSession();
-  const isManager = session?.isManager ?? false;
   const sp = await searchParams;
   const statusFilter =
     sp.status && Object.values(EventStatus).includes(sp.status as EventStatus)
@@ -28,9 +25,7 @@ export default async function AdminEventsPage({ searchParams }: Props) {
       : undefined;
 
   const [customers, events] = await Promise.all([
-    isManager
-      ? prisma.customer.findMany({ orderBy: { id: "desc" } })
-      : Promise.resolve([] as Awaited<ReturnType<typeof prisma.customer.findMany>>),
+    prisma.customer.findMany({ orderBy: { id: "desc" } }),
     prisma.event.findMany({
       where: statusFilter ? { status: statusFilter } : undefined,
       orderBy: { id: "desc" },
@@ -45,61 +40,54 @@ export default async function AdminEventsPage({ searchParams }: Props) {
     <div className="stack-gap">
       <section className="panel">
         <h1>المناسبات</h1>
-        <p>
-          {isManager
-            ? "مناسبة مربوطة بزبون، وتحتها مواعيد خدمات بتاريخ (مثل حنا وعرس)."
-            : "عرض المناسبات للقراءة — التعديل للمدير فقط."}
-        </p>
 
-        <div className="row-actions" style={{ marginTop: "0.75rem" }}>
-          <Link className="text-link" href="/admin/events">
-            الكل
-          </Link>
-          {(Object.keys(STATUS_LABEL) as EventStatus[]).map((s) => (
-            <Link key={s} className="text-link" href={`/admin/events?status=${s}`}>
-              {STATUS_LABEL[s]}
-            </Link>
-          ))}
-        </div>
+        <FilterChips
+          items={[
+            { href: "/admin/events", label: "الكل", active: !statusFilter },
+            ...(Object.keys(STATUS_LABEL) as EventStatus[]).map((s) => ({
+              href: `/admin/events?status=${s}`,
+              label: STATUS_LABEL[s],
+              active: statusFilter === s,
+            })),
+          ]}
+        />
 
-        {isManager ? (
-          <form action={createEvent} className="inline-form">
-            <h2>إنشاء مناسبة</h2>
-            <label>
-              الزبون
-              <select name="customerId" required defaultValue="">
-                <option value="" disabled>
-                  اختاري زبوناً
+        <form action={createEvent} className="inline-form">
+          <h2>إنشاء مناسبة</h2>
+          <label>
+            الزبون
+            <select name="customerId" required defaultValue="">
+              <option value="" disabled>
+                اختاري زبوناً
+              </option>
+              {customers.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.firstName} {c.lastName} — {c.phone}
                 </option>
-                {customers.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.firstName} {c.lastName} — {c.phone}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              الحالة
-              <select name="status" defaultValue="PREPARING">
-                {(Object.keys(STATUS_LABEL) as EventStatus[]).map((s) => (
-                  <option key={s} value={s}>
-                    {STATUS_LABEL[s]}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              ملاحظات
-              <textarea name="notes" rows={2} />
-            </label>
-            <button type="submit" disabled={customers.length === 0}>
-              حفظ المناسبة
-            </button>
-            {customers.length === 0 ? (
-              <p>أضيفي زبوناً أولاً من صفحة الزبائن.</p>
-            ) : null}
-          </form>
-        ) : null}
+              ))}
+            </select>
+          </label>
+          <label>
+            الحالة
+            <select name="status" defaultValue="PREPARING">
+              {(Object.keys(STATUS_LABEL) as EventStatus[]).map((s) => (
+                <option key={s} value={s}>
+                  {STATUS_LABEL[s]}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            ملاحظات
+            <textarea name="notes" rows={2} />
+          </label>
+          <button type="submit" disabled={customers.length === 0}>
+            حفظ المناسبة
+          </button>
+          {customers.length === 0 ? (
+            <p>أضيفي زبوناً أولاً من صفحة الزبائن.</p>
+          ) : null}
+        </form>
       </section>
 
       <section className="panel">

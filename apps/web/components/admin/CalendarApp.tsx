@@ -62,7 +62,7 @@ export function CalendarApp({
   services,
   offers,
   events,
-  canEdit = true,
+  canEdit = false,
 }: Props) {
   const [eventsState, setEventsState] = useState(initialEvents);
   const [mode, setMode] = useState<ModalMode>("closed");
@@ -188,11 +188,6 @@ export function CalendarApp({
         <div className="calendar-toolbar">
           <div>
             <h1>التقويم</h1>
-            <p>
-              {canEdit
-                ? "كل المواعيد من سجل الاستوديو — مواعيد حقيقية فقط، بدون تجريب وهمي."
-                : "عرض المواعيد فقط — إضافة وتعديل الموعد للمدير."}
-            </p>
           </div>
           {canEdit ? (
             <button type="button" className="btn-primary" onClick={() => openCreate()}>
@@ -248,7 +243,6 @@ export function CalendarApp({
             {mode === "create" && canEdit ? (
               <>
                 <h2>إضافة موعد</h2>
-                <p>يُحفظ الموعد ويظهر فوراً على التقويم.</p>
                 <form action={onCreateSubmit} className="inline-form">
                   <label>
                     الزبون

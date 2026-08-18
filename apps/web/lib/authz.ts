@@ -9,7 +9,7 @@ import {
 } from "@/lib/session";
 import { isManagerRole, MANAGER_ROLE_NAME } from "@/lib/roles";
 
-export { MANAGER_ROLE_NAME, isManagerRole, isManagerOnlyPath } from "@/lib/roles";
+export { MANAGER_ROLE_NAME, isManagerRole, isManagerOnlyPath, roleCanLogin } from "@/lib/roles";
 
 export type VerifiedSession = SessionPayload & {
   isManager: boolean;
@@ -35,7 +35,7 @@ export async function getVerifiedSession(): Promise<VerifiedSession | null> {
     include: { role: true },
   });
 
-  if (!user || !user.active) {
+  if (!user || !user.active || !isManagerRole(user.role.name)) {
     await clearSessionCookie();
     return null;
   }
@@ -74,6 +74,6 @@ export async function requireSessionPage(): Promise<VerifiedSession> {
 
 export async function requireManagerPage(): Promise<VerifiedSession> {
   const session = await requireSessionPage();
-  if (!session.isManager) redirect("/admin/my-assignments");
+  if (!session.isManager) redirect("/admin/login");
   return session;
 }

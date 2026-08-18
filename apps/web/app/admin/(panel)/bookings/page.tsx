@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BookingStatus } from "@prisma/client";
 import { ActionIconLink } from "@/components/admin/AdminActionIcons";
+import { FilterChips, filterHref } from "@/components/admin/FilterChips";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = { title: "طلبات التسجيل" };
@@ -59,30 +60,34 @@ export default async function AdminBookingsPage({ searchParams }: Props) {
     <div className="stack-gap">
       <section className="panel">
         <h1>طلبات التسجيل</h1>
-        <p>
-          طلبات الحجز من الموقع — التحويل ينشئ زبون ومناسبة وموعد على التقويم.
-        </p>
+
+        <FilterChips
+          items={[
+            {
+              href: filterHref("/admin/bookings", { q }),
+              label: "الكل",
+              active: !statusFilter,
+            },
+            ...(Object.keys(STATUS_LABEL) as BookingStatus[]).map((s) => ({
+              href: filterHref("/admin/bookings", { q, status: s }),
+              label: STATUS_LABEL[s],
+              active: statusFilter === s,
+            })),
+          ]}
+        />
 
         <form method="get" className="inline-form" style={{ marginBottom: "1rem" }}>
+          {statusFilter ? <input type="hidden" name="status" value={statusFilter} /> : null}
           <label>
             بحث (اسم / هاتف / مدينة)
             <input name="q" defaultValue={q} placeholder="مثال: أحمد" />
           </label>
-          <label>
-            الحالة
-            <select name="status" defaultValue={statusFilter}>
-              <option value="">الكل</option>
-              {(Object.keys(STATUS_LABEL) as BookingStatus[]).map((s) => (
-                <option key={s} value={s}>
-                  {STATUS_LABEL[s]}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button type="submit">تصفية</button>
-          {q || statusFilter ? (
-            <Link className="text-link" href="/admin/bookings">
-              مسح الفلتر
+          <button type="submit" className="btn-primary">
+            بحث
+          </button>
+          {q ? (
+            <Link className="btn-secondary" href={filterHref("/admin/bookings", { status: statusFilter })}>
+              مسح البحث
             </Link>
           ) : null}
         </form>

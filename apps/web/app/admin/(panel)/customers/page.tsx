@@ -18,7 +18,6 @@ export default async function AdminCustomersPage() {
     <div className="stack-gap">
       <section className="panel">
         <h1>الزبائن</h1>
-        <p>سجل زبائن الاستوديو — أساس ربط المناسبات لاحقاً.</p>
 
         <form action={createCustomer} className="inline-form">
           <h2>إضافة زبون</h2>

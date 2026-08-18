@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { FilterChips, filterHref } from "@/components/admin/FilterChips";
 import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
+import { EmployeeForm } from "@/components/admin/EmployeeForm";
 import { prisma } from "@/lib/prisma";
 import { createEmployee, createRole, deleteEmployee, deleteRole } from "./actions";
 
@@ -51,72 +53,75 @@ export default async function AdminEmployeesPage({ searchParams }: Props) {
       <section className="panel">
         <h1>الموظفين</h1>
         <p>
-          طاقم الاستوديو (مصورون ومساعدون) — غير الزبائن. التعيين يكون على{" "}
-          <strong>خدمة المناسبة</strong> بتاريخها.
+          الطاقم للتعيين على المواعيد فقط. دخول اللوحة وحفظ التعديلات لحساب المسؤول
+          («مدير الأستوديو») وحده — المصور والمساعد بلا كلمة مرور للدخول.
         </p>
 
+        <FilterChips
+          label="الحالة"
+          items={[
+            {
+              href: filterHref("/admin/employees", { q, roleId: roleRaw }),
+              label: "الكل",
+              active: !activeFilter,
+            },
+            {
+              href: filterHref("/admin/employees", { q, roleId: roleRaw, active: "1" }),
+              label: "نشط",
+              active: activeFilter === "1",
+            },
+            {
+              href: filterHref("/admin/employees", { q, roleId: roleRaw, active: "0" }),
+              label: "معطّل",
+              active: activeFilter === "0",
+            },
+          ]}
+        />
+        <FilterChips
+          label="الدور"
+          items={[
+            {
+              href: filterHref("/admin/employees", { q, active: activeFilter }),
+              label: "الكل",
+              active: !roleRaw,
+            },
+            ...roles.map((r) => ({
+              href: filterHref("/admin/employees", {
+                q,
+                active: activeFilter,
+                roleId: String(r.id),
+              }),
+              label: r.name,
+              active: roleId === r.id,
+            })),
+          ]}
+        />
+
         <form method="get" className="inline-form" style={{ marginBottom: "1rem" }}>
+          {roleRaw ? <input type="hidden" name="roleId" value={roleRaw} /> : null}
+          {activeFilter ? <input type="hidden" name="active" value={activeFilter} /> : null}
           <label>
             بحث (اسم / بريد / هاتف)
             <input name="q" defaultValue={q} placeholder="مثال: محمد" />
           </label>
-          <label>
-            الدور
-            <select name="roleId" defaultValue={roleRaw ?? ""}>
-              <option value="">الكل</option>
-              {roles.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            الحالة
-            <select name="active" defaultValue={activeFilter}>
-              <option value="">الكل</option>
-              <option value="1">نشط</option>
-              <option value="0">معطّل</option>
-            </select>
-          </label>
-          <button type="submit">تصفية</button>
-          {q || roleRaw || activeFilter ? (
-            <Link className="text-link" href="/admin/employees">
-              مسح الفلتر
+          <button type="submit" className="btn-primary">
+            بحث
+          </button>
+          {q ? (
+            <Link
+              className="btn-secondary"
+              href={filterHref("/admin/employees", { roleId: roleRaw, active: activeFilter })}
+            >
+              مسح البحث
             </Link>
           ) : null}
         </form>
 
-        <form action={createEmployee} className="inline-form">
-          <h2>إضافة موظف</h2>
-          <label>
-            الاسم
-            <input name="name" required />
-          </label>
-          <label>
-            البريد (لتسجيل الدخول)
-            <input className="input-ltr" name="email" type="email" required />
-          </label>
-          <label>
-            الهاتف
-            <input className="input-ltr" name="phone" />
-          </label>
-          <label>
-            الدور
-            <select name="roleId" required defaultValue={roles[0]?.id ?? ""}>
-              {roles.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            كلمة المرور
-            <input className="input-ltr" name="password" type="password" required minLength={8} />
-          </label>
-          <button type="submit">حفظ الموظف</button>
-        </form>
+        <EmployeeForm
+          mode="create"
+          action={createEmployee}
+          roles={roles.map((r) => ({ id: r.id, name: r.name }))}
+        />
       </section>
 
       <section className="panel">

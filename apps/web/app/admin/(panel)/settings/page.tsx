@@ -12,10 +12,6 @@ export default async function AdminSettingsPage() {
     <div className="stack-gap">
       <section className="panel">
         <h1>إعدادات الموقع</h1>
-        <p>
-          رقم واتساب وروابط السوشيال تظهر على الصفحات العامة فوراً. اتركي الرابط
-          فارغاً لإخفاء الأيقونة. نص «من نحن» يظهر في `/about`.
-        </p>
 
         <form action={saveSiteSettings} className="inline-form">
           <h2>واتساب العائم</h2>

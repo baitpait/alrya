@@ -29,9 +29,6 @@ export default async function ReportStaffPage({ searchParams }: Props) {
     <div className="stack-gap">
       <section className="panel">
         <h1>تقرير خدمات الموظفين</h1>
-        <p>
-          كل تعيين على موعد بتاريخ — مثال: محمد على حنا أحمد يظهر هنا براتب ومكافأة إن وُجدت.
-        </p>
         <ReportToolbar kind="staff" query={qs.toString()} />
 
         <form method="get" className="inline-form report-print-hide" style={{ marginBottom: "1rem" }}>
@@ -47,10 +44,12 @@ export default async function ReportStaffPage({ searchParams }: Props) {
             المشرف
             <input name="supervisor" defaultValue={supervisor} placeholder="اسم المشرف" />
           </label>
-          <button type="submit">تصفية</button>
+          <button type="submit" className="btn-primary">
+            بحث
+          </button>
           {hasFilter ? (
-            <Link className="text-link" href="/admin/reports/staff">
-              مسح الفلتر
+            <Link className="btn-secondary" href="/admin/reports/staff">
+              مسح البحث
             </Link>
           ) : null}
         </form>

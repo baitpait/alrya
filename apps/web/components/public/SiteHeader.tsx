@@ -6,7 +6,6 @@ const LINKS = [
   { href: "/about", label: "من نحن" },
   { href: "/faq", label: "الأسئلة" },
   { href: "/contact", label: "تواصل" },
-  { href: "/book", label: "احجز الآن" },
 ];
 
 export function SiteHeader() {
@@ -28,6 +27,9 @@ export function SiteHeader() {
               {l.label}
             </Link>
           ))}
+          <Link className="site-header-cta" href="/book">
+            سجّل طلب حجز
+          </Link>
         </nav>
       </div>
     </header>

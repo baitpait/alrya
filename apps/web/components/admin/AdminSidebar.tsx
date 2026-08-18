@@ -6,7 +6,7 @@ import { ADMIN_NAV } from "@/components/admin/nav";
 
 export function AdminSidebar({
   unreadMessages = 0,
-  isManager = true,
+  isManager = false,
 }: {
   unreadMessages?: number;
   isManager?: boolean;

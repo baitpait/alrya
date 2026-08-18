@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ContactMessageStatus } from "@prisma/client";
 import { ActionIconLink } from "@/components/admin/AdminActionIcons";
+import { FilterChips, filterHref } from "@/components/admin/FilterChips";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = { title: "رسائل التواصل" };
@@ -60,32 +61,38 @@ export default async function AdminMessagesPage({ searchParams }: Props) {
   return (
     <div className="stack-gap">
       <section className="panel">
-        <h1>رسائل التواصل</h1>
-        <p>
-          استفسارات صفحة «تواصل معنا» — منفصلة عن طلبات الحجز. غير مقروءة:{" "}
-          <strong>{newCount}</strong>
-        </p>
+        <h1>
+          رسائل التواصل
+          {newCount > 0 ? ` (${newCount} جديدة)` : ""}
+        </h1>
+
+        <FilterChips
+          items={[
+            {
+              href: filterHref("/admin/messages", { q }),
+              label: "الكل",
+              active: !statusFilter,
+            },
+            ...(Object.keys(STATUS_LABEL) as ContactMessageStatus[]).map((s) => ({
+              href: filterHref("/admin/messages", { q, status: s }),
+              label: STATUS_LABEL[s],
+              active: statusFilter === s,
+            })),
+          ]}
+        />
 
         <form method="get" className="inline-form" style={{ marginBottom: "1rem" }}>
+          {statusFilter ? <input type="hidden" name="status" value={statusFilter} /> : null}
           <label>
             بحث (اسم / هاتف / موضوع)
             <input name="q" defaultValue={q} placeholder="مثال: أحمد" />
           </label>
-          <label>
-            الحالة
-            <select name="status" defaultValue={statusFilter}>
-              <option value="">الكل</option>
-              {(Object.keys(STATUS_LABEL) as ContactMessageStatus[]).map((s) => (
-                <option key={s} value={s}>
-                  {STATUS_LABEL[s]}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button type="submit">تصفية</button>
-          {q || statusFilter ? (
-            <Link className="text-link" href="/admin/messages">
-              مسح الفلتر
+          <button type="submit" className="btn-primary">
+            بحث
+          </button>
+          {q ? (
+            <Link className="btn-secondary" href={filterHref("/admin/messages", { status: statusFilter })}>
+              مسح البحث
             </Link>
           ) : null}
         </form>

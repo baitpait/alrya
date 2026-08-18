@@ -36,7 +36,11 @@ export default async function PortfolioPage() {
           ) : (
             <ul className="portfolio-grid">
               {items.map((item) => {
-                const imageSrc = safeMediaSrc(item.imageUrl);
+                const imageSrc = (() => {
+                  const s = safeMediaSrc(item.imageUrl);
+                  if (!s || /\.svg($|\?)/i.test(s)) return null;
+                  return s;
+                })();
                 const videoHref =
                   item.videoUrl && isSafeHttpUrl(item.videoUrl) ? item.videoUrl : null;
                 return (

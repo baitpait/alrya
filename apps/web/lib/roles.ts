@@ -1,12 +1,18 @@
 /** ثوابت الأدوار — آمنة للـ middleware (بدون Prisma) */
 
+/** الدور الوحيد المسموح له دخول `/admin` (قرار المرحلة 15) */
 export const MANAGER_ROLE_NAME = "مدير الأستوديو";
 
 export function isManagerRole(roleName: string) {
   return roleName.trim() === MANAGER_ROLE_NAME;
 }
 
-/** مسارات الإدارة الحساسة — للمدير فقط */
+/** دخول اللوحة = نفس شرط المسؤول — لا حقل canLogin منفصل */
+export function roleCanLogin(roleName: string) {
+  return isManagerRole(roleName);
+}
+
+/** مسارات الإدارة الحساسة — للمدير فقط (الطاقم لا يدخل أصلاً) */
 export const MANAGER_ONLY_PREFIXES = [
   "/admin/employees",
   "/admin/settings",
@@ -18,6 +24,9 @@ export const MANAGER_ONLY_PREFIXES = [
   "/admin/messages",
   "/admin/customers",
   "/admin/payments",
+  "/admin/calendar",
+  "/admin/events",
+  "/admin/my-assignments",
 ] as const;
 
 export function isManagerOnlyPath(pathname: string) {

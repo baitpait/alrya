@@ -22,7 +22,6 @@ export default async function ReportPaymentsPage({ searchParams }: Props) {
     <div className="stack-gap">
       <section className="panel">
         <h1>تقرير الدفعات / التحصيل</h1>
-        <p>كل دفعة مسجّلة مع الزبون والمبلغ — نفس أرقام شاشة الدفعات.</p>
         <ReportToolbar kind="payments" query={qs} />
 
         <form method="get" className="inline-form report-print-hide" style={{ marginBottom: "1rem" }}>
@@ -30,10 +29,12 @@ export default async function ReportPaymentsPage({ searchParams }: Props) {
             بحث (اسم / هاتف / طريقة / ملاحظة)
             <input name="q" defaultValue={q} placeholder="مثال: أحمد أو نقدي" />
           </label>
-          <button type="submit">تصفية</button>
+          <button type="submit" className="btn-primary">
+            بحث
+          </button>
           {q ? (
-            <Link className="text-link" href="/admin/reports/payments">
-              مسح الفلتر
+            <Link className="btn-secondary" href="/admin/reports/payments">
+              مسح البحث
             </Link>
           ) : null}
         </form>

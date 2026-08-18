@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdminBackLink } from "@/components/admin/AdminBackLink";
 import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
+import { EmployeeForm } from "@/components/admin/EmployeeForm";
 import { prisma } from "@/lib/prisma";
 import { deleteEmployee, updateEmployee } from "../actions";
 
@@ -60,51 +61,19 @@ export default async function AdminEmployeeDetailPage({ params }: Props) {
 
       <section className="panel">
         <h1>{user.name}</h1>
-        <form action={updateEmployee} className="inline-form">
-          <input type="hidden" name="id" value={user.id} />
-          <label>
-            الاسم
-            <input name="name" required defaultValue={user.name} />
-          </label>
-          <label>
-            البريد
-            <input
-              className="input-ltr"
-              name="email"
-              type="email"
-              required
-              defaultValue={user.email}
-            />
-          </label>
-          <label>
-            الهاتف
-            <input className="input-ltr" name="phone" defaultValue={user.phone ?? ""} />
-          </label>
-          <label>
-            الدور
-            <select name="roleId" required defaultValue={user.roleId}>
-              {roles.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            الحالة
-            <select name="active" defaultValue={user.active ? "1" : "0"}>
-              <option value="1">نشط</option>
-              <option value="0">معطّل</option>
-            </select>
-          </label>
-          <label>
-            كلمة مرور جديدة (اختياري)
-            <input className="input-ltr" name="password" type="password" minLength={8} />
-          </label>
-          <button type="submit" className="btn-primary">
-            حفظ
-          </button>
-        </form>
+        <EmployeeForm
+          mode="edit"
+          action={updateEmployee}
+          roles={roles.map((r) => ({ id: r.id, name: r.name }))}
+          employee={{
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            roleId: user.roleId,
+            active: user.active,
+          }}
+        />
         <div className="detail-footer-actions" style={{ marginTop: "0.75rem" }}>
           <ConfirmDelete
             action={deleteEmployee}
@@ -119,7 +88,7 @@ export default async function AdminEmployeeDetailPage({ params }: Props) {
       <section className="panel">
         <h2>تعييناته ({user.assignments.length})</h2>
         {user.assignments.length === 0 ? (
-          <p>لا تعيينات بعد — عيّنيه من تفاصيل المناسبة على خدمة بتاريخ.</p>
+          <p>لا تعيينات بعد.</p>
         ) : (
           <div className="table-wrap">
             <table className="data-table">

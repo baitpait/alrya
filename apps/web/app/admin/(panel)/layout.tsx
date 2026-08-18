@@ -1,6 +1,5 @@
-import { redirect } from "next/navigation";
 import { AdminShell } from "@/components/admin/AdminShell";
-import { getVerifiedSession } from "@/lib/authz";
+import { requireManagerPage } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
 import { ContactMessageStatus } from "@prisma/client";
 
@@ -11,14 +10,11 @@ export default async function AdminPanelLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getVerifiedSession();
-  if (!session) redirect("/admin/login");
+  const session = await requireManagerPage();
 
-  const unreadMessages = session.isManager
-    ? await prisma.contactMessage.count({
-        where: { status: ContactMessageStatus.NEW },
-      })
-    : 0;
+  const unreadMessages = await prisma.contactMessage.count({
+    where: { status: ContactMessageStatus.NEW },
+  });
 
   return (
     <AdminShell

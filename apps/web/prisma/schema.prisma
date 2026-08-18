@@ -61,7 +61,8 @@ model User {
   name         String
   email        String   @unique
   phone        String?
-  passwordHash String
+  /** كلمة مرور الدخول — للمسؤول فقط؛ الطاقم يُعيَّن على المواعيد بلا login */
+  passwordHash String?
   roleId       Int
   role         Role     @relation(fields: [roleId], references: [id])
   active       Boolean  @default(true)

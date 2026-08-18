@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ActionIconLink } from "@/components/admin/AdminActionIcons";
+import { FilterChips, filterHref } from "@/components/admin/FilterChips";
 import { prisma } from "@/lib/prisma";
 import { ConfirmDelete } from "@/components/admin/ConfirmDelete";
 import { createGalleryItem, deleteGalleryItem } from "./actions";
@@ -34,31 +35,39 @@ export default async function AdminGalleryPage({ searchParams }: Props) {
     <div className="stack-gap">
       <section className="panel">
         <h1>معرض الأعمال</h1>
-        <p>
-          ما يُنشر هنا يظهر في{" "}
-          <Link className="text-link" href="/portfolio" target="_blank">
-            /portfolio
-          </Link>
-          . يمكن رفع صورة أو لصق رابط، وإضافة رابط فيديو اختيارياً.
-        </p>
+
+        <FilterChips
+          items={[
+            {
+              href: filterHref("/admin/gallery", { q }),
+              label: "الكل",
+              active: !publishedFilter,
+            },
+            {
+              href: filterHref("/admin/gallery", { q, published: "1" }),
+              label: "منشور",
+              active: publishedFilter === "1",
+            },
+            {
+              href: filterHref("/admin/gallery", { q, published: "0" }),
+              label: "مخفي",
+              active: publishedFilter === "0",
+            },
+          ]}
+        />
 
         <form method="get" className="inline-form report-print-hide" style={{ marginBottom: "1rem" }}>
+          {publishedFilter ? <input type="hidden" name="published" value={publishedFilter} /> : null}
           <label>
             بحث (عنوان / وصف)
             <input name="q" defaultValue={q} placeholder="مثال: حنا" />
           </label>
-          <label>
-            الحالة
-            <select name="published" defaultValue={publishedFilter}>
-              <option value="">الكل</option>
-              <option value="1">منشور</option>
-              <option value="0">مخفي</option>
-            </select>
-          </label>
-          <button type="submit">تصفية</button>
-          {q || publishedFilter ? (
-            <Link className="text-link" href="/admin/gallery">
-              مسح الفلتر
+          <button type="submit" className="btn-primary">
+            بحث
+          </button>
+          {q ? (
+            <Link className="btn-secondary" href={filterHref("/admin/gallery", { published: publishedFilter })}>
+              مسح البحث
             </Link>
           ) : null}
         </form>

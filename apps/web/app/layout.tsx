@@ -26,11 +26,17 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const theme = saved === "dark" ? "dark" : "light";
 
   return (
-    <html lang="ar" dir="rtl" data-theme={theme} suppressHydrationWarning>
+    <html
+      lang="ar"
+      dir="rtl"
+      data-theme={theme}
+      className={`${cairo.variable} ${cairo.className}`}
+      suppressHydrationWarning
+    >
       <head>
         <meta name="theme-color" content="#4A0404" />
       </head>
-      <body className={`${cairo.variable} site-body`}>
+      <body className="site-body">
         <ThemeSync />
         {children}
       </body>

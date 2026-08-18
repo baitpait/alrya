@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/session-token";
-import { isManagerOnlyPath, isManagerRole } from "@/lib/roles";
+import { isManagerRole } from "@/lib/roles";
+
+function loginRedirect(request: NextRequest) {
+  const url = request.nextUrl.clone();
+  url.pathname = "/admin/login";
+  url.search = "";
+  const res = NextResponse.redirect(url);
+  res.cookies.delete(SESSION_COOKIE);
+  return res;
+}
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -16,14 +25,20 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  const isManager = Boolean(session && isManagerRole(session.roleName));
+
   if (isApi) {
     if (!session) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
     }
-    if (pathname.startsWith("/api/admin/reports") && !isManagerRole(session.roleName)) {
-      return NextResponse.json({ error: "صلاحية المدير مطلوبة" }, { status: 403 });
+    if (!isManager) {
+      return NextResponse.json({ error: "الدخول مسموح لحساب المسؤول فقط" }, { status: 403 });
     }
     return NextResponse.next();
+  }
+
+  if (session && !isManager) {
+    return loginRedirect(request);
   }
 
   if (!session && !isLogin) {
@@ -35,13 +50,6 @@ export async function middleware(request: NextRequest) {
   if (session && isLogin) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin";
-    url.search = "";
-    return NextResponse.redirect(url);
-  }
-
-  if (session && isManagerOnlyPath(pathname) && !isManagerRole(session.roleName)) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/admin/my-assignments";
     url.search = "";
     return NextResponse.redirect(url);
   }

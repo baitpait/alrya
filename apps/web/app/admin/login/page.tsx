@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/session";
+import { getVerifiedSession } from "@/lib/authz";
 import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = {
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminLoginPage() {
-  const session = await getSession();
+  const session = await getVerifiedSession();
   if (session) {
     redirect("/admin");
   }
@@ -25,7 +25,6 @@ export default async function AdminLoginPage() {
         />
         <h1>استوديو الراية</h1>
         <p className="login-tagline">علامة الجودة والاحتراف</p>
-        <p>دخول لوحة الإدارة</p>
         <LoginForm />
       </section>
     </div>

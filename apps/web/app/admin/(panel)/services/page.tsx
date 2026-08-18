@@ -17,7 +17,6 @@ export default async function AdminServicesPage() {
     <div className="stack-gap">
       <section className="panel">
         <h1>الخدمات</h1>
-        <p>كتالوج الخدمات (عرس، حنا…) — كل خدمة لها عروض/باقات بأسعار.</p>
 
         <form action={createService} className="inline-form">
           <h2>إضافة خدمة</h2>

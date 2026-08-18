@@ -15,7 +15,7 @@ export function AdminShell({
   title,
   userName,
   unreadMessages = 0,
-  isManager = true,
+  isManager = false,
   children,
 }: Props) {
   return (

@@ -51,22 +51,18 @@ export default async function AdminPaymentsPage({ searchParams }: Props) {
     <div className="stack-gap">
       <section className="panel">
         <h1>الدفعات</h1>
-        <p>
-          سجل تحصيل الاستوديو — التفاصيل والإضافة من صفحة المناسبة.{" "}
-          <Link className="text-link" href="/admin/events">
-            المناسبات
-          </Link>
-        </p>
 
         <form method="get" className="inline-form" style={{ marginBottom: "1rem" }}>
           <label>
             بحث (اسم / هاتف / طريقة / ملاحظة)
             <input name="q" defaultValue={q} placeholder="مثال: أحمد أو نقدي" />
           </label>
-          <button type="submit">تصفية</button>
+          <button type="submit" className="btn-primary">
+            بحث
+          </button>
           {q ? (
-            <Link className="text-link" href="/admin/payments">
-              مسح الفلتر
+            <Link className="btn-secondary" href="/admin/payments">
+              مسح البحث
             </Link>
           ) : null}
         </form>

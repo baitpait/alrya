@@ -3,7 +3,6 @@ import Link from "next/link";
 import { ActionIconLink } from "@/components/admin/AdminActionIcons";
 import { getDashboardStats } from "@/lib/dashboard-stats";
 import { formatMoney } from "@/lib/event-finance";
-import { getVerifiedSession } from "@/lib/authz";
 
 export const metadata: Metadata = { title: "لوحة التحكم" };
 export const dynamic = "force-dynamic";
@@ -20,8 +19,6 @@ function formatDateTimeAr(d: Date) {
 }
 
 export default async function AdminHomePage() {
-  const session = await getVerifiedSession();
-  const isManager = session?.isManager ?? false;
   const stats = await getDashboardStats();
 
   const managerCards = [
@@ -69,58 +66,20 @@ export default async function AdminHomePage() {
     },
   ];
 
-  const staffCards = [
-    {
-      label: "مناسبات قيد التحضير",
-      value: String(stats.eventsPreparing),
-      href: "/admin/events?status=PREPARING",
-    },
-    {
-      label: "مناسبات قيد العمل",
-      value: String(stats.eventsInProgress),
-      href: "/admin/events?status=IN_PROGRESS",
-    },
-    {
-      label: "مواعيدي",
-      value: "افتح",
-      href: "/admin/my-assignments",
-    },
-    {
-      label: "التقويم",
-      value: "افتح",
-      href: "/admin/calendar",
-    },
-  ];
-
-  const cards = isManager ? managerCards : staffCards;
-
   return (
     <div className="stack-gap">
       <section className="panel">
         <div className="calendar-toolbar">
           <h1>لوحة التحكم</h1>
-          {isManager ? (
-            <ActionIconLink
-              href="/admin/reports"
-              label="فتح التقارير"
-              kind="reports"
-            />
-          ) : (
-            <ActionIconLink
-              href="/admin/my-assignments"
-              label="مناسباتي"
-              kind="event"
-            />
-          )}
+          <ActionIconLink
+            href="/admin/reports"
+            label="فتح التقارير"
+            kind="reports"
+          />
         </div>
-        <p>
-          {isManager
-            ? "أرقام حية من النظام — كل بطاقة تفتح الصفحة المفلترة."
-            : `مرحباً ${session?.name ?? ""} — هذي شاشة الطاقم: مواعيدك والتقويم.`}
-        </p>
 
         <div className="dash-grid" aria-label="مؤشرات التشغيل">
-          {cards.map((card) => (
+          {managerCards.map((card) => (
             <Link key={card.href + card.label} href={card.href} className="dash-card">
               <span>{card.label}</span>
               <strong className={"ltr" in card && card.ltr ? "cell-ltr" : undefined}>
@@ -141,7 +100,7 @@ export default async function AdminHomePage() {
           />
         </div>
         {stats.upcoming.length === 0 ? (
-          <p>لا مواعيد قادمة — أضيفي خدمة بتاريخ من المناسبة أو من التقويم.</p>
+          <p>لا مواعيد قادمة.</p>
         ) : (
           <div className="table-wrap">
             <table className="data-table">

@@ -36,15 +36,11 @@ export default function AdminReportsPage() {
     <div className="stack-gap">
       <section className="panel">
         <h1>التقارير</h1>
-        <p>
-          نفس أرقام الشاشات. «تصدير Excel» يفتح في Excel، و«طباعة / PDF» من نافذة
-          الطباعة في المتصفح.
-        </p>
         <div className="dash-grid">
           {REPORTS.map((r) => (
             <Link key={r.href} href={r.href} className="dash-card">
               <span>{r.title}</span>
-              <strong style={{ fontSize: "1rem", fontWeight: 600 }}>{r.summary}</strong>
+              <strong className="dash-card-note">{r.summary}</strong>
             </Link>
           ))}
         </div>

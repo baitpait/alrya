@@ -22,7 +22,6 @@ export default async function ReportDiscountsPage({ searchParams }: Props) {
     <div className="stack-gap">
       <section className="panel">
         <h1>تقرير الخصومات</h1>
-        <p>خصومات المناسبات مع السبب — مثال: خصم على عرس أحمد يظهر هنا.</p>
         <ReportToolbar kind="discounts" query={qs} />
 
         <form method="get" className="inline-form report-print-hide" style={{ marginBottom: "1rem" }}>
@@ -30,10 +29,12 @@ export default async function ReportDiscountsPage({ searchParams }: Props) {
             بحث (اسم / هاتف / سبب)
             <input name="q" defaultValue={q} placeholder="مثال: أحمد" />
           </label>
-          <button type="submit">تصفية</button>
+          <button type="submit" className="btn-primary">
+            بحث
+          </button>
           {q ? (
-            <Link className="text-link" href="/admin/reports/discounts">
-              مسح الفلتر
+            <Link className="btn-secondary" href="/admin/reports/discounts">
+              مسح البحث
             </Link>
           ) : null}
         </form>

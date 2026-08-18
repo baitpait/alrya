@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { verifyPassword } from "@/lib/password";
+import { isManagerRole } from "@/lib/roles";
 import {
   clearSessionCookie,
   createSessionToken,
@@ -26,6 +27,14 @@ export async function loginWithCredentials(
   });
 
   if (!user || !user.active) {
+    return { ok: false, error: "بيانات الدخول غير صحيحة." };
+  }
+
+  if (!isManagerRole(user.role.name)) {
+    return { ok: false, error: "الدخول مسموح لحساب المسؤول فقط." };
+  }
+
+  if (!user.passwordHash) {
     return { ok: false, error: "بيانات الدخول غير صحيحة." };
   }
 

@@ -311,22 +311,26 @@ async function seedPhotographerDemo() {
   const role = await prisma.role.findFirst({ where: { name: "مصور" } });
   if (!role) return;
   const email = "photographer@alray.studio";
-  const passwordHash = await bcrypt.hash("Photo@123456", 10);
   await prisma.user.upsert({
     where: { email },
     update: {
       name: "محمد المصور",
-      passwordHash,
+      passwordHash: null,
       roleId: role.id,
       active: true,
     },
     create: {
       name: "محمد المصور",
       email,
-      passwordHash,
+      passwordHash: null,
       roleId: role.id,
       active: true,
     },
+  });
+
+  await prisma.user.updateMany({
+    where: { role: { name: { not: "مدير الأستوديو" } } },
+    data: { passwordHash: null },
   });
 }
 
@@ -400,7 +404,7 @@ async function main() {
   console.log("Seed OK (محلي فقط — غيّري كلمة الأدمن على أي بيئة مشتركة)");
   console.log(`email=${SEED_EMAIL}`);
   console.log(`password=${SEED_PASSWORD}`);
-  console.log("photographer=photographer@alray.studio / Photo@123456");
+  console.log("طاقم تجريبي: photographer@alray.studio — بلا دخول للوحة");
 }
 
 main()

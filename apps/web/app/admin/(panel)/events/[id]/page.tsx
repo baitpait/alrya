@@ -18,7 +18,6 @@ import {
   unassignEmployee,
   updateEventStatus,
 } from "../actions";
-import { getVerifiedSession } from "@/lib/authz";
 
 const STATUS_LABEL: Record<EventStatus, string> = {
   PREPARING: "قيد التحضير",
@@ -57,9 +56,41 @@ function formatDateTimeAr(d: Date) {
   });
 }
 
+function FinanceSummary({
+  finance,
+}: {
+  finance: {
+    totalPrice: number;
+    discountsTotal: number;
+    paymentsTotal: number;
+    remaining: number;
+  };
+}) {
+  const remainingTone =
+    finance.remaining < 0 ? "is-negative" : "is-positive";
+  return (
+    <div className="finance-grid" aria-label="ملخص مالي">
+      <div className="finance-card">
+        <span>الإجمالي</span>
+        <strong className="cell-ltr">{formatMoney(finance.totalPrice)}</strong>
+      </div>
+      <div className="finance-card">
+        <span>المدفوع</span>
+        <strong className="cell-ltr">{formatMoney(finance.paymentsTotal)}</strong>
+      </div>
+      <div className="finance-card">
+        <span>الخصومات</span>
+        <strong className="cell-ltr">{formatMoney(finance.discountsTotal)}</strong>
+      </div>
+      <div className={`finance-card ${remainingTone}`}>
+        <span>المتبقي</span>
+        <strong className="cell-ltr">{formatMoney(finance.remaining)}</strong>
+      </div>
+    </div>
+  );
+}
+
 export default async function AdminEventDetailPage({ params }: Props) {
-  const session = await getVerifiedSession();
-  const isManager = session?.isManager ?? false;
   const { id: idRaw } = await params;
   const id = Number(idRaw);
   if (!Number.isFinite(id) || id <= 0) notFound();
@@ -83,101 +114,20 @@ export default async function AdminEventDetailPage({ params }: Props) {
         discounts: { orderBy: { createdAt: "desc" } },
       },
     }),
-    isManager
-      ? prisma.service.findMany({
-          where: { active: true },
-          orderBy: { name: "asc" },
-          include: { offers: { orderBy: { name: "asc" } } },
-        })
-      : Promise.resolve([]),
-    isManager
-      ? prisma.user.findMany({
-          where: { active: true },
-          orderBy: { name: "asc" },
-          include: { role: true },
-        })
-      : Promise.resolve([]),
+    prisma.service.findMany({
+      where: { active: true },
+      orderBy: { name: "asc" },
+      include: { offers: { orderBy: { name: "asc" } } },
+    }),
+    prisma.user.findMany({
+      where: { active: true },
+      orderBy: { name: "asc" },
+      include: { role: true },
+    }),
   ]);
   const finance = await getEventFinance(id);
 
   if (!event) notFound();
-
-  if (!isManager) {
-    return (
-      <div className="stack-gap">
-        <p>
-          <Link className="text-link" href="/admin/events">
-            ← رجوع للمناسبات
-          </Link>
-        </p>
-        <section className="panel">
-          <h1>مناسبة #{event.id}</h1>
-          <p>
-            الزبون: {event.customer.firstName} {event.customer.lastName} —{" "}
-            <span className="cell-ltr">{event.customer.phone}</span>
-          </p>
-          <p>الحالة: {STATUS_LABEL[event.status]}</p>
-          <div className="finance-grid" aria-label="ملخص مالي">
-            <div className="finance-card">
-              <span>الإجمالي</span>
-              <strong className="cell-ltr">{formatMoney(finance.totalPrice)}</strong>
-            </div>
-            <div className="finance-card">
-              <span>المدفوع</span>
-              <strong className="cell-ltr">{formatMoney(finance.paymentsTotal)}</strong>
-            </div>
-            <div className="finance-card">
-              <span>المتبقي</span>
-              <strong className="cell-ltr">{formatMoney(finance.remaining)}</strong>
-            </div>
-          </div>
-          <p className="muted">عرض للطاقم — التعديل والدفعات للمدير فقط.</p>
-        </section>
-        <section className="panel">
-          <h2>المواعيد / الخدمات</h2>
-          {event.services.length === 0 ? (
-            <p>لا خدمات مسجّلة.</p>
-          ) : (
-            <div className="table-wrap">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>الخدمة</th>
-                    <th>من</th>
-                    <th>إلى</th>
-                    <th>المكان</th>
-                    <th>الطاقم</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {event.services.map((s) => (
-                    <tr key={s.id}>
-                      <td>{s.service.name}</td>
-                      <td className="cell-ltr">{formatDateTimeAr(s.startsAt)}</td>
-                      <td className="cell-ltr">{formatDateTimeAr(s.endsAt)}</td>
-                      <td>
-                        {[s.city, s.venue, s.hall].filter(Boolean).join(" · ") || "—"}
-                      </td>
-                      <td>
-                        {s.employees.length === 0
-                          ? "—"
-                          : s.employees.map((e) => e.user.name).join("، ")}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
-        <p>
-          <Link className="text-link" href="/admin/my-assignments">
-            مناسباتي
-          </Link>
-        </p>
-      </div>
-    );
-  }
 
   const defaultStart = new Date();
   defaultStart.setMinutes(0, 0, 0);
@@ -188,42 +138,34 @@ export default async function AdminEventDetailPage({ params }: Props) {
   return (
     <div className="stack-gap">
       <AdminBackLink href="/admin/events" label="رجوع للمناسبات" />
+      <h1 className="event-page-title">مناسبة #{event.id}</h1>
 
       <section className="panel">
-        <h1>مناسبة #{event.id}</h1>
-        <p>
-          الزبون:{" "}
-          <Link className="text-link" href={`/admin/customers/${event.customerId}`}>
-            {event.customer.firstName} {event.customer.lastName}
-          </Link>{" "}
-          — {event.customer.phone}
-        </p>
+        <h2>بيانات الزبون</h2>
+        <dl className="event-dl">
+          <div>
+            <dt>الاسم</dt>
+            <dd>
+              <Link className="text-link" href={`/admin/customers/${event.customerId}`}>
+                {event.customer.firstName} {event.customer.lastName}
+              </Link>
+            </dd>
+          </div>
+          <div>
+            <dt>الجوال</dt>
+            <dd className="cell-ltr">{event.customer.phone}</dd>
+          </div>
+        </dl>
+      </section>
 
-        <div className="finance-grid" aria-label="ملخص مالي">
-          <div className="finance-card">
-            <span>الإجمالي</span>
-            <strong className="cell-ltr">{formatMoney(finance.totalPrice)}</strong>
-          </div>
-          <div className="finance-card">
-            <span>الخصومات</span>
-            <strong className="cell-ltr">{formatMoney(finance.discountsTotal)}</strong>
-          </div>
-          <div className="finance-card">
-            <span>المدفوع</span>
-            <strong className="cell-ltr">{formatMoney(finance.paymentsTotal)}</strong>
-          </div>
-          <div
-            className={`finance-card finance-card-remaining${
-              finance.remaining <= 0 ? " is-zero" : ""
-            }`}
-          >
-            <span>المتبقي</span>
-            <strong className="cell-ltr">{formatMoney(finance.remaining)}</strong>
-          </div>
-        </div>
+      <section className="panel">
+        <h2>الملخص المالي</h2>
+        <FinanceSummary finance={finance} />
+      </section>
 
-        <form action={updateEventStatus} className="inline-form">
-          <h2>الحالة · الاتفاقية · الملاحظات</h2>
+      <section className="panel">
+        <h2>الحالة والاتفاقية</h2>
+        <form action={updateEventStatus} className="stacked-form">
           <input type="hidden" name="id" value={event.id} />
           <label>
             الحالة
@@ -263,8 +205,7 @@ export default async function AdminEventDetailPage({ params }: Props) {
             حفظ
           </button>
         </form>
-
-        <div className="detail-footer-actions" style={{ marginTop: "0.75rem" }}>
+        <div className="detail-footer-actions">
           <ConfirmDelete
             action={deleteEvent}
             id={event.id}
@@ -276,8 +217,46 @@ export default async function AdminEventDetailPage({ params }: Props) {
       </section>
 
       <section className="panel">
-        <h2>الدفعات</h2>
-        <form action={addPayment} className="inline-form">
+        <h2>سجل الدفعات</h2>
+        {event.payments.length === 0 ? (
+          <p>لا دفعات بعد.</p>
+        ) : (
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>التاريخ</th>
+                  <th>المبلغ</th>
+                  <th>الطريقة</th>
+                  <th>ملاحظة</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {event.payments.map((p) => (
+                  <tr key={p.id}>
+                    <td className="cell-ltr">{formatDateTimeAr(p.paidAt)}</td>
+                    <td className="cell-ltr">{Number(p.amount).toFixed(2)}</td>
+                    <td>{p.method || "—"}</td>
+                    <td>{p.note || "—"}</td>
+                    <td className="row-actions row-actions--icons">
+                      <ConfirmDelete
+                        action={deletePayment}
+                        id={p.id}
+                        fieldName="recordId"
+                        hiddenFields={{ eventId: event.id }}
+                        label={`حذف دفعة ${Number(p.amount).toFixed(2)}`}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        <h3 className="event-subhead">إضافة دفعة</h3>
+        <form action={addPayment} className="stacked-form">
           <input type="hidden" name="eventId" value={event.id} />
           <label>
             المبلغ (₪)
@@ -325,50 +304,15 @@ export default async function AdminEventDetailPage({ params }: Props) {
             ملاحظة
             <input name="note" />
           </label>
-          <button type="submit">إضافة دفعة</button>
+          <button type="submit" className="btn-primary">
+            حفظ الدفعة
+          </button>
         </form>
-
-        {event.payments.length === 0 ? (
-          <p>لا دفعات بعد.</p>
-        ) : (
-          <div className="table-wrap">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>التاريخ</th>
-                  <th>المبلغ</th>
-                  <th>الطريقة</th>
-                  <th>ملاحظة</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {event.payments.map((p) => (
-                  <tr key={p.id}>
-                    <td className="cell-ltr">{formatDateTimeAr(p.paidAt)}</td>
-                    <td className="cell-ltr">{Number(p.amount).toFixed(2)}</td>
-                    <td>{p.method || "—"}</td>
-                    <td>{p.note || "—"}</td>
-                    <td className="row-actions row-actions--icons">
-                      <ConfirmDelete
-                        action={deletePayment}
-                        id={p.id}
-                        fieldName="recordId"
-                        hiddenFields={{ eventId: event.id }}
-                        label={`حذف دفعة ${Number(p.amount).toFixed(2)}`}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
       </section>
 
       <section className="panel">
         <h2>الخصومات</h2>
-        <form action={addDiscount} className="inline-form">
+        <form action={addDiscount} className="stacked-form">
           <input type="hidden" name="eventId" value={event.id} />
           <label>
             المبلغ (₪)
@@ -387,7 +331,9 @@ export default async function AdminEventDetailPage({ params }: Props) {
             السبب
             <input name="reason" placeholder="مثال: خصم عرسان" />
           </label>
-          <button type="submit">إضافة خصم</button>
+          <button type="submit" className="btn-primary">
+            حفظ الخصم
+          </button>
         </form>
 
         {event.discounts.length === 0 ? (
@@ -437,7 +383,7 @@ export default async function AdminEventDetailPage({ params }: Props) {
             .
           </p>
         ) : (
-          <form action={addEventService} className="inline-form">
+          <form action={addEventService} className="stacked-form">
             <input type="hidden" name="eventId" value={event.id} />
             <label>
               الخدمة
@@ -535,7 +481,9 @@ export default async function AdminEventDetailPage({ params }: Props) {
               ملاحظات
               <textarea name="notes" rows={2} />
             </label>
-            <button type="submit">إضافة الخدمة</button>
+            <button type="submit" className="btn-primary">
+              حفظ الموعد
+            </button>
           </form>
         )}
       </section>
@@ -543,7 +491,7 @@ export default async function AdminEventDetailPage({ params }: Props) {
       <section className="panel">
         <h2>خدمات هذه المناسبة ({event.services.length})</h2>
         {event.services.length === 0 ? (
-          <p>لا خدمات بعد — أضيفي خدمتين بتواريخ مختلفة للاختبار.</p>
+            <p>لا مواعيد بعد.</p>
         ) : (
           <div className="table-wrap">
             <table className="data-table">
@@ -597,7 +545,6 @@ export default async function AdminEventDetailPage({ params }: Props) {
 
       <section className="panel">
         <h2>طاقم التغطية</h2>
-        <p>التعيين على خدمة بتاريخ (مثال: محمد على حنا أحمد الخميس — مش على العرس كله).</p>
         {event.services.length === 0 ? (
           <p>أضيفي خدمة مناسبة أولاً ثم عيّني الطاقم.</p>
         ) : staff.length === 0 ? (
@@ -615,7 +562,7 @@ export default async function AdminEventDetailPage({ params }: Props) {
                 {es.service.name}{" "}
                 <span className="cell-ltr">{formatDateTimeAr(es.startsAt)}</span>
               </h3>
-              <form action={assignEmployeeToService} className="inline-form">
+              <form action={assignEmployeeToService} className="stacked-form">
                 <input type="hidden" name="eventId" value={event.id} />
                 <input type="hidden" name="eventServiceId" value={es.id} />
                 <label>
@@ -666,7 +613,9 @@ export default async function AdminEventDetailPage({ params }: Props) {
                     ))}
                   </select>
                 </label>
-                <button type="submit">تعيين</button>
+                <button type="submit" className="btn-primary">
+                  حفظ التعيين
+                </button>
               </form>
               {es.employees.length === 0 ? (
                 <p>لا طاقم على هذا الموعد بعد.</p>
